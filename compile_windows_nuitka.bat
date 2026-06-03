@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ============================================================
-echo  PythonSoundHelix v0.2.0 - Nuitka onefile build
+echo  PythonSoundHelix v0.4.3 - Nuitka onefile build
 echo ============================================================
 if not exist ".venv\Scripts\python.exe" (
     echo [INFO] Local venv missing. Running installer first...

@@ -49,7 +49,7 @@ class TrackSettings:
 class GeneratorSettings:
     preset_name: str = "PythonSoundHelix Extended Pop"
     seed: int = 123456789
-    randomize_seed: bool = False
+    randomize_seed: bool = True
     title: str = ""
     bpm: int = 118
     bars: int = 96
@@ -75,6 +75,16 @@ class GeneratorSettings:
     export_json: bool = True
     export_chord_sheet: bool = True
     use_rating_memory: bool = True
+    normalize_velocity: bool = False
+    normalize_target: int = 88
+    normalize_strength: int = 72
+    auto_range_guard: bool = True
+    max_melody_pitch: int = 79
+    render_wav: bool = True
+    render_mp3: bool = True
+    audio_sample_rate: int = 44100
+    ui_theme: str = "Dark"
+    language: str = "en"
     melody_template: str = "auto"
     groove_template: str = "auto"
     description: str = ""
@@ -145,7 +155,16 @@ class SongResult:
     chords: List[ChordEvent]
     note_count: int
     settings: GeneratorSettings
+    wav_path: str = ""
+    mp3_path: str = ""
+    render_log: str = ""
 
     def summary(self) -> str:
         section_text = ", ".join(f"{s.name}:{s.bars}" for s in self.sections)
-        return f"{self.title} | seed={self.seed} | notes={self.note_count} | sections={section_text}"
+        audio = []
+        if self.wav_path:
+            audio.append("WAV")
+        if self.mp3_path:
+            audio.append("MP3")
+        audio_text = f" | audio={'+'.join(audio)}" if audio else ""
+        return f"{self.title} | seed={self.seed} | notes={self.note_count} | sections={section_text}{audio_text}"

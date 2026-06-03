@@ -14,8 +14,10 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
+from .audio_render import convert_wav_to_mp3, ffmpeg_available, render_tracks_to_wav
 from .midi_writer import MidiTrackData, write_midi
 from .models import ChordEvent, GeneratorSettings, SectionEvent, SongResult, TrackSettings
+from .song_names import generate_song_name
 from .music_theory import (
     DRUM_NOTES,
     clamp,
@@ -58,6 +60,51 @@ def _human_tick(rng: random.Random, base_tick: int, amount: int) -> int:
 
 def _velocity(rng: random.Random, base: int, human: int, accent: int = 0) -> int:
     return clamp(base + accent + rng.randint(-human, human), 1, 127)
+
+
+BASE_ROLE_RANGES: Dict[str, Tuple[int, int]] = {
+    # Tuned to avoid the first v0.4.1 test problem: nice motifs, but too many
+    # dominant notes in the glassy upper register. The user can still override
+    # per-track octave; the guard just folds runaway notes back into a musical lane.
+    "bass": (31, 52),
+    "chord": (45, 72),
+    "pad": (43, 72),
+    "arpeggio": (50, 81),
+    "melody": (52, 79),
+    "counter": (50, 76),
+    "texture": (48, 78),
+}
+
+
+def _role_range(settings: GeneratorSettings, track: TrackSettings) -> Tuple[int, int]:
+    role = (track.role or "melody").lower().strip()
+    low, high = BASE_ROLE_RANGES.get(role, (48, 80))
+    if not getattr(settings, "auto_range_guard", True):
+        return low + track.octave * 12, high + track.octave * 12
+    # Respect the user's octave nudge, but cap melodic/counter voices so the
+    # built-in synth and common GM sounds don't become piercing.
+    low += track.octave * 7
+    high += track.octave * 7
+    melodic_cap = clamp(getattr(settings, "max_melody_pitch", 79), 60, 96)
+    if role in ("melody", "counter", "arpeggio", "texture"):
+        high = min(high, melodic_cap + (2 if role == "arpeggio" else 0))
+    if role in ("pad", "chord"):
+        high = min(high, melodic_cap - 2)
+    if high <= low + 7:
+        high = low + 12
+    return int(low), int(high)
+
+
+def _fold_pitch(pitch: int, low: int, high: int) -> int:
+    while pitch > high:
+        pitch -= 12
+    while pitch < low:
+        pitch += 12
+    return clamp(pitch, max(0, low), min(127, high))
+
+
+def _fold_notes(notes: Sequence[int], low: int, high: int) -> List[int]:
+    return [_fold_pitch(int(n), low, high) for n in notes]
 
 
 def _swing_offset(step_index: int, step_len: int, swing: int) -> int:
@@ -243,7 +290,8 @@ def _add_bass_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSe
     for i, step in enumerate(steps):
         if rng.randint(0, 100) > track.density + section.energy // 4:
             continue
-        pitch = candidates[i % len(candidates)]
+        low, high = _role_range(settings, track)
+        pitch = _fold_pitch(candidates[i % len(candidates)], low, high)
         duration = int(sixteenth * (2.8 if len(steps) <= 4 else 1.6))
         tick = start + step * sixteenth + _swing_offset(step, sixteenth, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step == 0 else 0))
@@ -255,7 +303,9 @@ def _add_chord_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorS
     bar_len = _bar_ticks(settings)
     start = bar * bar_len
     beat = settings.ticks_per_beat
-    voicing = voice_lead([n + track.octave * 12 for n in chord_notes], previous_voicing, low=42 + track.octave * 4, high=78 + track.octave * 4)
+    low, high = _role_range(settings, track)
+    voicing = voice_lead([n + track.octave * 12 for n in chord_notes], previous_voicing, low=low, high=high)
+    voicing = _fold_notes(voicing, low, high)
     pattern = (track.pattern or "auto").lower()
     notes = 0
     if "guitar" in pattern:
@@ -288,7 +338,9 @@ def _add_pad_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSet
         return 0, list(previous_voicing)
     bar_len = _bar_ticks(settings)
     start = bar * bar_len
-    voicing = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], previous_voicing, low=50, high=88)
+    low, high = _role_range(settings, track)
+    voicing = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], previous_voicing, low=low, high=high)
+    voicing = _fold_notes(voicing, low, high)
     length = bar_len * max(1, settings.harmonic_rhythm) - settings.ticks_per_beat // 8
     notes = 0
     for pitch in voicing:
@@ -302,7 +354,9 @@ def _add_arpeggio_bar(rng: random.Random, data: MidiTrackData, settings: Generat
     start = bar * bar_len
     beat = settings.ticks_per_beat
     sixteenth = beat // 4
-    pcs = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], None, low=54, high=90)
+    low, high = _role_range(settings, track)
+    pcs = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], None, low=low, high=high)
+    pcs = _fold_notes(pcs, low, high)
     if len(pcs) < 3:
         pcs = list(pcs) + [pcs[0] + 12]
     pattern = (track.pattern or "auto").lower()
@@ -316,7 +370,8 @@ def _add_arpeggio_bar(rng: random.Random, data: MidiTrackData, settings: Generat
     for step in range(steps):
         if rng.randint(0, 100) > track.density + settings.complexity // 5:
             continue
-        pitch = pcs[order[step % len(order)]] + (12 if step >= 8 and rng.random() < settings.variation / 140 else 0)
+        pitch = pcs[order[step % len(order)]] + (12 if step >= 8 and rng.random() < settings.variation / 180 else 0)
+        pitch = _fold_pitch(pitch, low, high)
         dur = int((bar_len / steps) * 0.78)
         tick = start + int(step * bar_len / steps) + _swing_offset(step, sixteenth, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, track.channel, pitch, _velocity(rng, track.volume - 6, settings.humanize_velocity, 8 if step % 4 == 0 else 0))
@@ -329,6 +384,7 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
     start = bar * bar_len
     beat = settings.ticks_per_beat
     key_pc = key_to_pc(settings.key)
+    low, high = _role_range(settings, track)
     template_name = settings.melody_template or "auto"
     # Known/public-domain inspired motifs are made more recognizable by using the template more directly.
     direct_template = template_name != "auto"
@@ -343,15 +399,17 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
         if direct_template and step >= len(motif) and rng.randint(0, 100) > density:
             continue
         degree = motif[(bar * step_count + step) % len(motif)] if motif else rng.randint(0, 7)
-        pitch = degree_pitch(degree, key_pc, settings.mode, 5 + track.octave)
+        pitch = degree_pitch(degree, key_pc, settings.mode, 4 + track.octave)
         # Pull toward chord tones on strong beats.
         if step % 4 == 0:
-            candidates = [n + 12 + track.octave * 12 for n in chord.notes]
+            candidates = _fold_notes([n + track.octave * 12 for n in chord.notes], low, high)
             pitch = min(candidates, key=lambda p: abs(pitch - p))
         else:
-            pitch = nearest_scale_pitch(pitch, key_pc, settings.mode, 58 + track.octave * 12, 94 + track.octave * 12)
+            pitch = nearest_scale_pitch(pitch, key_pc, settings.mode, low, high)
+            pitch = _fold_pitch(pitch, low, high)
         if last_pitch is not None and abs(pitch - last_pitch) > 12 and rng.randint(0, 100) < settings.motif_memory:
             pitch = pitch - 12 if pitch > last_pitch else pitch + 12
+        pitch = _fold_pitch(pitch, low, high)
         duration = int(step_len * rng.choice([0.75, 0.9, 1.4 if step_count == 8 else 1.0]))
         tick = start + step * step_len + _swing_offset(step, step_len, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step % 4 == 0 else 0))
@@ -359,7 +417,8 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
         notes += 1
         # Call-and-response echo in upper octave for sparse melody.
         if settings.call_response and step in (2, 6, 10, 14) and rng.randint(0, 100) < settings.variation // 2:
-            echo_pitch = nearest_scale_pitch(pitch + rng.choice([-5, 7, 12]), key_pc, settings.mode, 58, 98)
+            echo_pitch = nearest_scale_pitch(pitch + rng.choice([-7, -5, 4, 7]), key_pc, settings.mode, low, high)
+            echo_pitch = _fold_pitch(echo_pitch, low, high)
             data.add_note(_human_tick(rng, tick + step_len // 2, settings.humanize_ticks), max(1, duration // 2), track.channel, echo_pitch, _velocity(rng, track.volume - 18, settings.humanize_velocity, -4))
             notes += 1
     return notes
@@ -372,7 +431,8 @@ def _add_counter_bar(rng: random.Random, data: MidiTrackData, settings: Generato
     start = bar * bar_len
     beat = settings.ticks_per_beat
     key_pc = key_to_pc(settings.key)
-    candidates = scale_pitches(key_pc, settings.mode, 55 + track.octave * 12, 86 + track.octave * 12)
+    low, high = _role_range(settings, track)
+    candidates = scale_pitches(key_pc, settings.mode, low, high)
     chord_pcs = {n % 12 for n in chord.notes}
     candidates = [p for p in candidates if p % 12 in chord_pcs] or candidates
     notes = 0
@@ -391,16 +451,52 @@ def _add_texture_bar(rng: random.Random, data: MidiTrackData, settings: Generato
     beat = settings.ticks_per_beat
     notes = 0
     for i in range(1 + settings.variation // 35):
-        pitch = (chord.notes[i % len(chord.notes)] + 24 + track.octave * 12)
+        low, high = _role_range(settings, track)
+        pitch = _fold_pitch((chord.notes[i % len(chord.notes)] + 12 + track.octave * 12), low, high)
         tick = start + rng.randint(0, max(0, bar_len - beat))
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks * 2), beat * rng.choice([1, 2, 3]), track.channel, pitch, _velocity(rng, min(track.volume, 70), settings.humanize_velocity, -18))
         notes += 1
     return notes
 
 
+
+def _normalize_track_velocities(tracks: Sequence[MidiTrackData], settings: GeneratorSettings) -> None:
+    """Equalize perceived MIDI note loudness per track while preserving accents.
+
+    The user-facing goal is not hard compression. Normal notes are moved toward a
+    shared target average, while unusually loud accents/fills are changed much
+    less so hook moments, drum fills and section highlights can still stand out.
+    """
+    if not settings.normalize_velocity:
+        return
+    target = clamp(settings.normalize_target, 35, 120)
+    strength = clamp(settings.normalize_strength, 0, 100) / 100.0
+    if strength <= 0:
+        return
+    for data in tracks:
+        note_ons = [ev for ev in data.events if ev.kind == "note_on" and ev.b > 0]
+        if not note_ons:
+            continue
+        avg = sum(ev.b for ev in note_ons) / max(1, len(note_ons))
+        if avg <= 0:
+            continue
+        # Drums usually need a little more apparent level to compete with tonal instruments.
+        is_drum = any(ev.channel == 9 for ev in note_ons)
+        local_target = min(122, target + 4) if is_drum else target
+        factor = max(0.55, min(1.80, local_target / avg))
+        for ev in note_ons:
+            desired = ev.b * factor
+            local_strength = strength
+            # Preserve special events: strong accents and fills keep more of their original contrast.
+            if ev.b >= avg + 18:
+                local_strength *= 0.35
+            elif ev.b <= avg - 20:
+                local_strength = min(1.0, local_strength * 1.15)
+            ev.b = clamp(ev.b + (desired - ev.b) * local_strength, 1, 127)
+
 def _default_title(settings: GeneratorSettings, seed: int) -> str:
-    preset = settings.preset_name.replace("PythonSoundHelix", "PSH").replace(" ", "_")
-    return f"{preset}_seed{seed}"
+    # SoundHelix-style random title: deterministic for the seed, human-readable for the GUI/files.
+    return generate_song_name(seed, settings.preset_name)
 
 
 def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str], taste_profile: Optional[dict] = None, progress_callback=None) -> SongResult:
@@ -424,6 +520,7 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     title = settings.title.strip() or _default_title(settings, settings.seed)
+    settings.title = title
     safe = safe_filename(title)
     midi_path = output / f"{safe}.mid"
     json_path = output / f"{safe}.json"
@@ -476,6 +573,11 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
                 note_count += _add_melody_bar(rng, data, settings, track, bar, section, chord, motif)
         tracks.append(data)
 
+    if settings.normalize_velocity:
+        if progress_callback:
+            progress_callback(88, "Normalizing instrument loudness...")
+        _normalize_track_velocities(tracks, settings)
+
     if progress_callback:
         progress_callback(90, "Writing MIDI...")
     write_midi(str(midi_path), tracks, settings.ticks_per_beat, settings.bpm, settings.beats_per_bar, title, markers)
@@ -497,14 +599,43 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
         note_count=note_count,
         settings=settings,
     )
+
+    if settings.render_wav or settings.render_mp3:
+        wav_path = output / f"{safe}.wav"
+        mp3_path = output / f"{safe}.mp3"
+        try:
+            if progress_callback:
+                progress_callback(92, "Rendering WAV with internal synth...")
+            result.wav_path = render_tracks_to_wav(
+                wav_path, tracks, settings.tracks, settings.bpm, settings.ticks_per_beat, end_tick, settings.audio_sample_rate, progress_callback
+            )
+            result.render_log += "WAV rendered with the built-in lightweight synth. "
+            if settings.render_mp3:
+                if ffmpeg_available():
+                    if progress_callback:
+                        progress_callback(99, "Converting WAV to MP3 with ffmpeg...")
+                    try:
+                        result.mp3_path = convert_wav_to_mp3(result.wav_path, mp3_path)
+                        result.render_log += "MP3 rendered via ffmpeg/libmp3lame. "
+                    except Exception as mp3_exc:
+                        result.mp3_path = ""
+                        result.render_log += f"MP3 skipped: {mp3_exc} "
+                else:
+                    result.render_log += "MP3 skipped: ffmpeg was not found in PATH. "
+        except Exception as exc:
+            result.render_log += f"Audio render warning: {type(exc).__name__}: {exc}"
+
     if settings.export_json:
         payload = {
             "application": "PythonSoundHelix",
-            "version": "0.2.0",
+            "version": "0.4.3",
             "license": "GPLv3",
             "title": result.title,
             "seed": result.seed,
             "midi_path": result.midi_path,
+            "wav_path": result.wav_path,
+            "mp3_path": result.mp3_path,
+            "render_log": result.render_log,
             "note_count": result.note_count,
             "settings": settings.to_dict(),
             "sections": [asdict(s) for s in sections],
@@ -521,7 +652,7 @@ def make_chord_sheet(title: str, settings: GeneratorSettings, sections: Sequence
         title,
         "=" * len(title),
         "",
-        f"Generated by PythonSoundHelix 0.2.0 (GPLv3)",
+        f"Generated by PythonSoundHelix 0.4.3 (GPLv3)",
         f"Preset: {settings.preset_name}",
         f"Seed: {settings.seed}",
         f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",

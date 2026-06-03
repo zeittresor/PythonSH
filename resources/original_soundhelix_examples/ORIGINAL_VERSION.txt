@@ -1,0 +1,7 @@
+Bundled XML examples copied from SoundHelix SVN archive soundhelix-code-r896-trunk r896 / SoundHelix 0.10u source snapshot.
+
+Original project: https://www.soundhelix.com/
+Original download/SVN mirror: https://sourceforge.net/projects/soundhelix/
+License: GNU General Public License version 3.0 (GPLv3).
+
+These XML files are included as reference material and preset inspiration for PythonSoundHelix.

@@ -1,0 +1,1507 @@
+{
+  "application": "PythonSoundHelix",
+  "version": "0.2.0",
+  "license": "GPLv3",
+  "title": "Public_Domain_Elise_Synth_seed422796215",
+  "seed": 422796215,
+  "midi_path": "E:\\Debug_Enviroment\\PythonSoundHelix_PyQt6_GPLv3\\output\\Public_Domain_Elise_Synth_seed422796215.mid",
+  "note_count": 3554,
+  "settings": {
+    "preset_name": "Public Domain Elise Synth",
+    "seed": 422796215,
+    "randomize_seed": true,
+    "title": "",
+    "bpm": 132,
+    "bars": 112,
+    "beats_per_bar": 4,
+    "ticks_per_beat": 480,
+    "key": "A",
+    "mode": "minor",
+    "progression": "i,VII,VI,V,i,iv,V,i",
+    "custom_progression": "",
+    "harmonic_rhythm": 1,
+    "section_count": 5,
+    "swing": 3,
+    "humanize_ticks": 8,
+    "humanize_velocity": 8,
+    "complexity": 68,
+    "variation": 62,
+    "motif_memory": 70,
+    "accent_strength": 52,
+    "lfo_expression": true,
+    "call_response": true,
+    "keep_bass_on_roots": true,
+    "add_markers": true,
+    "export_json": true,
+    "export_chord_sheet": true,
+    "use_rating_memory": true,
+    "melody_template": "Fuer-Elise public-domain hint",
+    "groove_template": "auto",
+    "description": "",
+    "tracks": [
+      {
+        "name": "Broken Beat",
+        "role": "drum",
+        "enabled": true,
+        "channel": 9,
+        "program": 0,
+        "volume": 92,
+        "pan": 64,
+        "octave": 0,
+        "density": 74,
+        "complexity": 78,
+        "activity": 86,
+        "pattern": "broken electro",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Left Hand Bass",
+        "role": "bass",
+        "enabled": true,
+        "channel": 1,
+        "program": 38,
+        "volume": 90,
+        "pan": 42,
+        "octave": -1,
+        "density": 72,
+        "complexity": 58,
+        "activity": 88,
+        "pattern": "sync eighth",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Elise Pluck",
+        "role": "melody",
+        "enabled": true,
+        "channel": 2,
+        "program": 7,
+        "volume": 94,
+        "pan": 68,
+        "octave": 0,
+        "density": 86,
+        "complexity": 78,
+        "activity": 92,
+        "pattern": "template",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Dark Arp",
+        "role": "arpeggio",
+        "enabled": true,
+        "channel": 3,
+        "program": 6,
+        "volume": 82,
+        "pan": 82,
+        "octave": 1,
+        "density": 88,
+        "complexity": 72,
+        "activity": 84,
+        "pattern": "down",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Minor Pad",
+        "role": "pad",
+        "enabled": true,
+        "channel": 4,
+        "program": 90,
+        "volume": 66,
+        "pan": 78,
+        "octave": 0,
+        "density": 48,
+        "complexity": 36,
+        "activity": 90,
+        "pattern": "long",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      }
+    ]
+  },
+  "sections": [
+    {
+      "name": "Intro",
+      "start_bar": 0,
+      "bars": 24,
+      "energy": 28
+    },
+    {
+      "name": "A",
+      "start_bar": 24,
+      "bars": 24,
+      "energy": 74
+    },
+    {
+      "name": "Rise",
+      "start_bar": 48,
+      "bars": 22,
+      "energy": 93
+    },
+    {
+      "name": "Hook",
+      "start_bar": 70,
+      "bars": 22,
+      "energy": 92
+    },
+    {
+      "name": "Break",
+      "start_bar": 92,
+      "bars": 20,
+      "energy": 16
+    }
+  ],
+  "chords": [
+    {
+      "bar": 0,
+      "tick": 0,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 1,
+      "tick": 1920,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 2,
+      "tick": 3840,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 3,
+      "tick": 5760,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 4,
+      "tick": 7680,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 5,
+      "tick": 9600,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 6,
+      "tick": 11520,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 7,
+      "tick": 13440,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 8,
+      "tick": 15360,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 9,
+      "tick": 17280,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 10,
+      "tick": 19200,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 11,
+      "tick": 21120,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 12,
+      "tick": 23040,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 13,
+      "tick": 24960,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 14,
+      "tick": 26880,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 15,
+      "tick": 28800,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 16,
+      "tick": 30720,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 17,
+      "tick": 32640,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 18,
+      "tick": 34560,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 19,
+      "tick": 36480,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 20,
+      "tick": 38400,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 21,
+      "tick": 40320,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 22,
+      "tick": 42240,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 23,
+      "tick": 44160,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 24,
+      "tick": 46080,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 25,
+      "tick": 48000,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 26,
+      "tick": 49920,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 27,
+      "tick": 51840,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 28,
+      "tick": 53760,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 29,
+      "tick": 55680,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 30,
+      "tick": 57600,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 31,
+      "tick": 59520,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 32,
+      "tick": 61440,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 33,
+      "tick": 63360,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 34,
+      "tick": 65280,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 35,
+      "tick": 67200,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 36,
+      "tick": 69120,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 37,
+      "tick": 71040,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 38,
+      "tick": 72960,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 39,
+      "tick": 74880,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 40,
+      "tick": 76800,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 41,
+      "tick": 78720,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 42,
+      "tick": 80640,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 43,
+      "tick": 82560,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 44,
+      "tick": 84480,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 45,
+      "tick": 86400,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 46,
+      "tick": 88320,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 47,
+      "tick": 90240,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 48,
+      "tick": 92160,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 49,
+      "tick": 94080,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 50,
+      "tick": 96000,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 51,
+      "tick": 97920,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 52,
+      "tick": 99840,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 53,
+      "tick": 101760,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 54,
+      "tick": 103680,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 55,
+      "tick": 105600,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 56,
+      "tick": 107520,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 57,
+      "tick": 109440,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 58,
+      "tick": 111360,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 59,
+      "tick": 113280,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 60,
+      "tick": 115200,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 61,
+      "tick": 117120,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 62,
+      "tick": 119040,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 63,
+      "tick": 120960,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 64,
+      "tick": 122880,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 65,
+      "tick": 124800,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 66,
+      "tick": 126720,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 67,
+      "tick": 128640,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 68,
+      "tick": 130560,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 69,
+      "tick": 132480,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 70,
+      "tick": 134400,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 71,
+      "tick": 136320,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 72,
+      "tick": 138240,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 73,
+      "tick": 140160,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 74,
+      "tick": 142080,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 75,
+      "tick": 144000,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 76,
+      "tick": 145920,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 77,
+      "tick": 147840,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 78,
+      "tick": 149760,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 79,
+      "tick": 151680,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 80,
+      "tick": 153600,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 81,
+      "tick": 155520,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 82,
+      "tick": 157440,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 83,
+      "tick": 159360,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 84,
+      "tick": 161280,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 85,
+      "tick": 163200,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 86,
+      "tick": 165120,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 87,
+      "tick": 167040,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 88,
+      "tick": 168960,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 89,
+      "tick": 170880,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 90,
+      "tick": 172800,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 91,
+      "tick": 174720,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 92,
+      "tick": 176640,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 93,
+      "tick": 178560,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 94,
+      "tick": 180480,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 95,
+      "tick": 182400,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 96,
+      "tick": 184320,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 97,
+      "tick": 186240,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 98,
+      "tick": 188160,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 99,
+      "tick": 190080,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 100,
+      "tick": 192000,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 101,
+      "tick": 193920,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 102,
+      "tick": 195840,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 103,
+      "tick": 197760,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 104,
+      "tick": 199680,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 105,
+      "tick": 201600,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 106,
+      "tick": 203520,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 107,
+      "tick": 205440,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 108,
+      "tick": 207360,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 109,
+      "tick": 209280,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 110,
+      "tick": 211200,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 111,
+      "tick": 213120,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    }
+  ]
+}

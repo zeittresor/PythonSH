@@ -25,6 +25,8 @@ The original SoundHelix project (soundhelix.com) is a Java framework for algorit
 - Original XML inspector tab for the bundled GPLv3 SoundHelix XML examples.
 - Windows installer and Nuitka onefile/no-console compile script.
 
+<img width="1361" height="915" alt="grafik" src="https://github.com/user-attachments/assets/61b4419b-7bab-439a-9f4b-0c530e947d15" />
+
 ## Start on Windows
 
 1. Extract the ZIP.

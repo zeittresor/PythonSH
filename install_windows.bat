@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ============================================================
-echo  PythonSoundHelix v0.4.3 - PyQt6 GPLv3 Windows installer
+echo  PythonSoundHelix v0.4.6 - PyQt6 GPLv3 Windows installer
 echo ============================================================
 where py >nul 2>nul
 if %errorlevel%==0 (

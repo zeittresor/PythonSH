@@ -41,8 +41,113 @@ MELODY_TEMPLATES: Dict[str, List[int]] = {
     "Canon public-domain hint": [0, 4, 5, 2, 3, 0, 3, 4, 5, 7, 4, 5, 3, 4],
     "Toccata public-domain hint": [0, 7, 5, 3, 2, 0, -2, 0, 2, 3, 5, 7],
     "Original arcade anthem": [0, 0, 4, 7, 4, 2, 0, -1, 0, 2, 4, 2, 0],
+    "AlgoMusic tracker pulse": [0, 0, 7, 0, 3, 5, 0, -2, 0, 7, 5, 3, 2, 0, -2, 0],
+    "AlgoMusic house chord riff": [0, 2, 3, 2, 0, -2, 0, 2, 5, 3, 2, 0, -2, -4, -2, 0],
+    "AlgoMusic random walk": [0, 3, 2, 5, 3, 7, 5, 3, 0, -2, 0, 2, -1, 2, 4, 2],
 }
 
+LEGACY_POPCORN_HARMONY = "+Am/10,G/2,F/2,Am/12,G/2,F/2,Am/2,+C/8,Em/2,D/2,C/12,Em/2,D/2,C/4"
+
+
+# Screenshot-informed AlgoMusic pattern rows.
+# The user supplied screenshots of AlgoMusic's Techno preset showing long rows
+# of compact digit/dash melody cells and symbol-based drum cells. The rows below
+# are newly written approximations of that structure: digits select chord/scale
+# tones, '-' means rest/hold, and drum symbols map to tracker-like percussion.
+ALGOMUSIC_DIGIT_PATTERN_BANK = [
+    "1---1---1---1---",
+    "1-1---1---1-1---",
+    "1---2---1---2---",
+    "1--2--1--2--112-",
+    "1-1---2-1---1---",
+    "1---2--1---12-1-",
+    "1--2--121--2-12-",
+    "1---1---2-11-11-",
+    "1---3---1---3---",
+    "1-3---1---3-1---",
+    "1---3-4-3-2-1---",
+    "1---1---4---1---",
+    "1-2-3---3-2-1---",
+    "1---31--3-1---1-",
+    "1-3-1-3-1-3-1-3-",
+    "1-2-3-4-1-2-3-4-",
+]
+
+ALGOMUSIC_DRUM_SYMBOL_BANK = [
+    "----+-----+-----",
+    ".---:---.---:---",
+    "--^---^---^---^-",
+    "*--*--*--*****--",
+    "*--*--*--*--***-",
+    "---^--+---^--+--",
+    "----+-----++-+--",
+    ".---:---.--+:-+-",
+    "---^--+---^--+X-",
+    ".---.---.---.---",
+    "---^--+---^--+--",
+    "----+-----+++--+",
+]
+
+# Activity matrix copied from the original SoundHelix-Popcorn console trace.
+# Each character represents one of 36 structural sections; the classic preset
+# uses 288 bars, therefore one activity section spans 8 bars.
+LEGACY_POPCORN_ACTIVITY = {
+    "accomp": "*****-------------*****-------***---",
+    "arpeggio": "----------**---**---------******----",
+    "base_snare": "--****---****---***-********-******-",
+    "bass": "------********---------***----------",
+    "chords": "***********-----------------********",
+    "clap": "--------**---********-**---*********",
+    "hihat": "-----------***********--*******-----",
+    "melody": "-**-***----------***-----*****--**--",
+    "pad": "-------*********---**********-------",
+    "string": "-----**********----------------***--",
+}
+
+def _is_legacy_popcorn(settings: GeneratorSettings) -> bool:
+    return "popcorn" in (settings.preset_name or "").lower() and "original xml" in (settings.preset_name or "").lower()
+
+
+def _is_algomusic(settings: GeneratorSettings) -> bool:
+    return "algomusic" in (settings.preset_name or "").lower() or "algomusic" in (settings.groove_template or "").lower()
+
+
+def _legacy_activity_key(track: TrackSettings) -> str:
+    name = (track.name or "").lower().strip().replace(" ", "_")
+    pat = (track.pattern or "").lower().strip().replace(" ", "_")
+    role = (track.role or "").lower().strip()
+    for key in LEGACY_POPCORN_ACTIVITY:
+        if key in name or key in pat:
+            return key
+    if role == "drum":
+        return "base_snare"
+    if role == "counter":
+        return "accomp"
+    return role if role in LEGACY_POPCORN_ACTIVITY else name
+
+
+
+
+def _stable_track_index(settings: GeneratorSettings, track: TrackSettings, bar: int, salt: int = 0) -> int:
+    return abs(settings.seed * 131 + bar * 977 + salt * 37 + sum(ord(ch) for ch in (track.name + track.pattern)))
+
+
+def _algomusic_digit_row(settings: GeneratorSettings, track: TrackSettings, bar: int) -> str:
+    return ALGOMUSIC_DIGIT_PATTERN_BANK[_stable_track_index(settings, track, bar, 17) % len(ALGOMUSIC_DIGIT_PATTERN_BANK)]
+
+
+def _algomusic_drum_row(settings: GeneratorSettings, track: TrackSettings, bar: int) -> str:
+    return ALGOMUSIC_DRUM_SYMBOL_BANK[_stable_track_index(settings, track, bar, 29) % len(ALGOMUSIC_DRUM_SYMBOL_BANK)]
+
+
+def _is_algomusic_digit_pattern(settings: GeneratorSettings, track: TrackSettings) -> bool:
+    text = f"{settings.melody_template} {track.pattern} {settings.groove_template}".lower()
+    return "digit" in text or "pattern bank" in text or "techno rows" in text
+
+
+def _is_algomusic_drum_pattern(settings: GeneratorSettings, track: TrackSettings) -> bool:
+    text = f"{track.pattern} {settings.groove_template}".lower()
+    return "symbol" in text or "techno rows" in text or "algomusic drums" in text
 
 def _bar_ticks(settings: GeneratorSettings) -> int:
     return settings.ticks_per_beat * settings.beats_per_bar
@@ -114,7 +219,7 @@ def _swing_offset(step_index: int, step_len: int, swing: int) -> int:
 
 
 def build_sections(settings: GeneratorSettings) -> List[SectionEvent]:
-    count = clamp(settings.section_count, 3, 7)
+    count = clamp(settings.section_count, 3, 64)
     bars = max(8, settings.bars)
     base = bars // count
     remainder = bars % count
@@ -147,12 +252,29 @@ def section_for_bar(sections: Sequence[SectionEvent], bar: int) -> SectionEvent:
 def build_chords(settings: GeneratorSettings, sections: Sequence[SectionEvent]) -> List[ChordEvent]:
     key_pc = key_to_pc(settings.key)
     bar_len = _bar_ticks(settings)
-    units = parse_progression_units(settings.effective_progression(), max(1, settings.harmonic_rhythm))
-    expanded: List[str] = []
-    for sym, length in units:
-        expanded.extend([sym] * max(1, length * max(1, settings.harmonic_rhythm)))
-    if not expanded:
-        expanded = ["I"]
+    if _is_legacy_popcorn(settings):
+        # The Java Popcorn XML uses duration-bearing absolute chords. The Python
+        # engine is bar-based, so scale the XML pattern over the full song instead
+        # of reducing it to the generic pop I/V/vi/IV-style loop.
+        units = parse_progression_units(settings.effective_progression(), 1, max_units_per_token=32, divide_duration_by_four=False)
+        total_units = sum(length for _, length in units) or 1
+        expanded = []
+        used = 0
+        for idx, (sym, length) in enumerate(units):
+            if idx == len(units) - 1:
+                bars_for = max(1, settings.bars - used)
+            else:
+                bars_for = max(1, round(settings.bars * length / total_units))
+                used += bars_for
+            expanded.extend([sym] * bars_for)
+        expanded = expanded[:settings.bars] or ["Am"]
+    else:
+        units = parse_progression_units(settings.effective_progression(), max(1, settings.harmonic_rhythm))
+        expanded: List[str] = []
+        for sym, length in units:
+            expanded.extend([sym] * max(1, length * max(1, settings.harmonic_rhythm)))
+        if not expanded:
+            expanded = ["I"]
     chords: List[ChordEvent] = []
     for bar in range(settings.bars):
         symbol = expanded[bar % len(expanded)]
@@ -167,6 +289,12 @@ def _is_active(rng: random.Random, settings: GeneratorSettings, track: TrackSett
         return False
     if track.mute_in_intro and section.name == "Intro":
         return False
+    if _is_legacy_popcorn(settings):
+        key = _legacy_activity_key(track)
+        matrix = LEGACY_POPCORN_ACTIVITY.get(key)
+        if matrix:
+            section_idx = min(len(matrix) - 1, max(0, int(bar * len(matrix) / max(1, settings.bars))))
+            return matrix[section_idx] == "*"
     probability = (track.activity * 0.55 + section.energy * 0.35 + settings.complexity * 0.10)
     if section.name == "Break" and track.role in ("drum", "bass"):
         probability -= 20
@@ -204,8 +332,14 @@ def _motif(settings: GeneratorSettings, rng: random.Random) -> List[int]:
         return template[:]
     length = 8 + (settings.complexity // 20) * 2
     degrees = [0]
+    algomusic = _is_algomusic(settings)
     for _ in range(length - 1):
-        if rng.randint(0, 100) < settings.motif_memory and degrees:
+        if algomusic and rng.randint(0, 100) < settings.variation:
+            # AlgoMusic-inspired behavior: a tracker-like seeded random walk that
+            # occasionally snaps back to the home degree instead of freely wandering.
+            move = rng.choice([-3, -2, -1, 0, 1, 2, 3, 5])
+            degrees.append(0 if rng.random() < 0.18 else degrees[-1] + move)
+        elif rng.randint(0, 100) < settings.motif_memory and degrees:
             move = rng.choice([-2, -1, 0, 1, 2, 3])
             degrees.append(degrees[-1] + move)
         else:
@@ -222,32 +356,64 @@ def _add_drum_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSe
     energy = (section.energy + track.density + settings.complexity) / 3
     pattern = (track.pattern or "auto").lower()
 
+    only_clap = "clap" in pattern and "base" not in pattern
+    only_hihat = "hihat" in pattern or "hat" in pattern
+    only_base_snare = "base_snare" in pattern or "base snare" in pattern
+    is_amiga = "amiga" in pattern or "tracker" in pattern
+
+    if _is_algomusic_drum_pattern(settings, track):
+        row = _algomusic_drum_row(settings, track, bar)
+        cell_len = max(1, bar_len // max(1, len(row)))
+        for idx, symbol in enumerate(row):
+            tick = start + idx * cell_len + _swing_offset(idx, cell_len, settings.swing)
+            dur = max(1, int(cell_len * 0.55))
+            sym = symbol.lower()
+            if sym == "+":
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES["kick"], _velocity(rng, 88, settings.humanize_velocity, 10 if idx % 4 == 0 else 0)); notes += 1
+            elif sym == "^":
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES["snare"], _velocity(rng, 82, settings.humanize_velocity, 6)); notes += 1
+            elif sym == "*":
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES["closed_hat"], _velocity(rng, 62, settings.humanize_velocity, 5 if idx % 4 == 0 else -5)); notes += 1
+            elif sym == ".":
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES["closed_hat"], _velocity(rng, 44, settings.humanize_velocity, -10)); notes += 1
+            elif sym == ":":
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES["rim"], _velocity(rng, 54, settings.humanize_velocity, -4)); notes += 1
+            elif sym == "x":
+                for drum, base_vel in (("kick", 92), ("snare", 88), ("crash", 82)):
+                    data.add_note(_human_tick(rng, tick, settings.humanize_ticks), dur, 9, DRUM_NOTES[drum], _velocity(rng, base_vel, settings.humanize_velocity, 8)); notes += 1
+        return notes
+
     # Kicks
-    kick_steps = [0, 8] if "four" not in pattern else [0, 4, 8, 12]
-    if energy > 55 and "break" not in pattern:
-        kick_steps += [6 if rng.random() < 0.45 else 10]
-    if "broken" in pattern:
-        kick_steps = [0, 3, 8, 11]
-    for step in sorted(set(kick_steps)):
-        vel = _velocity(rng, 88, settings.humanize_velocity, 12 if step == 0 else 0)
-        data.add_note(_human_tick(rng, start + step * sixteenth, settings.humanize_ticks), max(20, sixteenth // 2), 9, DRUM_NOTES["kick"], vel)
-        notes += 1
+    if not only_clap and not only_hihat:
+        kick_steps = [0, 8] if "four" not in pattern else [0, 4, 8, 12]
+        if is_amiga and "four" in pattern:
+            kick_steps = [0, 4, 8, 12, 14 if rng.random() < 0.35 else 10]
+        if energy > 55 and "break" not in pattern:
+            kick_steps += [6 if rng.random() < 0.45 else 10]
+        if "broken" in pattern:
+            kick_steps = [0, 3, 8, 11]
+        for step in sorted(set(kick_steps)):
+            vel = _velocity(rng, 88, settings.humanize_velocity, 12 if step == 0 else 0)
+            data.add_note(_human_tick(rng, start + step * sixteenth, settings.humanize_ticks), max(1, sixteenth // 2), 9, DRUM_NOTES["kick"], vel)
+            notes += 1
 
     # Snare / clap on 2 and 4
-    for step in [4, 12]:
-        snare = DRUM_NOTES["clap"] if "electro" in pattern or energy > 72 else DRUM_NOTES["snare"]
-        data.add_note(_human_tick(rng, start + step * sixteenth, settings.humanize_ticks), max(20, sixteenth // 2), 9, snare, _velocity(rng, 82, settings.humanize_velocity, 8))
-        notes += 1
+    if not only_hihat:
+        for step in [4, 12]:
+            snare = DRUM_NOTES["clap"] if only_clap or "electro" in pattern or energy > 72 else DRUM_NOTES["snare"]
+            data.add_note(_human_tick(rng, start + step * sixteenth, settings.humanize_ticks), max(1, sixteenth // 2), 9, snare, _velocity(rng, 82, settings.humanize_velocity, 8))
+            notes += 1
 
     # Hats
-    hat_rate = 2 if energy > 58 else 4
-    for step in range(0, 16, hat_rate):
-        if rng.randint(0, 100) <= track.density:
-            hat = DRUM_NOTES["open_hat"] if step % 8 == 6 and rng.random() < 0.35 else DRUM_NOTES["closed_hat"]
-            accent = 8 if step % 4 == 0 else -4
-            tick = start + step * sixteenth + _swing_offset(step, sixteenth, settings.swing)
-            data.add_note(_human_tick(rng, tick, settings.humanize_ticks), max(10, sixteenth // 2), 9, hat, _velocity(rng, 58, settings.humanize_velocity, accent))
-            notes += 1
+    if not only_clap and not only_base_snare:
+        hat_rate = 1 if "tracker hats" in pattern else (2 if energy > 58 else 4)
+        for step in range(0, 16, hat_rate):
+            if rng.randint(0, 100) <= track.density:
+                hat = DRUM_NOTES["open_hat"] if step % 8 == 6 and rng.random() < (0.45 if is_amiga else 0.35) else DRUM_NOTES["closed_hat"]
+                accent = 10 if step % 4 == 0 else (-7 if is_amiga and step % 2 else -4)
+                tick = start + step * sixteenth + _swing_offset(step, sixteenth, settings.swing)
+                data.add_note(_human_tick(rng, tick, settings.humanize_ticks), max(1, sixteenth // 2), 9, hat, _velocity(rng, 58, settings.humanize_velocity, accent))
+                notes += 1
 
     # Fills near section boundaries.
     boundary = (bar + 1 == section.start_bar + section.bars) or (track.fill_every and (bar + 1) % track.fill_every == 0)
@@ -278,21 +444,27 @@ def _add_bass_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSe
     if base > 55:
         base -= 12
     pattern = (track.pattern or "auto").lower()
+    sixteenth = max(1, beat // 4)
     steps = [0, 2, 4, 6] if "eighth" in pattern else [0, 4, 8, 12]
     if "sync" in pattern or settings.variation > 55:
         steps = [0, 3, 6, 8, 11, 14]
+    if "acid" in pattern or "tracker" in pattern:
+        steps = [0, 3, 4, 7, 8, 10, 12, 15]
+        if settings.variation > 75:
+            steps += [rng.choice([1, 5, 13])]
     if settings.keep_bass_on_roots:
         candidates = [base, base + 12, base + 7]
     else:
         candidates = [base + i for i in [0, 3, 5, 7, 10, 12]]
+    if "acid" in pattern or "tracker" in pattern:
+        candidates = [base, base + 7, base + 12, base + 10, base + 3, base + 5]
     notes = 0
-    sixteenth = beat // 4
     for i, step in enumerate(steps):
         if rng.randint(0, 100) > track.density + section.energy // 4:
             continue
         low, high = _role_range(settings, track)
         pitch = _fold_pitch(candidates[i % len(candidates)], low, high)
-        duration = int(sixteenth * (2.8 if len(steps) <= 4 else 1.6))
+        duration = int(sixteenth * (0.95 if ("acid" in pattern or "tracker" in pattern) else (2.8 if len(steps) <= 4 else 1.6)))
         tick = start + step * sixteenth + _swing_offset(step, sixteenth, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step == 0 else 0))
         notes += 1
@@ -316,6 +488,16 @@ def _add_chord_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorS
             pitch = voicing[i % len(voicing)]
             data.add_note(_human_tick(rng, start + off, settings.humanize_ticks), beat // 2, track.channel, pitch, _velocity(rng, track.volume - 8, settings.humanize_velocity, 8 if i == 0 else 0))
             notes += 1
+    elif "gate" in pattern:
+        gate_steps = 8 if settings.complexity < 72 else 16
+        gate_len = max(1, bar_len // gate_steps)
+        for step in range(gate_steps):
+            # Pseudo-random gate cells, stable per seed/bar but still algorithmic.
+            if rng.randint(0, 100) > track.density + (12 if step % 4 == 0 else -8):
+                continue
+            for pitch in voicing:
+                data.add_note(_human_tick(rng, start + step * gate_len, settings.humanize_ticks), max(1, int(gate_len * 0.58)), track.channel, pitch, _velocity(rng, track.volume - 8, settings.humanize_velocity, 8 if step % 4 == 0 else -6))
+                notes += 1
     elif "stab" in pattern:
         for off in [0, beat * 2, beat * 3 + beat // 2]:
             for pitch in voicing:
@@ -361,16 +543,21 @@ def _add_arpeggio_bar(rng: random.Random, data: MidiTrackData, settings: Generat
         pcs = list(pcs) + [pcs[0] + 12]
     pattern = (track.pattern or "auto").lower()
     order = list(range(len(pcs)))
-    if "down" in pattern:
+    if "tracker" in pattern:
+        rotate = bar % max(1, len(pcs))
+        order = order[rotate:] + order[:rotate]
+        if bar % 2:
+            order = list(reversed(order))
+    elif "down" in pattern:
         order = list(reversed(order))
     elif "updown" in pattern:
         order = list(range(len(pcs))) + list(reversed(range(1, len(pcs) - 1)))
     notes = 0
-    steps = 16 if section.energy > 48 or settings.complexity > 55 else 8
+    steps = 16 if ("tracker" in pattern or section.energy > 48 or settings.complexity > 55) else 8
     for step in range(steps):
         if rng.randint(0, 100) > track.density + settings.complexity // 5:
             continue
-        pitch = pcs[order[step % len(order)]] + (12 if step >= 8 and rng.random() < settings.variation / 180 else 0)
+        pitch = pcs[order[step % len(order)]] + (12 if step >= 8 and rng.random() < (settings.variation / (120 if "tracker" in pattern else 180)) else 0)
         pitch = _fold_pitch(pitch, low, high)
         dur = int((bar_len / steps) * 0.78)
         tick = start + int(step * bar_len / steps) + _swing_offset(step, sixteenth, settings.swing)
@@ -387,16 +574,43 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
     low, high = _role_range(settings, track)
     template_name = settings.melody_template or "auto"
     # Known/public-domain inspired motifs are made more recognizable by using the template more directly.
+    # AlgoMusic-inspired templates keep the recognizable seed but add more stochastic gates.
     direct_template = template_name != "auto"
+    algomusic_template = "algomusic" in template_name.lower()
     density = track.density + (18 if "Hook" in section.name else 0) - (20 if section.name == "Intro" else 0)
     step_count = 8 if settings.complexity < 70 else 16
     step_len = bar_len // step_count
     notes = 0
     last_pitch = None
+    if _is_algomusic_digit_pattern(settings, track):
+        row = _algomusic_digit_row(settings, track, bar)
+        step_count = max(8, min(32, len(row)))
+        step_len = max(1, bar_len // step_count)
+        tone_bank = voice_lead([n + track.octave * 12 for n in chord.notes] + [chord.notes[0] + 12 + track.octave * 12], None, low=low, high=high)
+        tone_bank = _fold_notes(tone_bank, low, high)
+        for step in range(step_count):
+            symbol = row[step % len(row)]
+            if symbol not in "1234":
+                continue
+            if rng.randint(0, 100) > density + (10 if step % 4 == 0 else 0):
+                continue
+            pitch = tone_bank[(int(symbol) - 1) % len(tone_bank)]
+            if last_pitch is not None and abs(pitch - last_pitch) > 12 and rng.randint(0, 100) < settings.motif_memory:
+                pitch = pitch - 12 if pitch > last_pitch else pitch + 12
+            pitch = _fold_pitch(pitch, low, high)
+            tick = start + step * step_len + _swing_offset(step, step_len, settings.swing)
+            duration = max(1, int(step_len * rng.choice([0.55, 0.75, 0.95])))
+            data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 10 if step % 4 == 0 else -2))
+            last_pitch = pitch
+            notes += 1
+        return notes
+
     for step in range(step_count):
         if not direct_template and rng.randint(0, 100) > density:
             continue
         if direct_template and step >= len(motif) and rng.randint(0, 100) > density:
+            continue
+        if algomusic_template and step % 4 not in (0, 2) and rng.randint(0, 100) > density + settings.variation // 3:
             continue
         degree = motif[(bar * step_count + step) % len(motif)] if motif else rng.randint(0, 7)
         pitch = degree_pitch(degree, key_pc, settings.mode, 4 + track.octave)
@@ -410,7 +624,7 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
         if last_pitch is not None and abs(pitch - last_pitch) > 12 and rng.randint(0, 100) < settings.motif_memory:
             pitch = pitch - 12 if pitch > last_pitch else pitch + 12
         pitch = _fold_pitch(pitch, low, high)
-        duration = int(step_len * rng.choice([0.75, 0.9, 1.4 if step_count == 8 else 1.0]))
+        duration = int(step_len * (rng.choice([0.45, 0.62, 0.82]) if algomusic_template else rng.choice([0.75, 0.9, 1.4 if step_count == 8 else 1.0])))
         tick = start + step * step_len + _swing_offset(step, step_len, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step % 4 == 0 else 0))
         last_pitch = pitch
@@ -628,7 +842,7 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
     if settings.export_json:
         payload = {
             "application": "PythonSoundHelix",
-            "version": "0.4.3",
+            "version": "0.4.6",
             "license": "GPLv3",
             "title": result.title,
             "seed": result.seed,
@@ -652,7 +866,7 @@ def make_chord_sheet(title: str, settings: GeneratorSettings, sections: Sequence
         title,
         "=" * len(title),
         "",
-        f"Generated by PythonSoundHelix 0.4.3 (GPLv3)",
+        f"Generated by PythonSoundHelix 0.4.6 (GPLv3)",
         f"Preset: {settings.preset_name}",
         f"Seed: {settings.seed}",
         f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",

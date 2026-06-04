@@ -1,0 +1,2196 @@
+{
+  "application": "PythonSoundHelix",
+  "version": "0.4.6",
+  "license": "GPLv3",
+  "title": "The Chaotic Giant",
+  "seed": 1791275596,
+  "midi_path": "E:\\Debug_Enviroment\\PythonSoundHelix_PyQt6_GPLv3_v0_4_6\\PythonSoundHelix_PyQt6_GPLv3\\output\\The Chaotic Giant.mid",
+  "wav_path": "E:\\Debug_Enviroment\\PythonSoundHelix_PyQt6_GPLv3_v0_4_6\\PythonSoundHelix_PyQt6_GPLv3\\output\\The Chaotic Giant.wav",
+  "mp3_path": "E:\\Debug_Enviroment\\PythonSoundHelix_PyQt6_GPLv3_v0_4_6\\PythonSoundHelix_PyQt6_GPLv3\\output\\The Chaotic Giant.mp3",
+  "render_log": "WAV rendered with the built-in lightweight synth. MP3 rendered via ffmpeg/libmp3lame. ",
+  "note_count": 11955,
+  "settings": {
+    "preset_name": "AlgoMusic Techno Pattern Rows",
+    "seed": 1791275596,
+    "randomize_seed": true,
+    "title": "The Chaotic Giant",
+    "bpm": 138,
+    "bars": 160,
+    "beats_per_bar": 4,
+    "ticks_per_beat": 480,
+    "key": "A",
+    "mode": "minor",
+    "progression": "i,VII,VI,VII,i,VII,iv,V",
+    "custom_progression": "",
+    "harmonic_rhythm": 1,
+    "section_count": 16,
+    "swing": 1,
+    "humanize_ticks": 1,
+    "humanize_velocity": 8,
+    "complexity": 76,
+    "variation": 82,
+    "motif_memory": 52,
+    "accent_strength": 66,
+    "lfo_expression": true,
+    "call_response": true,
+    "keep_bass_on_roots": true,
+    "add_markers": true,
+    "export_json": true,
+    "export_chord_sheet": true,
+    "use_rating_memory": true,
+    "normalize_velocity": true,
+    "normalize_target": 85,
+    "normalize_strength": 72,
+    "auto_range_guard": true,
+    "max_melody_pitch": 79,
+    "render_wav": true,
+    "render_mp3": true,
+    "audio_sample_rate": 44100,
+    "ui_theme": "MagicWB",
+    "language": "en",
+    "melody_template": "AlgoMusic digit progression",
+    "groove_template": "auto",
+    "description": "",
+    "tracks": [
+      {
+        "name": "Symbol Row Drums",
+        "role": "drum",
+        "enabled": true,
+        "channel": 9,
+        "program": 0,
+        "volume": 108,
+        "pan": 64,
+        "octave": 0,
+        "density": 96,
+        "complexity": 88,
+        "activity": 100,
+        "pattern": "algomusic drums",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Tracker Row Hats",
+        "role": "drum",
+        "enabled": true,
+        "channel": 9,
+        "program": 0,
+        "volume": 72,
+        "pan": 64,
+        "octave": 0,
+        "density": 92,
+        "complexity": 70,
+        "activity": 96,
+        "pattern": "tracker hats",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Row Bass",
+        "role": "bass",
+        "enabled": true,
+        "channel": 1,
+        "program": 39,
+        "volume": 102,
+        "pan": 46,
+        "octave": -1,
+        "density": 90,
+        "complexity": 84,
+        "activity": 96,
+        "pattern": "acid pulse",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Digit Gate Chords",
+        "role": "chord",
+        "enabled": true,
+        "channel": 2,
+        "program": 5,
+        "volume": 78,
+        "pan": 34,
+        "octave": 0,
+        "density": 78,
+        "complexity": 72,
+        "activity": 88,
+        "pattern": "random gate",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Digit Row Lead",
+        "role": "melody",
+        "enabled": true,
+        "channel": 3,
+        "program": 80,
+        "volume": 92,
+        "pan": 62,
+        "octave": 0,
+        "density": 88,
+        "complexity": 82,
+        "activity": 90,
+        "pattern": "digit progression",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Row Tracker Arp",
+        "role": "arpeggio",
+        "enabled": true,
+        "channel": 4,
+        "program": 7,
+        "volume": 78,
+        "pan": 82,
+        "octave": 0,
+        "density": 94,
+        "complexity": 82,
+        "activity": 86,
+        "pattern": "tracker arp",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      },
+      {
+        "name": "Machine Pad",
+        "role": "pad",
+        "enabled": true,
+        "channel": 5,
+        "program": 90,
+        "volume": 52,
+        "pan": 88,
+        "octave": 0,
+        "density": 35,
+        "complexity": 30,
+        "activity": 70,
+        "pattern": "long",
+        "accent": 50,
+        "mute_in_intro": false,
+        "fill_every": 8
+      }
+    ]
+  },
+  "sections": [
+    {
+      "name": "Intro",
+      "start_bar": 0,
+      "bars": 10,
+      "energy": 28
+    },
+    {
+      "name": "A",
+      "start_bar": 10,
+      "bars": 10,
+      "energy": 42
+    },
+    {
+      "name": "Rise",
+      "start_bar": 20,
+      "bars": 10,
+      "energy": 54
+    },
+    {
+      "name": "Hook",
+      "start_bar": 30,
+      "bars": 10,
+      "energy": 84
+    },
+    {
+      "name": "Break",
+      "start_bar": 40,
+      "bars": 10,
+      "energy": 64
+    },
+    {
+      "name": "Hook 2",
+      "start_bar": 50,
+      "bars": 10,
+      "energy": 100
+    },
+    {
+      "name": "Outro",
+      "start_bar": 60,
+      "bars": 10,
+      "energy": 90
+    },
+    {
+      "name": "Section 8",
+      "start_bar": 70,
+      "bars": 10,
+      "energy": 93
+    },
+    {
+      "name": "Section 9",
+      "start_bar": 80,
+      "bars": 10,
+      "energy": 93
+    },
+    {
+      "name": "Section 10",
+      "start_bar": 90,
+      "bars": 10,
+      "energy": 90
+    },
+    {
+      "name": "Section 11",
+      "start_bar": 100,
+      "bars": 10,
+      "energy": 84
+    },
+    {
+      "name": "Section 12",
+      "start_bar": 110,
+      "bars": 10,
+      "energy": 76
+    },
+    {
+      "name": "Section 13",
+      "start_bar": 120,
+      "bars": 10,
+      "energy": 66
+    },
+    {
+      "name": "Section 14",
+      "start_bar": 130,
+      "bars": 10,
+      "energy": 54
+    },
+    {
+      "name": "Section 15",
+      "start_bar": 140,
+      "bars": 10,
+      "energy": 42
+    },
+    {
+      "name": "Section 16",
+      "start_bar": 150,
+      "bars": 10,
+      "energy": 28
+    }
+  ],
+  "chords": [
+    {
+      "bar": 0,
+      "tick": 0,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 1,
+      "tick": 1920,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 2,
+      "tick": 3840,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 3,
+      "tick": 5760,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 4,
+      "tick": 7680,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 5,
+      "tick": 9600,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 6,
+      "tick": 11520,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 7,
+      "tick": 13440,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 8,
+      "tick": 15360,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 9,
+      "tick": 17280,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 10,
+      "tick": 19200,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 11,
+      "tick": 21120,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 12,
+      "tick": 23040,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 13,
+      "tick": 24960,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 14,
+      "tick": 26880,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 15,
+      "tick": 28800,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 16,
+      "tick": 30720,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 17,
+      "tick": 32640,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 18,
+      "tick": 34560,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 19,
+      "tick": 36480,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 20,
+      "tick": 38400,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 21,
+      "tick": 40320,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 22,
+      "tick": 42240,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 23,
+      "tick": 44160,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 24,
+      "tick": 46080,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 25,
+      "tick": 48000,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 26,
+      "tick": 49920,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 27,
+      "tick": 51840,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 28,
+      "tick": 53760,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 29,
+      "tick": 55680,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Rise"
+    },
+    {
+      "bar": 30,
+      "tick": 57600,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 31,
+      "tick": 59520,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 32,
+      "tick": 61440,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 33,
+      "tick": 63360,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 34,
+      "tick": 65280,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 35,
+      "tick": 67200,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 36,
+      "tick": 69120,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 37,
+      "tick": 71040,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 38,
+      "tick": 72960,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 39,
+      "tick": 74880,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 40,
+      "tick": 76800,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 41,
+      "tick": 78720,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 42,
+      "tick": 80640,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 43,
+      "tick": 82560,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 44,
+      "tick": 84480,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 45,
+      "tick": 86400,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 46,
+      "tick": 88320,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 47,
+      "tick": 90240,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 48,
+      "tick": 92160,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 49,
+      "tick": 94080,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Break"
+    },
+    {
+      "bar": 50,
+      "tick": 96000,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 51,
+      "tick": 97920,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 52,
+      "tick": 99840,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 53,
+      "tick": 101760,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 54,
+      "tick": 103680,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 55,
+      "tick": 105600,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 56,
+      "tick": 107520,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 57,
+      "tick": 109440,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 58,
+      "tick": 111360,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 59,
+      "tick": 113280,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook 2"
+    },
+    {
+      "bar": 60,
+      "tick": 115200,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 61,
+      "tick": 117120,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 62,
+      "tick": 119040,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 63,
+      "tick": 120960,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 64,
+      "tick": 122880,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 65,
+      "tick": 124800,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 66,
+      "tick": 126720,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 67,
+      "tick": 128640,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 68,
+      "tick": 130560,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 69,
+      "tick": 132480,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 70,
+      "tick": 134400,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 71,
+      "tick": 136320,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 72,
+      "tick": 138240,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 73,
+      "tick": 140160,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 74,
+      "tick": 142080,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 75,
+      "tick": 144000,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 76,
+      "tick": 145920,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 77,
+      "tick": 147840,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 78,
+      "tick": 149760,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 79,
+      "tick": 151680,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 8"
+    },
+    {
+      "bar": 80,
+      "tick": 153600,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 81,
+      "tick": 155520,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 82,
+      "tick": 157440,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 83,
+      "tick": 159360,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 84,
+      "tick": 161280,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 85,
+      "tick": 163200,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 86,
+      "tick": 165120,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 87,
+      "tick": 167040,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 88,
+      "tick": 168960,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 89,
+      "tick": 170880,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 9"
+    },
+    {
+      "bar": 90,
+      "tick": 172800,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 91,
+      "tick": 174720,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 92,
+      "tick": 176640,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 93,
+      "tick": 178560,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 94,
+      "tick": 180480,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 95,
+      "tick": 182400,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 96,
+      "tick": 184320,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 97,
+      "tick": 186240,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 98,
+      "tick": 188160,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 99,
+      "tick": 190080,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 10"
+    },
+    {
+      "bar": 100,
+      "tick": 192000,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 101,
+      "tick": 193920,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 102,
+      "tick": 195840,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 103,
+      "tick": 197760,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 104,
+      "tick": 199680,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 105,
+      "tick": 201600,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 106,
+      "tick": 203520,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 107,
+      "tick": 205440,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 108,
+      "tick": 207360,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 109,
+      "tick": 209280,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 11"
+    },
+    {
+      "bar": 110,
+      "tick": 211200,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 111,
+      "tick": 213120,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 112,
+      "tick": 215040,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 113,
+      "tick": 216960,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 114,
+      "tick": 218880,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 115,
+      "tick": 220800,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 116,
+      "tick": 222720,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 117,
+      "tick": 224640,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 118,
+      "tick": 226560,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 119,
+      "tick": 228480,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 12"
+    },
+    {
+      "bar": 120,
+      "tick": 230400,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 121,
+      "tick": 232320,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 122,
+      "tick": 234240,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 123,
+      "tick": 236160,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 124,
+      "tick": 238080,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 125,
+      "tick": 240000,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 126,
+      "tick": 241920,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 127,
+      "tick": 243840,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 128,
+      "tick": 245760,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 129,
+      "tick": 247680,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 13"
+    },
+    {
+      "bar": 130,
+      "tick": 249600,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 131,
+      "tick": 251520,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 132,
+      "tick": 253440,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 133,
+      "tick": 255360,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 134,
+      "tick": 257280,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 135,
+      "tick": 259200,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 136,
+      "tick": 261120,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 137,
+      "tick": 263040,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 138,
+      "tick": 264960,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 139,
+      "tick": 266880,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 14"
+    },
+    {
+      "bar": 140,
+      "tick": 268800,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 141,
+      "tick": 270720,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 142,
+      "tick": 272640,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 143,
+      "tick": 274560,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 144,
+      "tick": 276480,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 145,
+      "tick": 278400,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 146,
+      "tick": 280320,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 147,
+      "tick": 282240,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 148,
+      "tick": 284160,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 149,
+      "tick": 286080,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 15"
+    },
+    {
+      "bar": 150,
+      "tick": 288000,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 151,
+      "tick": 289920,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 152,
+      "tick": 291840,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 153,
+      "tick": 293760,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 154,
+      "tick": 295680,
+      "symbol": "VI",
+      "root": 5,
+      "notes": [
+        65,
+        69,
+        72
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 155,
+      "tick": 297600,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 156,
+      "tick": 299520,
+      "symbol": "i",
+      "root": 9,
+      "notes": [
+        69,
+        72,
+        76
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 157,
+      "tick": 301440,
+      "symbol": "VII",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 158,
+      "tick": 303360,
+      "symbol": "iv",
+      "root": 2,
+      "notes": [
+        62,
+        65,
+        69
+      ],
+      "section": "Section 16"
+    },
+    {
+      "bar": 159,
+      "tick": 305280,
+      "symbol": "V",
+      "root": 4,
+      "notes": [
+        64,
+        68,
+        71
+      ],
+      "section": "Section 16"
+    }
+  ]
+}

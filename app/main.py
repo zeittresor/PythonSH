@@ -32,6 +32,8 @@ ROLE_OPTIONS = ["drum", "bass", "chord", "arpeggio", "melody", "pad", "counter",
 PATTERN_OPTIONS = [
     "auto", "template", "electro four", "four", "soft four", "broken electro", "sync eighth", "eighth",
     "stab", "block", "long", "updown", "up", "down", "answer", "spark", "guitar",
+    "amiga four", "tracker hats", "acid pulse", "random gate", "tracker arp",
+    "algomusic drums", "digit progression",
 ]
 
 
@@ -60,6 +62,8 @@ THEMES = {
     "Matrix": _theme("#020805", "#b8ffd2", "#06150c", "#071c10", "#00994f", "#00c96a", "#0b5d35"),
     "Ocean": _theme("#071924", "#e1f7ff", "#0b2838", "#10364a", "#1586b8", "#1ba6df", "#21566f"),
     "Avatar": _theme("#070d18", "#e7f6ff", "#0b1c30", "#102b45", "#1f8cd6", "#4eb7ff", "#28587a"),
+    "Amiga MUI": _theme("#8a8a8a", "#050505", "#b8b8b8", "#d8d8d8", "#315f9e", "#4a79bd", "#555555"),
+    "MagicWB": _theme("#6f7895", "#080a10", "#9da6c0", "#c2c8d8", "#314a84", "#5a6fa8", "#3a4258"),
 }
 
 TRANSLATIONS: Dict[str, Dict[str, str]] = {
@@ -306,7 +310,7 @@ class MainWindow(QMainWindow):
         self.bpm_spin = QSpinBox(); self.bpm_spin.setRange(40, 240)
         self.bars_spin = QSpinBox(); self.bars_spin.setRange(8, 512); self.bars_spin.setSingleStep(8)
         self.beats_spin = QSpinBox(); self.beats_spin.setRange(2, 12)
-        self.tpb_spin = QSpinBox(); self.tpb_spin.setRange(24, 1920); self.tpb_spin.setSingleStep(24)
+        self.tpb_spin = QSpinBox(); self.tpb_spin.setRange(12, 1920); self.tpb_spin.setSingleStep(12)
         for key, widget in [("preset", self.preset_combo), ("song_title", self.title_edit), ("seed", seed_widget), ("bpm", self.bpm_spin), ("bars", self.bars_spin), ("beats", self.beats_spin), ("tpb", self.tpb_spin)]:
             self._row(form, key, widget)
         top.addWidget(general, 1)
@@ -318,8 +322,8 @@ class MainWindow(QMainWindow):
         self.progression_combo.addItems(["I,V,vi,IV", "I,vi,IV,V", "i,VII,VI,V", "I,V,vi,iii,IV,I,IV,V", "I,bVII,IV,I", "i,VI,III,VII", "Am/10,G/2,F/2,Am/12,G/2,F/2,Am/2,+C/8,Em/2,D/2,C/12,Em/2,D/2,C/4"])
         self.custom_progression = QLineEdit(); self.custom_progression.setPlaceholderText("Optional override, e.g. I,V,vi,IV or Am,G,F,Em")
         self.harmonic_spin = QSpinBox(); self.harmonic_spin.setRange(1, 8)
-        self.section_spin = QSpinBox(); self.section_spin.setRange(3, 7)
-        self.melody_template_combo = QComboBox(); self.melody_template_combo.addItems(["auto", "Popcorn-style original pulse", "Ode-to-Joy public-domain hint", "Fuer-Elise public-domain hint", "Canon public-domain hint", "Toccata public-domain hint", "Original arcade anthem"])
+        self.section_spin = QSpinBox(); self.section_spin.setRange(3, 64)
+        self.melody_template_combo = QComboBox(); self.melody_template_combo.addItems(["auto", "Popcorn-style original pulse", "Ode-to-Joy public-domain hint", "Fuer-Elise public-domain hint", "Canon public-domain hint", "Toccata public-domain hint", "Original arcade anthem", "AlgoMusic tracker pulse", "AlgoMusic house chord riff", "AlgoMusic random walk", "AlgoMusic digit progression"])
         for key, widget in [("key", self.key_combo), ("mode", self.mode_combo), ("progression", self.progression_combo), ("custom_progression", self.custom_progression), ("harmonic", self.harmonic_spin), ("sections", self.section_spin), ("melody_template", self.melody_template_combo)]:
             self._row(hform, key, widget)
         top.addWidget(harmony, 1)
@@ -536,6 +540,9 @@ class MainWindow(QMainWindow):
     def _simple_combo(self, values: List[str], current: str) -> QComboBox:
         combo = QComboBox(); combo.addItems(values)
         idx = combo.findText(current)
+        if idx < 0 and current:
+            combo.addItem(current)
+            idx = combo.findText(current)
         combo.setCurrentIndex(idx if idx >= 0 else 0)
         return combo
 
@@ -749,7 +756,7 @@ class MainWindow(QMainWindow):
         except Exception as exc: self.xml_preview.setText(str(exc))
 
     def show_about(self) -> None:
-        QMessageBox.about(self, "About PythonSoundHelix", f"""PythonSoundHelix v{__version__}\n\nGPLv3 Python/PyQt6 reimplementation and expansion inspired by SoundHelix.\n\nOriginal project: https://www.soundhelix.com/\nOriginal source archive basis: soundhelix-code-r896-trunk / SoundHelix 0.10u.\n\nThis Python version writes Standard MIDI Files without Java and adds GUI presets, random SoundHelix-style song titles, instrument dropdowns, musical range guard, loudness normalization, WAV/MP3 rendering, themes, language switching, rating memory, project JSON and chord sheets.""")
+        QMessageBox.about(self, "About PythonSoundHelix", f"""PythonSoundHelix v{__version__}\n\nGPLv3 Python/PyQt6 reimplementation and expansion inspired by SoundHelix.\n\nOriginal project: https://www.soundhelix.com/\nOriginal source archive basis: soundhelix-code-r896-trunk / SoundHelix 0.10u.\nHistorical inspiration: Thomas Schürger's Amiga AlgoMusic 2.4, especially its Techno/House algorithmic-generator idea.\n\nThis Python version writes Standard MIDI Files without Java and adds GUI presets, random SoundHelix-style song titles, instrument dropdowns, musical range guard, loudness normalization, WAV/MP3 rendering, Amiga/MagicWB-inspired themes, language switching, rating memory, project JSON and chord sheets.""")
 
 
 def run_gui() -> int:

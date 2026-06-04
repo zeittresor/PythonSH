@@ -154,7 +154,7 @@ def parse_progression(text: str) -> List[str]:
     return parts or ["I", "V", "vi", "IV"]
 
 
-def parse_progression_units(text: str, default_units: int = 1, max_units_per_token: int = 8) -> List[Tuple[str, int]]:
+def parse_progression_units(text: str, default_units: int = 1, max_units_per_token: int = 8, divide_duration_by_four: bool = True) -> List[Tuple[str, int]]:
     """Parse roman or absolute chord progression tokens.
 
     SoundHelix' Popcorn XML uses a chord pattern such as "Am/10,G/2". We keep
@@ -168,9 +168,14 @@ def parse_progression_units(text: str, default_units: int = 1, max_units_per_tok
         if "/" in raw:
             symbol, length_text = raw.rsplit("/", 1)
             try:
-                # SoundHelix patterns often use tick/sub-beat-ish durations. For a GUI
-                # generator, map four duration units roughly to one bar.
-                length = max(1, min(max_units_per_token, int(round(float(length_text) / 4.0))))
+                raw_length = float(length_text)
+                # SoundHelix patterns often use tick/sub-beat-ish durations. For the
+                # generic GUI generator we map four duration units roughly to one bar.
+                # The classic Popcorn preset disables this reduction and scales the
+                # full XML pattern across the entire song length.
+                if divide_duration_by_four:
+                    raw_length = raw_length / 4.0
+                length = max(1, min(max_units_per_token, int(round(raw_length))))
             except ValueError:
                 length = default_units
         symbol = symbol.strip().lstrip("+") or "I"

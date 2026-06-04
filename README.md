@@ -1,18 +1,8 @@
-# PythonSoundHelix v0.4.3
+# PythonSoundHelix v0.4.6
 
 PythonSoundHelix is a GPLv3 Python/PyQt6 reimplementation and expansion inspired by the original Java SoundHelix project.
 
 The original SoundHelix project (soundhelix.com) is a Java framework for algorithmic random music composition with XML configuration and MIDI output. This Python version keeps the core ideas—seeded composition, configurable harmony, arrangement engines, sequence-like track roles, random song names and MIDI export—but removes the Java runtime dependency and adds a Windows-focused PyQt6 GUI.
-
-<img width="1361" height="979" alt="grafik" src="https://github.com/user-attachments/assets/965a3d40-a6c0-46cc-9848-5f6151acb25b" />
-
-Example Output #1 :
-
-https://github.com/user-attachments/assets/4525d977-92a7-4a5b-a0a2-e133c2a394b3
-
-Example Output #2 :
-
-https://github.com/user-attachments/assets/4c86acb8-f6a9-42a3-abdf-fc95119c9bf0
 
 ## What is included
 
@@ -20,20 +10,22 @@ https://github.com/user-attachments/assets/4c86acb8-f6a9-42a3-abdf-fc95119c9bf0
 - Pure-Python Standard MIDI File writer, no Java required.
 - SoundHelix-style deterministic random song titles when the song-title field is left blank.
 - Preset system inspired by the original XML examples:
-  - Original XML Popcorn Expansion
+  - Original XML Popcorn Expansion, now closer to the Java XML/log output
+  - PythonSoundHelix Popcorn Expansion, a shorter enhanced variant
   - Legacy XML Piano Expansion
   - Legacy XML Guitar Expansion
   - Extended Pop
   - Arcade Byte Bubbles
   - public-domain-inspired motif examples: Ode, Elise, Canon and Toccata
   - new genre/style presets: Synthwave, House, Drum and Bass, Ambient, Matrix/Cyber, Funk, LoFi and Orchestral.
+  - AlgoMusic legacy-inspired Techno/House presets based on the public Aminet metadata and screenshot-informed pattern concepts for Thomas Schürger's Amiga AlgoMusic.
 - Editable track table with roles: drum, bass, chord, arpeggio, melody, pad, counter and texture.
 - Per-track instrument dropdowns using General MIDI program names.
 - Optional per-instrument loudness normalization. It moves normal notes toward a similar average level while preserving strong accents, fills and highlighted song moments.
 - Auto octave/range guard for melody, counter, arpeggio and texture voices, reducing overly high/piercing generated lines while preserving the musical motif.
 - Optional WAV rendering through a built-in lightweight synth. No SoundFont is required.
 - Optional MP3 rendering when `ffmpeg` is installed and available in `PATH`; MP3 rendering is enabled by default and gracefully skipped when ffmpeg is missing.
-- Options tab with theme switching: Dark, Light, Hell, Matrix, Ocean and Avatar.
+- Options tab with theme switching: Dark, Light, Hell, Matrix, Ocean, Avatar, Amiga MUI and MagicWB.
 - English/German GUI language switching with tooltips for important controls.
 - Seed control and random seed mode; GUI presets now default to randomizing the seed on every generation.
 - Key, mode, chord progression, harmonic rhythm and structure controls.
@@ -87,6 +79,30 @@ The bundled XML files in `resources/original_soundhelix_examples/` are copied fr
 The public-domain-inspired examples use short transformed interval contours and generator variation. They are not bundled recordings and are not intended as exact covers. The new genre presets and `Arcade Byte Bubbles` are original generator templates designed to provide catchy, recognizable test material without using commercial melodies.
 
 
+
+
+## v0.4.6 AlgoMusic pattern-row pass
+
+- Added AlgoMusic-inspired presets:
+  - **AlgoMusic Legacy Techno House**
+  - **AlgoMusic 040 Acid Jam**
+  - **AlgoMusic Ambient House**
+  - **AlgoMusic Techno Pattern Rows**
+- Added screenshot-informed digit/dash melody-row logic and symbol-based drum-row logic inspired by the visible AlgoMusic Techno pattern screens.
+- Added tracker/Amiga-style generator patterns: `amiga four`, `tracker hats`, `acid pulse`, `random gate`, `tracker arp`, `algomusic drums` and `digit progression`.
+- Added melody templates: `AlgoMusic tracker pulse`, `AlgoMusic house chord riff`, `AlgoMusic random walk` and `AlgoMusic digit progression`.
+- Added **Amiga MUI** and **MagicWB** inspired GUI themes.
+- Added `resources/algomusic_reference/AlgoMusic_Aminet_Notes.txt` documenting the public Aminet facts used as inspiration.
+- The AlgoMusic additions are newly written Python logic; no Amiga binary/header/example code is bundled.
+
+## v0.4.4 Popcorn compatibility pass
+
+- Reworked **Original XML Popcorn Expansion** toward the original Java SoundHelix-Popcorn XML/log output.
+- Uses 137 BPM, 288 bars, 12 ticks per beat and 36 structural activity sections, matching the original console trace shape.
+- Uses the original Am/G/F/C/Em/D duration-bearing harmony pattern instead of falling back to a generic pop progression.
+- Adds a separate **PythonSoundHelix Popcorn Expansion** preset for the shorter, more modern enhanced version.
+- The classic Popcorn preset uses MIDI-only generation by default to avoid unexpectedly rendering an eight-minute WAV/MP3; audio can still be rendered with the Render/Play button.
+
 ## v0.4.1 hotfix
 
 - The main generation button is now labeled **Generate Song** because it creates a complete song project, not only a raw MIDI file.
@@ -94,7 +110,7 @@ The public-domain-inspired examples use short transformed interval contours and 
 - WAV rendering is enabled by default for fresh presets, but can still be disabled in Options.
 
 
-## v0.4.3 register / render polish
+## v0.4.2 register / render polish
 
 - Added an **Auto octave/range guard** option and **Max melody pitch** control.
 - Reduced the default melodic register so leads/counters no longer dominate in a very high, piercing octave.

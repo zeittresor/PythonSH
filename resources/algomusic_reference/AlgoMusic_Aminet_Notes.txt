@@ -1,0 +1,39 @@
+PythonSoundHelix AlgoMusic reference notes
+=========================================
+
+This project does not bundle or port the Amiga AlgoMusic binary/source code.
+These notes document the public Aminet metadata that inspired the new v0.4.6
+AlgoMusic-style Python presets and generator patterns.
+
+Public metadata used:
+- Package: mus/misc/AlgoMusic2_4u.lha
+- Short description: needs installed AlgoMusic V2.0+
+- Author/uploader: Thomas Schuerger / Thomas Schürger
+- Architecture: m68k-amigaos
+- Date: 1998-08-21
+- Stated version/date in readme: AlgoMusic 2.4 (20.08.98), Giftware
+- Description: a complex program that creates and plays a song randomly out of
+  a series of algorithms in a Techno/House manner.
+- Requirements mentioned by Aminet: AmigaOS 2.0 (V36), about 512 K free memory;
+  MUI 3.x is required for the prefs program.
+- Notable archive entries listed by Aminet: AlgoMusic.guide, AlgoMusic.prefs,
+  AlgoMusicPrefs, Developer/AlgoMusic.h, Developer/Example.c, Developer/Example2.c,
+  MagicWB/NewIcons/Regular icons and Commodore/AT Installer script.
+
+Implementation notes:
+- The v0.4.6 AlgoMusic presets are new Python implementations inspired by the
+  public description and historical context.
+- No Amiga executable, icon, header or example code from the .lha archive is
+  included in this package.
+- If the original .lha is later supplied as a ZIP for analysis, future versions
+  can add a more accurate AlgoMusic inspector/compatibility layer while keeping
+  licensing boundaries explicit.
+
+Screenshot-informed notes added in v0.4.6:
+- User-supplied AlgoMusic Techno screenshots show compact melody/progression rows
+  made from digits 1-4 and dash/rest/hold markers. PythonSoundHelix now models
+  that as newly written digit/dash pattern banks.
+- The drum screens show symbol rows with tracker-like percussion markers such as
+  plus, caret, asterisk, dots and X-style accents. PythonSoundHelix maps newly
+  written symbol rows to kick, snare/clap, hats, rim and fill/crash events.
+- MUI is treated as a GUI/theme reference only, not as a music preset/style name.

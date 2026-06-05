@@ -4,6 +4,8 @@ PythonSoundHelix is a GPLv3 Python/PyQt6 reimplementation and expansion inspired
 
 The original SoundHelix project is a Java framework for algorithmic random music composition with XML configuration and MIDI output. This Python version keeps the core ideas—seeded composition, configurable harmony, arrangement engines, sequence-like track roles, random song names and MIDI export—but removes the Java runtime dependency and adds a Windows-focused PyQt6 GUI.
 
+https://github.com/user-attachments/assets/4627ff79-b327-45cb-ac00-ba589ec109fe
+
 ## What is included
 
 - PyQt6 Windows GUI, no tkinter.

@@ -27,6 +27,9 @@ class TrackSettings:
     volume: int = 96
     pan: int = 64
     octave: int = 0
+    transpose: int = 0
+    fine_tune_cents: int = 0
+    arp_rate: int = 100
     density: int = 70
     complexity: int = 55
     activity: int = 80
@@ -68,6 +71,7 @@ class GeneratorSettings:
     variation: int = 45
     motif_memory: int = 70
     accent_strength: int = 52
+    seed_variation_strength: int = 70
     lfo_expression: bool = True
     call_response: bool = True
     keep_bass_on_roots: bool = True
@@ -78,6 +82,9 @@ class GeneratorSettings:
     normalize_velocity: bool = False
     normalize_target: int = 88
     normalize_strength: int = 72
+    global_arpeggio_rate: int = 100
+    rhythmic_smoothing: bool = True
+    smoothing_strength: int = 55
     auto_range_guard: bool = True
     max_melody_pitch: int = 79
     render_wav: bool = True

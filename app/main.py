@@ -68,21 +68,24 @@ THEMES = {
 
 TRANSLATIONS: Dict[str, Dict[str, str]] = {
     "en": {
-        "tab_generate": "Generate", "tab_tracks": "Tracks", "tab_options": "Options", "tab_history": "History / Ratings", "tab_xml": "Original XML Inspector", "tab_log": "Log",
+        "tab_generate": "Generate", "tab_tracks": "Tracks", "tab_options": "Options", "tab_finetune": "Fine Tune", "tab_history": "History / Ratings", "tab_xml": "Original XML Inspector", "tab_log": "Log",
         "menu_file": "File", "menu_help": "Help", "save_project_menu": "Save project JSON...", "load_project_menu": "Load project JSON...", "open_output_menu": "Open output folder", "about_menu": "About / License",
-        "group_generator": "Generator", "group_harmony": "Harmony / structure", "group_perf": "Performance / advanced", "group_audio": "Audio / loudness", "group_ui": "Interface", "group_presets": "Preset notes",
+        "group_generator": "Generator", "group_harmony": "Harmony / structure", "group_perf": "Performance / advanced", "group_finetune": "Track pitch / arpeggio fine tuning", "group_audio": "Audio / loudness", "group_ui": "Interface", "group_presets": "Preset notes",
         "preset": "Preset", "song_title": "Song title", "seed": "Seed", "bpm": "BPM", "bars": "Bars", "beats": "Beats per bar", "tpb": "Ticks per beat",
         "key": "Key", "mode": "Mode", "progression": "Progression", "custom_progression": "Custom progression", "harmonic": "Harmonic rhythm", "sections": "Sections", "melody_template": "Melody template",
-        "complexity": "Complexity", "variation": "Variation", "swing": "Swing", "motif": "Motif memory", "accent": "Accent", "human_ticks": "Humanize ticks", "human_vel": "Humanize velocity",
+        "complexity": "Complexity", "variation": "Variation", "seed_variation": "Seed variation", "swing": "Swing", "motif": "Motif memory", "accent": "Accent", "human_ticks": "Humanize ticks", "human_vel": "Humanize velocity",
         "lfo": "LFO expression CC", "call_response": "call/response melody", "bass_roots": "bass favors chord roots", "markers": "section markers", "export_json": "export JSON result", "export_chords": "export chord sheet", "rating_memory": "use thumbs-up rating memory",
         "generate": "Generate Song", "play_midi": "Play MIDI", "play_audio": "Render/Play WAV/MP3", "open_output": "Open output folder", "save_project": "Save project", "load_project": "Load project", "rate_good": "👍 Rate good", "rate_bad": "👎 Rate bad",
-        "normalize_loudness": "Normalize instrument loudness", "normalize_target": "Target velocity", "normalize_strength": "Normalize strength", "range_guard": "Auto octave/range guard", "max_melody_pitch": "Max melody pitch", "render_wav": "Render WAV", "render_mp3": "Render MP3", "sample_rate": "Sample rate", "ffmpeg_status": "MP3 encoder", "theme": "Theme", "language": "Language",
+        "global_arp_rate": "Global arpeggio rate", "smart_finetune": "Smart Fine Tune", "reset_finetune": "Reset fine tune", "refresh_finetune": "Refresh from tracks", "finetune_info": "Use this tab to adjust octave/transpose/cents and arpeggio rate per track. These values are stored in project JSON and are applied deterministically when regenerating with the same seed.", "normalize_loudness": "Normalize instrument loudness", "normalize_target": "Target velocity", "normalize_strength": "Normalize strength", "smooth_bursts": "Reduce rapid note bursts", "smoothing_strength": "Burst smoothing strength", "range_guard": "Auto octave/range guard", "max_melody_pitch": "Max melody pitch", "render_wav": "Render WAV", "render_mp3": "Render MP3", "sample_rate": "Sample rate", "ffmpeg_status": "MP3 encoder", "theme": "Theme", "language": "Language",
         "tracks_info": "Tracks are editable. Use the instrument dropdown per row to choose GM instruments. Channel 10 is MIDI drum channel; internally it is shown as 9 because MIDI channels are 0-based.",
         "add_track": "Add melody track", "remove_track": "Remove selected", "normalize_channels": "Normalize channels", "history_play": "Play selected", "history_load": "Load selected settings", "reset_ratings": "Reset all ratings",
         "xml_note": "These XML files are bundled as GPLv3 reference/preset material. The Python generator does not require Java.", "xml_label": "Bundled original SoundHelix XML references",
         "random_seed": "randomize on generate", "history_up": "👍 selected", "history_down": "👎 selected", "ready": "Ready.", "generating": "Generating...", "rendering_audio": "No audio file exists yet; rendering WAV now...", "already_rendering": "Audio rendering is already running.", "no_tracks": "No tracks configured.", "already_running": "Generation is already running.", "generate_first": "Generate a song first.",
         "tooltip_title": "Leave this blank to create a deterministic SoundHelix-style random title during generation.",
-        "tooltip_normalize": "Moves normal notes of each instrument toward a similar average level, while preserving strong accents/fills.",
+        "tooltip_normalize": "Balances instruments by note velocity, channel volume and estimated note density, while preserving strong accents/fills.",
+        "tooltip_global_arp_rate": "Controls how many arpeggio notes are generated. 50% is calmer, 100% is normal, 150-200% is busier.", "tooltip_smart_finetune": "Automatically spreads bass, chords, pads, melody and arpeggio into more sensible pitch lanes and reduces overly busy arps.", "tooltip_seed_variation": "Controls how strongly different seeds alter melodic phrase order, arpeggio rows and weak-note details. Higher values make randomize-on-generate more audible.",
+        "tooltip_smoothing": "Removes excessive rapid retriggers on tonal tracks while keeping true chord clusters and drums intact.",
+        "tooltip_smoothing_strength": "Higher values make arpeggios, gates and melodies less hectic by enforcing a larger minimum spacing between separate note attacks.",
         "tooltip_range_guard": "Keeps melody, counter and arpeggio voices in a less piercing register by folding runaway notes down an octave instead of deleting them.",
         "tooltip_max_melody_pitch": "Upper pitch limit for melodic voices when the range guard is enabled. 79 is G5; higher values sound brighter.",
         "tooltip_render_wav": "Renders the MIDI through a lightweight built-in synth to a WAV file. No SoundFont is required.",
@@ -90,21 +93,23 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "tooltip_theme": "Switches the GUI color theme immediately.", "tooltip_language": "Switches visible GUI labels and button text between English and German.",
     },
     "de": {
-        "tab_generate": "Generieren", "tab_tracks": "Spuren", "tab_options": "Optionen", "tab_history": "Historie / Bewertungen", "tab_xml": "Original-XML-Inspector", "tab_log": "Log",
+        "tab_generate": "Generieren", "tab_tracks": "Spuren", "tab_options": "Optionen", "tab_finetune": "Fine-Tuning", "tab_history": "Historie / Bewertungen", "tab_xml": "Original-XML-Inspector", "tab_log": "Log",
         "menu_file": "Datei", "menu_help": "Hilfe", "save_project_menu": "Projekt-JSON speichern...", "load_project_menu": "Projekt-JSON laden...", "open_output_menu": "Ausgabeordner öffnen", "about_menu": "Über / Lizenz",
-        "group_generator": "Generator", "group_harmony": "Harmonie / Struktur", "group_perf": "Performance / Erweitert", "group_audio": "Audio / Lautstärke", "group_ui": "Oberfläche", "group_presets": "Preset-Hinweise",
+        "group_generator": "Generator", "group_harmony": "Harmonie / Struktur", "group_perf": "Performance / Erweitert", "group_finetune": "Spur-Tonhöhe / Arpeggio-Finetuning", "group_audio": "Audio / Lautstärke", "group_ui": "Oberfläche", "group_presets": "Preset-Hinweise",
         "preset": "Preset", "song_title": "Songtitel", "seed": "Seed", "bpm": "BPM", "bars": "Takte", "beats": "Schläge pro Takt", "tpb": "Ticks pro Schlag",
         "key": "Tonart", "mode": "Modus", "progression": "Akkordfolge", "custom_progression": "Eigene Akkordfolge", "harmonic": "Harmoniewechsel", "sections": "Songteile", "melody_template": "Melodievorlage",
-        "complexity": "Komplexität", "variation": "Variation", "swing": "Swing", "motif": "Motivgedächtnis", "accent": "Akzent", "human_ticks": "Timing-Humanize", "human_vel": "Velocity-Humanize",
+        "complexity": "Komplexität", "variation": "Variation", "seed_variation": "Seed-Variation", "swing": "Swing", "motif": "Motivgedächtnis", "accent": "Akzent", "human_ticks": "Timing-Humanize", "human_vel": "Velocity-Humanize",
         "lfo": "LFO Expression CC", "call_response": "Call/Response-Melodie", "bass_roots": "Bass bevorzugt Grundtöne", "markers": "Songteil-Marker", "export_json": "JSON-Ergebnis exportieren", "export_chords": "Akkordblatt exportieren", "rating_memory": "Daumen-hoch-Lerndaten nutzen",
         "generate": "Song generieren", "play_midi": "MIDI abspielen", "play_audio": "WAV/MP3 rendern/abspielen", "open_output": "Ausgabeordner öffnen", "save_project": "Projekt speichern", "load_project": "Projekt laden", "rate_good": "👍 Gut bewerten", "rate_bad": "👎 Schlecht bewerten",
-        "normalize_loudness": "Instrument-Lautstärke normalisieren", "normalize_target": "Ziel-Velocity", "normalize_strength": "Normalisierungsstärke", "range_guard": "Auto-Oktav-/Tonlagen-Schutz", "max_melody_pitch": "Max. Melodietonhöhe", "render_wav": "WAV rendern", "render_mp3": "MP3 rendern", "sample_rate": "Samplerate", "ffmpeg_status": "MP3-Encoder", "theme": "Theme", "language": "Sprache",
+        "global_arp_rate": "Globale Arpeggio-Rate", "smart_finetune": "Smart Fine Tune", "reset_finetune": "Fine-Tune zurücksetzen", "refresh_finetune": "Aus Spuren aktualisieren", "finetune_info": "In diesem Tab stellst du Oktave/Transponierung/Cents und Arpeggio-Rate pro Spur ein. Die Werte werden im Projekt-JSON gespeichert und beim Neugenerieren mit gleichem Seed deterministisch berücksichtigt.", "normalize_loudness": "Instrument-Lautstärke normalisieren", "normalize_target": "Ziel-Velocity", "normalize_strength": "Normalisierungsstärke", "smooth_bursts": "Schnelle Notenfolgen beruhigen", "smoothing_strength": "Beruhigungsstärke", "range_guard": "Auto-Oktav-/Tonlagen-Schutz", "max_melody_pitch": "Max. Melodietonhöhe", "render_wav": "WAV rendern", "render_mp3": "MP3 rendern", "sample_rate": "Samplerate", "ffmpeg_status": "MP3-Encoder", "theme": "Theme", "language": "Sprache",
         "tracks_info": "Spuren sind editierbar. Über das Instrument-Dropdown pro Zeile kannst du GM-Instrumente wählen. MIDI-Kanal 10 ist der Drum-Kanal; intern wird er als 9 angezeigt, weil MIDI-Kanäle 0-basiert sind.",
         "add_track": "Melodiespur hinzufügen", "remove_track": "Auswahl entfernen", "normalize_channels": "Kanäle normalisieren", "history_play": "Auswahl abspielen", "history_load": "Auswahl laden", "reset_ratings": "Bewertungen zurücksetzen",
         "xml_note": "Diese XML-Dateien sind als GPLv3-Referenz-/Presetmaterial enthalten. Der Python-Generator benötigt kein Java.", "xml_label": "Mitgelieferte originale SoundHelix-XML-Referenzen",
         "random_seed": "beim Generieren randomisieren", "history_up": "👍 Auswahl", "history_down": "👎 Auswahl", "ready": "Bereit.", "generating": "Generiere...", "rendering_audio": "Es existiert noch keine Audiodatei; WAV wird jetzt gerendert...", "already_rendering": "Audio-Rendering läuft bereits.", "no_tracks": "Keine Spuren konfiguriert.", "already_running": "Die Generierung läuft bereits.", "generate_first": "Bitte zuerst einen Song generieren.",
         "tooltip_title": "Leer lassen, damit beim Generieren automatisch ein SoundHelix-artiger Zufallstitel entsteht.",
-        "tooltip_normalize": "Bringt normale Noten aller Instrumente näher auf eine Durchschnittslautstärke, lässt starke Akzente/Fills aber weitgehend stehen.",
+        "tooltip_normalize": "Balanciert Instrumente über Velocity, Kanal-Lautstärke und geschätzte Notendichte, lässt starke Akzente/Fills aber weitgehend stehen.",
+        "tooltip_global_arp_rate": "Steuert, wie viele Arpeggio-Noten erzeugt werden. 50% ist ruhiger, 100% normal, 150-200% dichter.", "tooltip_smart_finetune": "Verteilt Bass, Akkorde, Pads, Melodie und Arpeggio automatisch sinnvoller auf Tonlagen und beruhigt zu dichte Arps.", "tooltip_seed_variation": "Steuert, wie stark unterschiedliche Seeds Melodie-Reihenfolge, Arpeggio-Zeilen und kleine Notendetails verändern. Höhere Werte machen Randomize-on-generate deutlicher hörbar.", "tooltip_smoothing": "Entfernt übertrieben schnelle Wiederholungen auf tonalen Spuren, behält echte Akkord-Cluster und Drums aber bei.",
+        "tooltip_smoothing_strength": "Höhere Werte machen Arpeggios, Gates und Melodien entspannter, indem separate Notenanschläge stärker auseinandergehalten werden.",
         "tooltip_range_guard": "Hält Melodie-, Antwort- und Arpeggio-Stimmen in einer weniger spitzen Tonlage, indem Ausreißer eine Oktave heruntergefaltet werden.",
         "tooltip_max_melody_pitch": "Obergrenze für melodische Stimmen, wenn der Tonlagen-Schutz aktiv ist. 79 entspricht G5; höhere Werte klingen heller.",
         "tooltip_render_wav": "Rendert das MIDI über einen einfachen eingebauten Synth als WAV. Kein SoundFont nötig.",
@@ -136,7 +141,7 @@ try:
     from PyQt6.QtWidgets import (
         QApplication, QAbstractItemView, QCheckBox, QComboBox, QFileDialog, QFormLayout,
         QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMainWindow,
-        QMessageBox, QProgressBar, QPushButton, QScrollArea, QSpinBox, QTabWidget,
+        QMessageBox, QProgressBar, QPushButton, QScrollArea, QSlider, QSpinBox, QTabWidget,
         QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget,
     )
 except Exception:  # pragma: no cover - allows --nogui diagnostics without PyQt6 installed.
@@ -272,6 +277,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central)
         self._build_generate_tab()
         self._build_tracks_tab()
+        self._build_fine_tune_tab()
         self._build_options_tab()
         self._build_history_tab()
         self._build_xml_tab()
@@ -323,7 +329,7 @@ class MainWindow(QMainWindow):
         self.custom_progression = QLineEdit(); self.custom_progression.setPlaceholderText("Optional override, e.g. I,V,vi,IV or Am,G,F,Em")
         self.harmonic_spin = QSpinBox(); self.harmonic_spin.setRange(1, 8)
         self.section_spin = QSpinBox(); self.section_spin.setRange(3, 64)
-        self.melody_template_combo = QComboBox(); self.melody_template_combo.addItems(["auto", "Popcorn-style original pulse", "Ode-to-Joy public-domain hint", "Fuer-Elise public-domain hint", "Canon public-domain hint", "Toccata public-domain hint", "Original arcade anthem", "AlgoMusic tracker pulse", "AlgoMusic house chord riff", "AlgoMusic random walk", "AlgoMusic digit progression"])
+        self.melody_template_combo = QComboBox(); self.melody_template_combo.addItems(["auto", "Popcorn-style recognizable contour", "Popcorn-style original pulse", "Ode-to-Joy public-domain hint", "Fuer-Elise public-domain hint", "Canon public-domain hint", "Toccata public-domain hint", "Original arcade anthem", "AlgoMusic tracker pulse", "AlgoMusic house chord riff", "AlgoMusic random walk", "AlgoMusic digit progression"])
         for key, widget in [("key", self.key_combo), ("mode", self.mode_combo), ("progression", self.progression_combo), ("custom_progression", self.custom_progression), ("harmonic", self.harmonic_spin), ("sections", self.section_spin), ("melody_template", self.melody_template_combo)]:
             self._row(hform, key, widget)
         top.addWidget(harmony, 1)
@@ -331,13 +337,15 @@ class MainWindow(QMainWindow):
         performance = self._group("group_perf"); grid = QGridLayout(performance)
         self.complexity_spin = QSpinBox(); self.complexity_spin.setRange(1, 100)
         self.variation_spin = QSpinBox(); self.variation_spin.setRange(1, 100)
+        self.seed_variation_spin = QSpinBox(); self.seed_variation_spin.setRange(0, 100)
+        self._tip(self.seed_variation_spin, "tooltip_seed_variation")
         self.swing_spin = QSpinBox(); self.swing_spin.setRange(0, 60)
         self.motif_spin = QSpinBox(); self.motif_spin.setRange(0, 100)
         self.accent_spin = QSpinBox(); self.accent_spin.setRange(0, 100)
         self.human_ticks_spin = QSpinBox(); self.human_ticks_spin.setRange(0, 80)
         self.human_vel_spin = QSpinBox(); self.human_vel_spin.setRange(0, 40)
         self.lfo_check = QCheckBox(); self.call_response_check = QCheckBox(); self.bass_roots_check = QCheckBox(); self.markers_check = QCheckBox(); self.export_json_check = QCheckBox(); self.export_chords_check = QCheckBox(); self.rating_memory_check = QCheckBox()
-        for i, (key, widget) in enumerate([("complexity", self.complexity_spin), ("variation", self.variation_spin), ("swing", self.swing_spin), ("motif", self.motif_spin), ("accent", self.accent_spin), ("human_ticks", self.human_ticks_spin), ("human_vel", self.human_vel_spin)]):
+        for i, (key, widget) in enumerate([("complexity", self.complexity_spin), ("variation", self.variation_spin), ("seed_variation", self.seed_variation_spin), ("swing", self.swing_spin), ("motif", self.motif_spin), ("accent", self.accent_spin), ("human_ticks", self.human_ticks_spin), ("human_vel", self.human_vel_spin)]):
             lbl = self._label(key); grid.addWidget(lbl, i, 0); grid.addWidget(widget, i, 1)
         for i, (key, check) in enumerate([("lfo", self.lfo_check), ("call_response", self.call_response_check), ("bass_roots", self.bass_roots_check), ("markers", self.markers_check), ("export_json", self.export_json_check), ("export_chords", self.export_chords_check), ("rating_memory", self.rating_memory_check)]):
             check.setText(key); grid.addWidget(check, i, 2)
@@ -375,19 +383,78 @@ class MainWindow(QMainWindow):
         layout.addLayout(row)
         self._add_tab(tab, "tab_tracks")
 
+
+    def _slider_cell(self, value: int, lo: int, hi: int, suffix: str = "") -> QWidget:
+        box = QWidget()
+        lay = QHBoxLayout(box)
+        lay.setContentsMargins(0, 0, 0, 0)
+        slider = QSlider(Qt.Orientation.Horizontal)
+        slider.setRange(lo, hi)
+        slider.setValue(clamp(value, lo, hi))
+        label = QLabel(f"{slider.value()}{suffix}")
+        label.setMinimumWidth(52)
+        slider.valueChanged.connect(lambda v, lbl=label, suf=suffix: lbl.setText(f"{v}{suf}"))
+        lay.addWidget(slider, 1)
+        lay.addWidget(label)
+        return box
+
+    def _slider_value(self, row: int, col: int, default: int = 0) -> int:
+        cell = self.fine_table.cellWidget(row, col)
+        if not cell:
+            return default
+        slider = cell.findChild(QSlider)
+        return int(slider.value()) if slider else default
+
+    def _set_slider_value(self, row: int, col: int, value: int) -> None:
+        cell = self.fine_table.cellWidget(row, col)
+        if not cell:
+            return
+        slider = cell.findChild(QSlider)
+        if slider:
+            slider.setValue(value)
+
+    def _build_fine_tune_tab(self) -> None:
+        tab = QWidget(); layout = QVBoxLayout(tab)
+        info = QLabel(); info.setWordWrap(True); self.finetune_info = info; layout.addWidget(info)
+        box = self._group("group_finetune"); form = QFormLayout(box)
+        self.global_arp_rate_slider = QSlider(Qt.Orientation.Horizontal); self.global_arp_rate_slider.setRange(25, 240); self.global_arp_rate_slider.setValue(100)
+        self.global_arp_rate_spin = QSpinBox(); self.global_arp_rate_spin.setRange(25, 240); self.global_arp_rate_spin.setSuffix(" %"); self.global_arp_rate_spin.setValue(100)
+        self.global_arp_rate_slider.valueChanged.connect(self.global_arp_rate_spin.setValue)
+        self.global_arp_rate_spin.valueChanged.connect(self.global_arp_rate_slider.setValue)
+        self._tip(self.global_arp_rate_slider, "tooltip_global_arp_rate")
+        arp_row = QHBoxLayout(); arp_row.addWidget(self.global_arp_rate_slider, 1); arp_row.addWidget(self.global_arp_rate_spin)
+        arp_widget = QWidget(); arp_widget.setLayout(arp_row)
+        self._row(form, "global_arp_rate", arp_widget)
+        layout.addWidget(box)
+
+        self.fine_table = QTableWidget(0, 7)
+        self.fine_table.setHorizontalHeaderLabels(["Track", "Role", "Octave", "Transpose", "Fine cents", "Arp rate", "Program"])
+        self.fine_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.fine_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        layout.addWidget(self.fine_table)
+        row = QHBoxLayout()
+        self.smart_finetune_btn = QPushButton(); self.smart_finetune_btn.clicked.connect(self.smart_fine_tune); self._tip(self.smart_finetune_btn, "tooltip_smart_finetune")
+        self.reset_finetune_btn = QPushButton(); self.reset_finetune_btn.clicked.connect(self.reset_fine_tune)
+        self.refresh_finetune_btn = QPushButton(); self.refresh_finetune_btn.clicked.connect(self.refresh_fine_tune_from_tracks)
+        row.addWidget(self.smart_finetune_btn); row.addWidget(self.reset_finetune_btn); row.addWidget(self.refresh_finetune_btn); row.addStretch(1)
+        layout.addLayout(row)
+        self._add_tab(tab, "tab_finetune")
+
     def _build_options_tab(self) -> None:
         tab = QWidget(); layout = QVBoxLayout(tab)
         audio = self._group("group_audio"); aform = QFormLayout(audio)
         self.normalize_check = QCheckBox(); self._tip(self.normalize_check, "tooltip_normalize")
         self.normalize_target_spin = QSpinBox(); self.normalize_target_spin.setRange(35, 120)
         self.normalize_strength_spin = QSpinBox(); self.normalize_strength_spin.setRange(0, 100)
+        self.smooth_check = QCheckBox(); self._tip(self.smooth_check, "tooltip_smoothing")
+        self.smoothing_strength_spin = QSpinBox(); self.smoothing_strength_spin.setRange(0, 100); self._tip(self.smoothing_strength_spin, "tooltip_smoothing_strength")
         self.range_guard_check = QCheckBox(); self._tip(self.range_guard_check, "tooltip_range_guard")
         self.max_melody_pitch_spin = QSpinBox(); self.max_melody_pitch_spin.setRange(60, 96); self._tip(self.max_melody_pitch_spin, "tooltip_max_melody_pitch")
         self.render_wav_check = QCheckBox(); self._tip(self.render_wav_check, "tooltip_render_wav")
         self.render_mp3_check = QCheckBox(); self._tip(self.render_mp3_check, "tooltip_render_mp3")
         self.sample_rate_spin = QSpinBox(); self.sample_rate_spin.setRange(8000, 192000); self.sample_rate_spin.setSingleStep(1000)
         self.ffmpeg_label = QLabel("ffmpeg: " + ("available" if ffmpeg_available() else "not found"))
-        for key, widget in [("normalize_loudness", self.normalize_check), ("normalize_target", self.normalize_target_spin), ("normalize_strength", self.normalize_strength_spin), ("range_guard", self.range_guard_check), ("max_melody_pitch", self.max_melody_pitch_spin), ("render_wav", self.render_wav_check), ("render_mp3", self.render_mp3_check), ("sample_rate", self.sample_rate_spin), ("ffmpeg_status", self.ffmpeg_label)]:
+        for key, widget in [("normalize_loudness", self.normalize_check), ("normalize_target", self.normalize_target_spin), ("normalize_strength", self.normalize_strength_spin), ("smooth_bursts", self.smooth_check), ("smoothing_strength", self.smoothing_strength_spin), ("range_guard", self.range_guard_check), ("max_melody_pitch", self.max_melody_pitch_spin), ("render_wav", self.render_wav_check), ("render_mp3", self.render_mp3_check), ("sample_rate", self.sample_rate_spin), ("ffmpeg_status", self.ffmpeg_label)]:
             self._row(aform, key, widget)
         layout.addWidget(audio)
 
@@ -447,12 +514,12 @@ class MainWindow(QMainWindow):
             widget.setToolTip(tr(self.lang, key))
         self.file_menu.setTitle(tr(self.lang, "menu_file")); self.help_menu.setTitle(tr(self.lang, "menu_help"))
         self.save_project_action.setText(tr(self.lang, "save_project_menu")); self.load_project_action.setText(tr(self.lang, "load_project_menu")); self.open_output_action.setText(tr(self.lang, "open_output_menu")); self.about_action.setText(tr(self.lang, "about_menu"))
-        for key, check in [("lfo", self.lfo_check), ("call_response", self.call_response_check), ("bass_roots", self.bass_roots_check), ("markers", self.markers_check), ("export_json", self.export_json_check), ("export_chords", self.export_chords_check), ("rating_memory", self.rating_memory_check), ("normalize_loudness", self.normalize_check), ("range_guard", self.range_guard_check), ("render_wav", self.render_wav_check), ("render_mp3", self.render_mp3_check)]:
+        for key, check in [("lfo", self.lfo_check), ("call_response", self.call_response_check), ("bass_roots", self.bass_roots_check), ("markers", self.markers_check), ("export_json", self.export_json_check), ("export_chords", self.export_chords_check), ("rating_memory", self.rating_memory_check), ("normalize_loudness", self.normalize_check), ("smooth_bursts", self.smooth_check), ("range_guard", self.range_guard_check), ("render_wav", self.render_wav_check), ("render_mp3", self.render_mp3_check)]:
             check.setText(tr(self.lang, key))
-        for key, btn in [("generate", self.generate_btn), ("play_midi", self.play_btn), ("play_audio", self.play_audio_btn), ("open_output", self.open_output_btn), ("save_project", self.save_project_btn), ("load_project", self.load_project_btn), ("rate_good", self.thumb_up_btn), ("rate_bad", self.thumb_down_btn), ("add_track", self.add_track_btn), ("remove_track", self.remove_track_btn), ("normalize_channels", self.normalize_channels_btn), ("history_play", self.hist_play_btn), ("history_load", self.hist_load_btn), ("history_up", self.hist_up_btn), ("history_down", self.hist_down_btn), ("reset_ratings", self.reset_ratings_btn)]:
+        for key, btn in [("generate", self.generate_btn), ("play_midi", self.play_btn), ("play_audio", self.play_audio_btn), ("open_output", self.open_output_btn), ("save_project", self.save_project_btn), ("load_project", self.load_project_btn), ("rate_good", self.thumb_up_btn), ("rate_bad", self.thumb_down_btn), ("add_track", self.add_track_btn), ("remove_track", self.remove_track_btn), ("normalize_channels", self.normalize_channels_btn), ("smart_finetune", self.smart_finetune_btn), ("reset_finetune", self.reset_finetune_btn), ("refresh_finetune", self.refresh_finetune_btn), ("history_play", self.hist_play_btn), ("history_load", self.hist_load_btn), ("history_up", self.hist_up_btn), ("history_down", self.hist_down_btn), ("reset_ratings", self.reset_ratings_btn)]:
             btn.setText(tr(self.lang, key))
         self.random_seed_check.setText(tr(self.lang, "random_seed"));
-        self.tracks_info.setText(tr(self.lang, "tracks_info")); self.xml_note.setText(tr(self.lang, "xml_note")); self.xml_label.setText(tr(self.lang, "xml_label"))
+        self.tracks_info.setText(tr(self.lang, "tracks_info")); self.finetune_info.setText(tr(self.lang, "finetune_info")); self.xml_note.setText(tr(self.lang, "xml_note")); self.xml_label.setText(tr(self.lang, "xml_label"))
         if self.summary_box.toPlainText() in ("Ready.", "Bereit."):
             self.summary_box.setText(tr(self.lang, "ready"))
         self._update_preset_notes()
@@ -478,7 +545,7 @@ class MainWindow(QMainWindow):
         self.current_settings = get_preset(name)
         self.apply_settings_to_ui(self.current_settings, keep_combo=True)
 
-    def apply_settings_to_ui(self, s: GeneratorSettings, keep_combo: bool = False) -> None:
+    def apply_settings_to_ui(self, s: GeneratorSettings, keep_combo: bool = False, apply_interface: bool = False) -> None:
         if not keep_combo:
             idx = self.preset_combo.findText(s.preset_name)
             if idx >= 0:
@@ -488,19 +555,30 @@ class MainWindow(QMainWindow):
         self.bpm_spin.setValue(s.bpm); self.bars_spin.setValue(s.bars); self.beats_spin.setValue(s.beats_per_bar); self.tpb_spin.setValue(s.ticks_per_beat)
         self.key_combo.setCurrentText(s.key); self.mode_combo.setCurrentText(s.mode); self.progression_combo.setCurrentText(s.progression); self.custom_progression.setText(s.custom_progression)
         self.harmonic_spin.setValue(s.harmonic_rhythm); self.section_spin.setValue(s.section_count); self.melody_template_combo.setCurrentText(s.melody_template)
-        self.complexity_spin.setValue(s.complexity); self.variation_spin.setValue(s.variation); self.swing_spin.setValue(s.swing)
+        self.complexity_spin.setValue(s.complexity); self.variation_spin.setValue(s.variation); self.seed_variation_spin.setValue(getattr(s, "seed_variation_strength", 70)); self.swing_spin.setValue(s.swing)
         self.motif_spin.setValue(s.motif_memory); self.accent_spin.setValue(s.accent_strength); self.human_ticks_spin.setValue(s.humanize_ticks); self.human_vel_spin.setValue(s.humanize_velocity)
         self.lfo_check.setChecked(s.lfo_expression); self.call_response_check.setChecked(s.call_response); self.bass_roots_check.setChecked(s.keep_bass_on_roots)
         self.markers_check.setChecked(s.add_markers); self.export_json_check.setChecked(s.export_json); self.export_chords_check.setChecked(s.export_chord_sheet); self.rating_memory_check.setChecked(s.use_rating_memory)
         self.normalize_check.setChecked(s.normalize_velocity); self.normalize_target_spin.setValue(s.normalize_target); self.normalize_strength_spin.setValue(s.normalize_strength)
+        self.smooth_check.setChecked(getattr(s, "rhythmic_smoothing", True)); self.smoothing_strength_spin.setValue(getattr(s, "smoothing_strength", 55))
         self.range_guard_check.setChecked(getattr(s, "auto_range_guard", True)); self.max_melody_pitch_spin.setValue(getattr(s, "max_melody_pitch", 79))
         self.render_wav_check.setChecked(s.render_wav); self.render_mp3_check.setChecked(s.render_mp3); self.sample_rate_spin.setValue(s.audio_sample_rate)
-        if s.ui_theme in THEMES:
-            self.theme_combo.setCurrentText(s.ui_theme); self.apply_theme(s.ui_theme)
-        lang_idx = self.language_combo.findData(s.language)
-        if lang_idx >= 0:
-            self.language_combo.setCurrentIndex(lang_idx); self.apply_language(s.language)
+        if apply_interface:
+            if s.ui_theme in THEMES:
+                self.theme_combo.setCurrentText(s.ui_theme); self.apply_theme(s.ui_theme)
+            lang_idx = self.language_combo.findData(s.language)
+            if lang_idx >= 0:
+                self.language_combo.setCurrentIndex(lang_idx); self.apply_language(s.language)
+        else:
+            current_theme_idx = self.theme_combo.findText(self.theme)
+            if current_theme_idx >= 0 and self.theme_combo.currentIndex() != current_theme_idx:
+                self.theme_combo.blockSignals(True); self.theme_combo.setCurrentIndex(current_theme_idx); self.theme_combo.blockSignals(False)
+            current_lang_idx = self.language_combo.findData(self.lang)
+            if current_lang_idx >= 0 and self.language_combo.currentIndex() != current_lang_idx:
+                self.language_combo.blockSignals(True); self.language_combo.setCurrentIndex(current_lang_idx); self.language_combo.blockSignals(False)
         self.populate_track_table(s.tracks)
+        self.global_arp_rate_spin.setValue(getattr(s, "global_arpeggio_rate", 100))
+        self.populate_fine_tune_table(s.tracks)
         self.summary_box.setText(s.description or tr(self.lang, "ready"))
 
     def settings_from_ui(self) -> GeneratorSettings:
@@ -511,10 +589,11 @@ class MainWindow(QMainWindow):
         s.bpm = self.bpm_spin.value(); s.bars = self.bars_spin.value(); s.beats_per_bar = self.beats_spin.value(); s.ticks_per_beat = self.tpb_spin.value()
         s.key = self.key_combo.currentText(); s.mode = self.mode_combo.currentText(); s.progression = self.progression_combo.currentText().strip() or "I,V,vi,IV"; s.custom_progression = self.custom_progression.text().strip()
         s.harmonic_rhythm = self.harmonic_spin.value(); s.section_count = self.section_spin.value(); s.melody_template = self.melody_template_combo.currentText()
-        s.complexity = self.complexity_spin.value(); s.variation = self.variation_spin.value(); s.swing = self.swing_spin.value(); s.motif_memory = self.motif_spin.value(); s.accent_strength = self.accent_spin.value(); s.humanize_ticks = self.human_ticks_spin.value(); s.humanize_velocity = self.human_vel_spin.value()
+        s.complexity = self.complexity_spin.value(); s.variation = self.variation_spin.value(); s.seed_variation_strength = self.seed_variation_spin.value(); s.swing = self.swing_spin.value(); s.motif_memory = self.motif_spin.value(); s.accent_strength = self.accent_spin.value(); s.humanize_ticks = self.human_ticks_spin.value(); s.humanize_velocity = self.human_vel_spin.value()
         s.lfo_expression = self.lfo_check.isChecked(); s.call_response = self.call_response_check.isChecked(); s.keep_bass_on_roots = self.bass_roots_check.isChecked(); s.add_markers = self.markers_check.isChecked(); s.export_json = self.export_json_check.isChecked(); s.export_chord_sheet = self.export_chords_check.isChecked(); s.use_rating_memory = self.rating_memory_check.isChecked()
-        s.normalize_velocity = self.normalize_check.isChecked(); s.normalize_target = self.normalize_target_spin.value(); s.normalize_strength = self.normalize_strength_spin.value(); s.auto_range_guard = self.range_guard_check.isChecked(); s.max_melody_pitch = self.max_melody_pitch_spin.value(); s.render_wav = self.render_wav_check.isChecked(); s.render_mp3 = self.render_mp3_check.isChecked(); s.audio_sample_rate = self.sample_rate_spin.value(); s.ui_theme = self.theme; s.language = self.lang
+        s.normalize_velocity = self.normalize_check.isChecked(); s.normalize_target = self.normalize_target_spin.value(); s.normalize_strength = self.normalize_strength_spin.value(); s.global_arpeggio_rate = self.global_arp_rate_spin.value(); s.rhythmic_smoothing = self.smooth_check.isChecked(); s.smoothing_strength = self.smoothing_strength_spin.value(); s.auto_range_guard = self.range_guard_check.isChecked(); s.max_melody_pitch = self.max_melody_pitch_spin.value(); s.render_wav = self.render_wav_check.isChecked(); s.render_mp3 = self.render_mp3_check.isChecked(); s.audio_sample_rate = self.sample_rate_spin.value(); s.ui_theme = self.theme; s.language = self.lang
         s.tracks = self.tracks_from_table()
+        self.apply_fine_tune_to_tracks(s.tracks)
         return s
 
     def populate_track_table(self, tracks: List[TrackSettings]) -> None:
@@ -582,15 +661,106 @@ class MainWindow(QMainWindow):
             ))
         return tracks
 
+
+    def populate_fine_tune_table(self, tracks: List[TrackSettings]) -> None:
+        if not hasattr(self, "fine_table"):
+            return
+        self.fine_table.setRowCount(0)
+        for t in tracks:
+            row = self.fine_table.rowCount(); self.fine_table.insertRow(row)
+            self.fine_table.setItem(row, 0, self._item(t.name, editable=False))
+            self.fine_table.setItem(row, 1, self._item(t.role, editable=False))
+            self.fine_table.setCellWidget(row, 2, self._slider_cell(getattr(t, "octave", 0), -4, 4))
+            self.fine_table.setCellWidget(row, 3, self._slider_cell(getattr(t, "transpose", 0), -12, 12, " st"))
+            self.fine_table.setCellWidget(row, 4, self._slider_cell(getattr(t, "fine_tune_cents", 0), -50, 50, " ct"))
+            self.fine_table.setCellWidget(row, 5, self._slider_cell(getattr(t, "arp_rate", 100), 25, 240, " %"))
+            program = getattr(t, "program", 0)
+            self.fine_table.setItem(row, 6, self._item(f"{program:03d}", editable=False))
+
+    def refresh_fine_tune_from_tracks(self) -> None:
+        tracks = self.tracks_from_table()
+        old = {}
+        if hasattr(self, "fine_table"):
+            for row in range(self.fine_table.rowCount()):
+                name_item = self.fine_table.item(row, 0)
+                if name_item:
+                    old[name_item.text()] = (
+                        self._slider_value(row, 3, 0),
+                        self._slider_value(row, 4, 0), self._slider_value(row, 5, 100)
+                    )
+        for t in tracks:
+            if t.name in old:
+                t.transpose, t.fine_tune_cents, t.arp_rate = old[t.name]
+        self.populate_fine_tune_table(tracks)
+
+    def apply_fine_tune_to_tracks(self, tracks: List[TrackSettings]) -> None:
+        if not hasattr(self, "fine_table"):
+            return
+        for row, track in enumerate(tracks):
+            if row >= self.fine_table.rowCount():
+                break
+            track.octave = self._slider_value(row, 2, getattr(track, "octave", 0))
+            track.transpose = self._slider_value(row, 3, getattr(track, "transpose", 0))
+            track.fine_tune_cents = self._slider_value(row, 4, getattr(track, "fine_tune_cents", 0))
+            track.arp_rate = self._slider_value(row, 5, getattr(track, "arp_rate", 100))
+
+    def _sync_fine_octaves_to_track_table(self) -> None:
+        for row in range(min(self.track_table.rowCount(), self.fine_table.rowCount())):
+            self.track_table.setItem(row, 6, self._item(str(self._slider_value(row, 2, 0))))
+
+    def smart_fine_tune(self) -> None:
+        self.refresh_fine_tune_from_tracks()
+        role_seen: Dict[str, int] = {}
+        for row in range(self.fine_table.rowCount()):
+            role_item = self.fine_table.item(row, 1)
+            role = (role_item.text() if role_item else "melody").lower().strip()
+            role_seen[role] = role_seen.get(role, 0) + 1
+            nth = role_seen[role]
+            if role == "drum":
+                octave, transpose, cents, arp = 0, 0, 0, 100
+            elif role == "bass":
+                octave, transpose, cents, arp = -1, 0, 0, 85
+            elif role in ("chord",):
+                octave, transpose, cents, arp = 0, 0, 0, 80
+            elif role == "pad":
+                octave, transpose, cents, arp = -1 if nth == 1 else 0, 0, -3 if nth % 2 else 3, 70
+            elif role == "arpeggio":
+                octave, transpose, cents, arp = 0, 0, 2 if nth % 2 else -2, 72
+            elif role == "counter":
+                octave, transpose, cents, arp = -1, 0, -2, 75
+            elif role == "texture":
+                octave, transpose, cents, arp = -1, 0, 4, 60
+            else:
+                octave, transpose, cents, arp = 0, 0, 0, 90
+            self._set_slider_value(row, 2, octave)
+            self._set_slider_value(row, 3, transpose)
+            self._set_slider_value(row, 4, cents)
+            self._set_slider_value(row, 5, arp)
+        self.global_arp_rate_spin.setValue(85)
+        self._sync_fine_octaves_to_track_table()
+        self.log("Smart Fine Tune applied: pitch lanes, subtle cents and arpeggio rates adjusted.")
+
+    def reset_fine_tune(self) -> None:
+        for row in range(self.fine_table.rowCount()):
+            self._set_slider_value(row, 2, 0)
+            self._set_slider_value(row, 3, 0)
+            self._set_slider_value(row, 4, 0)
+            self._set_slider_value(row, 5, 100)
+        self.global_arp_rate_spin.setValue(100)
+        self._sync_fine_octaves_to_track_table()
+        self.log("Fine Tune reset.")
+
     def add_track(self) -> None:
         channels = {t.channel for t in self.tracks_from_table()}
         ch = next((i for i in range(16) if i not in channels and i != 9), 7)
         self._append_track_row(TrackSettings(name="New Melody", role="melody", channel=ch, program=80, volume=88, pan=64, density=60, complexity=55, activity=70))
+        self.refresh_fine_tune_from_tracks()
 
     def remove_track(self) -> None:
         rows = sorted({idx.row() for idx in self.track_table.selectedIndexes()}, reverse=True)
         for row in rows:
             self.track_table.removeRow(row)
+        self.refresh_fine_tune_from_tracks()
 
     def normalize_channels(self) -> None:
         next_channel = 0
@@ -775,7 +945,14 @@ def run_cli(args: argparse.Namespace) -> int:
     if args.title: settings.title = args.title
     if args.bpm: settings.bpm = args.bpm
     if args.bars: settings.bars = args.bars
-    settings.normalize_velocity = args.normalize
+    settings.normalize_velocity = args.normalize or settings.normalize_velocity
+    if args.arpeggio_rate is not None:
+        settings.global_arpeggio_rate = clamp(args.arpeggio_rate, 25, 240)
+    if args.seed_variation is not None:
+        settings.seed_variation_strength = clamp(args.seed_variation, 0, 100)
+    settings.rhythmic_smoothing = not args.no_smoothing
+    if args.smoothing_strength is not None:
+        settings.smoothing_strength = args.smoothing_strength
     settings.auto_range_guard = not args.no_range_guard
     settings.max_melody_pitch = args.max_melody_pitch
     settings.render_wav = args.render_wav or args.render_mp3
@@ -798,7 +975,11 @@ def main() -> int:
     parser.add_argument("--title", help="song title for --nogui; omitted means SoundHelix-style random title")
     parser.add_argument("--bpm", type=int, help="override BPM for --nogui")
     parser.add_argument("--bars", type=int, help="override bars for --nogui")
-    parser.add_argument("--normalize", action="store_true", help="normalize per-instrument MIDI velocity")
+    parser.add_argument("--normalize", action="store_true", help="normalize per-instrument MIDI velocity/loudness")
+    parser.add_argument("--arpeggio-rate", type=int, default=None, help="global arpeggio rate percent, 25-240")
+    parser.add_argument("--seed-variation", type=int, default=None, help="0-100 strength for seed-based melodic and pattern variation")
+    parser.add_argument("--no-smoothing", action="store_true", help="disable rapid note burst smoothing")
+    parser.add_argument("--smoothing-strength", type=int, default=None, help="0-100 strength for rapid note burst smoothing")
     parser.add_argument("--no-range-guard", action="store_true", help="disable automatic octave/range guard")
     parser.add_argument("--max-melody-pitch", type=int, default=79, help="upper pitch for melodic voices when range guard is enabled")
     parser.add_argument("--render-wav", action="store_true", help="render a WAV through the built-in synth")

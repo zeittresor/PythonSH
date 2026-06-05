@@ -1,8 +1,8 @@
-# PythonSoundHelix v0.4.6
+# PythonSoundHelix v0.4.9
 
 PythonSoundHelix is a GPLv3 Python/PyQt6 reimplementation and expansion inspired by the original Java SoundHelix project.
 
-The original SoundHelix project (soundhelix.com) is a Java framework for algorithmic random music composition with XML configuration and MIDI output. This Python version keeps the core ideas—seeded composition, configurable harmony, arrangement engines, sequence-like track roles, random song names and MIDI export—but removes the Java runtime dependency and adds a Windows-focused PyQt6 GUI.
+The original SoundHelix project is a Java framework for algorithmic random music composition with XML configuration and MIDI output. This Python version keeps the core ideas—seeded composition, configurable harmony, arrangement engines, sequence-like track roles, random song names and MIDI export—but removes the Java runtime dependency and adds a Windows-focused PyQt6 GUI.
 
 ## What is included
 
@@ -81,17 +81,26 @@ The public-domain-inspired examples use short transformed interval contours and 
 
 
 
-## v0.4.6 AlgoMusic pattern-row pass
+
+## v0.4.9 Seed / Popcorn contour pass
+
+- Added a **Seed variation** control in the Generate tab. Different randomized seeds now change melodic phrase order, weak-note details and arpeggio row ordering more audibly.
+- Improved the Popcorn-inspired preset behavior: the template now uses a contour-based synthetic pulse bank instead of being flattened into generic chord tones on strong beats. This is designed to be recognizable as a derivative/tribute style without embedding an exact copyrighted melody.
+- Added `--seed-variation 0..100` for CLI generation.
+- Arpeggio ordering now reacts to the seed at phrase/bar level, so repeated generations with the same parameters are less structurally identical.
+
+## v0.4.8 AlgoMusic pattern-row pass
 
 - Added AlgoMusic-inspired presets:
   - **AlgoMusic Legacy Techno House**
   - **AlgoMusic 040 Acid Jam**
   - **AlgoMusic Ambient House**
   - **AlgoMusic Techno Pattern Rows**
+- Renamed the former ambient-house preset to remove `MUI` from the musical preset name; MUI remains only as a GUI/theme reference.
 - Added screenshot-informed digit/dash melody-row logic and symbol-based drum-row logic inspired by the visible AlgoMusic Techno pattern screens.
 - Added tracker/Amiga-style generator patterns: `amiga four`, `tracker hats`, `acid pulse`, `random gate`, `tracker arp`, `algomusic drums` and `digit progression`.
 - Added melody templates: `AlgoMusic tracker pulse`, `AlgoMusic house chord riff`, `AlgoMusic random walk` and `AlgoMusic digit progression`.
-- Added **Amiga MUI** and **MagicWB** inspired GUI themes.
+- Added **Amiga MUI** and **MagicWB** GUI themes.
 - Added `resources/algomusic_reference/AlgoMusic_Aminet_Notes.txt` documenting the public Aminet facts used as inspiration.
 - The AlgoMusic additions are newly written Python logic; no Amiga binary/header/example code is bundled.
 
@@ -127,3 +136,15 @@ The public-domain-inspired examples use short transformed interval contours and 
 - Removed `-hide_banner` from MP3 conversion because some older Windows ffmpeg builds reject that option.
 - Captures ffmpeg stdout/stderr so failed MP3 conversion does not spam the installer/launcher console.
 - Adds MP3 fallback conversion modes and keeps the WAV when MP3 conversion fails.
+
+### v0.4.8 balancing notes
+
+- Changing a musical preset no longer changes the GUI theme. The visual theme is only changed through the Options tab.
+- The Normalize Instrument Loudness option now considers per-track note density and durations in addition to velocity, and also adjusts MIDI CC7 volume.
+- The Reduce Rapid Note Bursts option removes overly hectic tonal retriggers while keeping drums and real chord clusters intact. This is especially useful for AlgoMusic-inspired tracker/gate/arpeggio presets.
+
+## v0.4.8 Fine Tune tab
+
+This version adds a dedicated **Fine Tune** tab. It contains a global arpeggio-rate slider and per-track sliders for octave, semitone transpose, cents fine-tune and local arpeggio rate. These values are stored in the project JSON and are applied before MIDI/WAV/MP3 output, so regenerating with the same seed keeps the fine-tune decisions.
+
+The **Smart Fine Tune** button applies a conservative automatic layout: bass stays low, pads move slightly down and get tiny cents offsets, arpeggios are kept less busy, counters are moved out of the lead lane, and drums are left untouched.

@@ -28,6 +28,7 @@ class RenderNote:
     start_tick: int
     end_tick: int
     pan: int
+    fine_tune_cents: int = 0
 
 
 def _collect_notes(tracks: Sequence[MidiTrackData], settings: Sequence[TrackSettings]) -> List[RenderNote]:
@@ -43,11 +44,11 @@ def _collect_notes(tracks: Sequence[MidiTrackData], settings: Sequence[TrackSett
                 if open_notes.get(key):
                     start, vel = open_notes[key].pop(0)
                     if ev.tick > start:
-                        notes.append(RenderNote(idx, ts.role.lower(), ts.program, ev.channel, ev.a, vel, start, ev.tick, ts.pan))
+                        notes.append(RenderNote(idx, ts.role.lower(), ts.program, ev.channel, ev.a, vel, start, ev.tick, ts.pan, getattr(ts, "fine_tune_cents", 0)))
         # Close hanging notes defensively.
         for (channel, pitch), starts in open_notes.items():
             for start, vel in starts:
-                notes.append(RenderNote(idx, ts.role.lower(), ts.program, channel, pitch, vel, start, start + 240, ts.pan))
+                notes.append(RenderNote(idx, ts.role.lower(), ts.program, channel, pitch, vel, start, start + 240, ts.pan, getattr(ts, "fine_tune_cents", 0)))
     return notes
 
 
@@ -115,7 +116,7 @@ def _render_tonal(note: RenderNote, frames: int, sr: int):
     import numpy as np
     duration = max(1, frames) / float(sr)
     t = np.arange(frames, dtype=np.float32) / float(sr)
-    freq = 440.0 * (2.0 ** ((note.pitch - 69) / 12.0))
+    freq = 440.0 * (2.0 ** (((note.pitch - 69) + (getattr(note, "fine_tune_cents", 0) / 100.0)) / 12.0))
     kind = _program_wave(note.program, note.role)
     sig = _waveform(kind, t, freq).astype(np.float32)
     if note.role in ("pad", "texture"):
@@ -151,6 +152,7 @@ def render_tracks_to_wav(
     total_ticks: int,
     sample_rate: int = 44100,
     progress_callback=None,
+    normalize_loudness: bool = False,
 ) -> str:
     """Render MIDI track data to a simple internal-synth stereo WAV.
 
@@ -172,6 +174,29 @@ def render_tracks_to_wav(
     notes = _collect_notes(tracks, track_settings)
     if not notes:
         raise RuntimeError("No notes to render.")
+
+    # Optional per-track audio gain balancing. MIDI velocity normalization already
+    # happened before this renderer is called, but dense tracks can still dominate
+    # the lightweight synth because they occupy more time. Balance by estimated
+    # rendered energy, not by raw note count alone.
+    track_gains: Dict[int, float] = {}
+    if normalize_loudness:
+        role_gain_map = {
+            "bass": 0.48, "chord": 0.32, "arpeggio": 0.27, "melody": 0.32,
+            "counter": 0.20, "pad": 0.22, "texture": 0.18, "drum": 0.72,
+        }
+        energy_by_track: Dict[int, float] = {}
+        for n in notes:
+            dur = max(1, n.end_tick - n.start_tick)
+            rg = role_gain_map.get(n.role, 0.34)
+            if n.channel == 9 or n.role == "drum":
+                rg = 0.72
+            energy_by_track[n.track_index] = energy_by_track.get(n.track_index, 0.0) + ((n.velocity / 127.0) * rg) ** 2 * dur
+        vals = sorted(math.sqrt(v / max(1, total_ticks)) for v in energy_by_track.values() if v > 0)
+        target_energy = vals[len(vals) // 2] if vals else 0.01
+        for idx, energy in energy_by_track.items():
+            e = math.sqrt(energy / max(1, total_ticks))
+            track_gains[idx] = max(0.55, min(1.35, target_energy / max(0.0001, e)))
 
     for i, note in enumerate(notes):
         if progress_callback and i % 64 == 0:
@@ -201,6 +226,7 @@ def render_tracks_to_wav(
             gain = (note.velocity / 127.0) * role_gain
             if note.pitch >= 76 and note.role in ("melody", "counter", "arpeggio", "texture"):
                 gain *= 0.74
+        gain *= track_gains.get(note.track_index, 1.0)
         pan = max(0.0, min(1.0, note.pan / 127.0))
         left = math.cos(pan * math.pi / 2.0)
         right = math.sin(pan * math.pi / 2.0)

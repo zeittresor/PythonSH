@@ -35,7 +35,8 @@ from .music_theory import (
 SECTION_NAMES = ["Intro", "A", "Rise", "Hook", "Break", "Hook 2", "Outro"]
 MELODY_TEMPLATES: Dict[str, List[int]] = {
     "auto": [],
-    "Popcorn-style original pulse": [0, 2, 4, 2, 0, 2, 4, 7, 5, 4, 2, 0, 2, 4, 2, 0],
+    "Popcorn-style original pulse": [0, 0, -2, 0, 3, 0, -2, 0, 0, 0, -2, 0, 5, 3, 0, -2],
+    "Popcorn-style recognizable contour": [0, 0, -2, 0, 3, 0, -2, 0, 0, 0, -2, 0, 5, 3, 0, -2],
     "Ode-to-Joy public-domain hint": [2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2, 2, 1, 1],
     "Fuer-Elise public-domain hint": [4, 3, 4, 3, 4, 1, 3, 2, 0, -2, 0, 1, 2],
     "Canon public-domain hint": [0, 4, 5, 2, 3, 0, 3, 4, 5, 7, 4, 5, 3, 4],
@@ -45,6 +46,17 @@ MELODY_TEMPLATES: Dict[str, List[int]] = {
     "AlgoMusic house chord riff": [0, 2, 3, 2, 0, -2, 0, 2, 5, 3, 2, 0, -2, -4, -2, 0],
     "AlgoMusic random walk": [0, 3, 2, 5, 3, 7, 5, 3, 0, -2, 0, 2, -1, 2, 4, 2],
 }
+
+# v0.4.9: contour-based Popcorn-inspired phrase bank. These are deliberately
+# not a note-for-note copy of any copyrighted composition; they preserve the
+# synthetic pulse, repeated-note contour and minor-key call/answer feel so the
+# preset is more recognizable while remaining a newly generated derivative.
+POPCORN_CONTOUR_BANK = [
+    [0, 0, -2, 0, 3, 0, -2, 0, 0, 0, -2, 0, 5, 3, 0, -2],
+    [0, 0, -2, 0, 3, 0, -2, 0, 2, 2, 0, 2, 5, 3, 2, 0],
+    [0, 3, 0, -2, 0, 3, 0, -2, 5, 3, 0, -2, 0, -2, -4, -2],
+    [0, 0, -2, 0, 3, 0, -2, 0, -2, -2, -4, -2, 0, -2, -4, -5],
+]
 
 LEGACY_POPCORN_HARMONY = "+Am/10,G/2,F/2,Am/12,G/2,F/2,Am/2,+C/8,Em/2,D/2,C/12,Em/2,D/2,C/4"
 
@@ -110,6 +122,62 @@ def _is_legacy_popcorn(settings: GeneratorSettings) -> bool:
 
 def _is_algomusic(settings: GeneratorSettings) -> bool:
     return "algomusic" in (settings.preset_name or "").lower() or "algomusic" in (settings.groove_template or "").lower()
+
+
+def _seed_variation(settings: GeneratorSettings) -> float:
+    return clamp(getattr(settings, "seed_variation_strength", 70), 0, 100) / 100.0
+
+
+def _track_seed(track: TrackSettings) -> int:
+    return sum((idx + 1) * ord(ch) for idx, ch in enumerate((track.name or "") + "|" + (track.pattern or "")))
+
+
+def _is_popcorn_template(settings: GeneratorSettings) -> bool:
+    text = f"{settings.preset_name} {settings.melody_template}".lower()
+    return "popcorn" in text
+
+
+def _seeded_popcorn_phrase(settings: GeneratorSettings, track: TrackSettings, bar: int) -> List[int]:
+    # Keep the main phrase anchored every few bars, but let the seed select
+    # alternate contour rows so two randomized generations do not collapse into
+    # the same melody order.
+    depth = _seed_variation(settings)
+    phrase_idx = ((settings.seed // 97) + (bar // 2) + _track_seed(track)) % len(POPCORN_CONTOUR_BANK)
+    if bar % 8 in (0, 1) and depth < 0.90:
+        phrase_idx = 0
+    phrase = POPCORN_CONTOUR_BANK[phrase_idx][:]
+    if depth > 0.05:
+        rng = random.Random(settings.seed + _track_seed(track) * 131 + bar * 8191)
+        # Rotate only at phrase boundaries, never per note, to keep a hook-like
+        # identity while still changing the generated song for each seed.
+        if rng.random() < 0.35 * depth and bar % 4 not in (0, 1):
+            rot = rng.choice([0, 0, 2, 4, 8])
+            phrase = phrase[rot:] + phrase[:rot]
+        for i in range(len(phrase)):
+            # Strong beats and the first cell remain stable; weak cells may get
+            # a tiny diatonic nudge. This is what makes seed changes audible.
+            if i % 4 and rng.random() < 0.16 * depth * (settings.variation / 100.0):
+                phrase[i] += rng.choice([-1, 0, 1])
+    return phrase
+
+
+def _seeded_template_degree(settings: GeneratorSettings, track: TrackSettings, bar: int, step: int, motif: Sequence[int]) -> int:
+    if not motif:
+        return 0
+    depth = _seed_variation(settings)
+    if _is_popcorn_template(settings):
+        phrase = _seeded_popcorn_phrase(settings, track, bar)
+        return phrase[step % len(phrase)]
+    rng = random.Random(settings.seed + _track_seed(track) * 181 + bar * 4099 + step * 67)
+    phase = 0
+    if depth > 0.05:
+        phase = (settings.seed + _track_seed(track) + (bar // 4) * 3) % max(1, len(motif))
+        if rng.random() > depth:
+            phase = 0
+    degree = motif[(bar * len(motif) + step + phase) % len(motif)]
+    if depth > 0.05 and step % 4 and rng.random() < 0.18 * depth * (settings.variation / 100.0):
+        degree += rng.choice([-2, -1, 1, 2])
+    return degree
 
 
 def _legacy_activity_key(track: TrackSettings) -> str:
@@ -199,6 +267,32 @@ def _role_range(settings: GeneratorSettings, track: TrackSettings) -> Tuple[int,
         high = low + 12
     return int(low), int(high)
 
+
+
+
+def _track_transpose(track: TrackSettings) -> int:
+    return clamp(getattr(track, "transpose", 0), -24, 24)
+
+
+def _track_arp_rate(settings: GeneratorSettings, track: TrackSettings) -> float:
+    global_rate = clamp(getattr(settings, "global_arpeggio_rate", 100), 25, 240) / 100.0
+    local_rate = clamp(getattr(track, "arp_rate", 100), 25, 240) / 100.0
+    return max(0.20, min(3.00, global_rate * local_rate))
+
+
+def _apply_track_pitch(pitch: int, settings: GeneratorSettings, track: TrackSettings, low: int | None = None, high: int | None = None) -> int:
+    if (track.role or "").lower().strip() == "drum":
+        return clamp(pitch, 0, 127)
+    if low is None or high is None:
+        low, high = _role_range(settings, track)
+    return _fold_pitch(int(pitch) + _track_transpose(track), low, high)
+
+
+def _fine_tune_pitch_bend_value(track: TrackSettings) -> int:
+    # General MIDI devices commonly default to +/-2 semitones pitch-bend range.
+    # Therefore 200 cents maps to a full 14-bit bend span from center to edge.
+    cents = clamp(getattr(track, "fine_tune_cents", 0), -100, 100)
+    return clamp(8192 + round((cents / 200.0) * 8192), 0, 16383)
 
 def _fold_pitch(pitch: int, low: int, high: int) -> int:
     while pitch > high:
@@ -313,6 +407,8 @@ def _setup_track(track: TrackSettings) -> MidiTrackData:
     data.add_cc(0, track.channel, 10, track.pan)
     data.add_cc(0, track.channel, 91, 18 if track.role in ("pad", "texture") else 8)
     data.add_cc(0, track.channel, 93, 10 if track.role in ("melody", "arpeggio", "texture") else 2)
+    if track.channel != 9 and getattr(track, "fine_tune_cents", 0):
+        data.add_pitch_bend(0, track.channel, _fine_tune_pitch_bend_value(track))
     return data
 
 
@@ -463,7 +559,7 @@ def _add_bass_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSe
         if rng.randint(0, 100) > track.density + section.energy // 4:
             continue
         low, high = _role_range(settings, track)
-        pitch = _fold_pitch(candidates[i % len(candidates)], low, high)
+        pitch = _apply_track_pitch(candidates[i % len(candidates)], settings, track, low, high)
         duration = int(sixteenth * (0.95 if ("acid" in pattern or "tracker" in pattern) else (2.8 if len(steps) <= 4 else 1.6)))
         tick = start + step * sixteenth + _swing_offset(step, sixteenth, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step == 0 else 0))
@@ -476,7 +572,7 @@ def _add_chord_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorS
     start = bar * bar_len
     beat = settings.ticks_per_beat
     low, high = _role_range(settings, track)
-    voicing = voice_lead([n + track.octave * 12 for n in chord_notes], previous_voicing, low=low, high=high)
+    voicing = voice_lead([n + track.octave * 12 + _track_transpose(track) for n in chord_notes], previous_voicing, low=low, high=high)
     voicing = _fold_notes(voicing, low, high)
     pattern = (track.pattern or "auto").lower()
     notes = 0
@@ -521,7 +617,7 @@ def _add_pad_bar(rng: random.Random, data: MidiTrackData, settings: GeneratorSet
     bar_len = _bar_ticks(settings)
     start = bar * bar_len
     low, high = _role_range(settings, track)
-    voicing = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], previous_voicing, low=low, high=high)
+    voicing = voice_lead([n + 12 + track.octave * 12 + _track_transpose(track) for n in chord_notes], previous_voicing, low=low, high=high)
     voicing = _fold_notes(voicing, low, high)
     length = bar_len * max(1, settings.harmonic_rhythm) - settings.ticks_per_beat // 8
     notes = 0
@@ -537,7 +633,7 @@ def _add_arpeggio_bar(rng: random.Random, data: MidiTrackData, settings: Generat
     beat = settings.ticks_per_beat
     sixteenth = beat // 4
     low, high = _role_range(settings, track)
-    pcs = voice_lead([n + 12 + track.octave * 12 for n in chord_notes], None, low=low, high=high)
+    pcs = voice_lead([n + 12 + track.octave * 12 + _track_transpose(track) for n in chord_notes], None, low=low, high=high)
     pcs = _fold_notes(pcs, low, high)
     if len(pcs) < 3:
         pcs = list(pcs) + [pcs[0] + 12]
@@ -552,9 +648,24 @@ def _add_arpeggio_bar(rng: random.Random, data: MidiTrackData, settings: Generat
         order = list(reversed(order))
     elif "updown" in pattern:
         order = list(range(len(pcs))) + list(reversed(range(1, len(pcs) - 1)))
+    # v0.4.9: seed must influence not only title/humanization but also row order.
+    # Keep it phrase-level so arps remain musical instead of random noise.
+    depth = _seed_variation(settings)
+    if order and depth > 0.05:
+        vrng = random.Random(settings.seed + _track_seed(track) * 251 + bar * 613)
+        if vrng.random() < 0.55 * depth:
+            rot = vrng.randrange(len(order))
+            order = order[rot:] + order[:rot]
+        if vrng.random() < 0.25 * depth and "updown" not in pattern:
+            order = list(reversed(order))
     notes = 0
-    steps = 16 if ("tracker" in pattern or section.energy > 48 or settings.complexity > 55) else 8
-    for step in range(steps):
+    base_steps = 16 if ("tracker" in pattern or section.energy > 48 or settings.complexity > 55) else 8
+    rate = _track_arp_rate(settings, track)
+    if depth > 0.05 and settings.variation > 25:
+        vrng = random.Random(settings.seed + _track_seed(track) * 263 + bar * 719)
+        rate *= vrng.choice([0.75, 0.875, 1.0, 1.0, 1.125, 1.25])
+    steps = clamp(round(base_steps * rate), 2, 64)
+    for step in range(int(steps)):
         if rng.randint(0, 100) > track.density + settings.complexity // 5:
             continue
         pitch = pcs[order[step % len(order)]] + (12 if step >= 8 and rng.random() < (settings.variation / (120 if "tracker" in pattern else 180)) else 0)
@@ -586,7 +697,7 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
         row = _algomusic_digit_row(settings, track, bar)
         step_count = max(8, min(32, len(row)))
         step_len = max(1, bar_len // step_count)
-        tone_bank = voice_lead([n + track.octave * 12 for n in chord.notes] + [chord.notes[0] + 12 + track.octave * 12], None, low=low, high=high)
+        tone_bank = voice_lead([n + track.octave * 12 + _track_transpose(track) for n in chord.notes] + [chord.notes[0] + 12 + track.octave * 12 + _track_transpose(track)], None, low=low, high=high)
         tone_bank = _fold_notes(tone_bank, low, high)
         for step in range(step_count):
             symbol = row[step % len(row)]
@@ -612,10 +723,15 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
             continue
         if algomusic_template and step % 4 not in (0, 2) and rng.randint(0, 100) > density + settings.variation // 3:
             continue
-        degree = motif[(bar * step_count + step) % len(motif)] if motif else rng.randint(0, 7)
+        if direct_template:
+            degree = _seeded_template_degree(settings, track, bar, step, motif)
+        else:
+            degree = motif[(bar * step_count + step) % len(motif)] if motif else rng.randint(0, 7)
         pitch = degree_pitch(degree, key_pc, settings.mode, 4 + track.octave)
-        # Pull toward chord tones on strong beats.
-        if step % 4 == 0:
+        # Auto-melodies benefit from chord snapping. Template hooks should keep
+        # their contour; otherwise recognizable presets become generic chord
+        # tones and different seeds sound almost identical.
+        if not direct_template and step % 4 == 0:
             candidates = _fold_notes([n + track.octave * 12 for n in chord.notes], low, high)
             pitch = min(candidates, key=lambda p: abs(pitch - p))
         else:
@@ -623,7 +739,7 @@ def _add_melody_bar(rng: random.Random, data: MidiTrackData, settings: Generator
             pitch = _fold_pitch(pitch, low, high)
         if last_pitch is not None and abs(pitch - last_pitch) > 12 and rng.randint(0, 100) < settings.motif_memory:
             pitch = pitch - 12 if pitch > last_pitch else pitch + 12
-        pitch = _fold_pitch(pitch, low, high)
+        pitch = _apply_track_pitch(pitch, settings, track, low, high)
         duration = int(step_len * (rng.choice([0.45, 0.62, 0.82]) if algomusic_template else rng.choice([0.75, 0.9, 1.4 if step_count == 8 else 1.0])))
         tick = start + step * step_len + _swing_offset(step, step_len, settings.swing)
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks), duration, track.channel, pitch, _velocity(rng, track.volume, settings.humanize_velocity, 12 if step % 4 == 0 else 0))
@@ -652,6 +768,7 @@ def _add_counter_bar(rng: random.Random, data: MidiTrackData, settings: Generato
     notes = 0
     for off in [beat, beat * 3]:
         pitch = rng.choice(candidates)
+        pitch = _apply_track_pitch(pitch, settings, track, low, high)
         data.add_note(_human_tick(rng, start + off, settings.humanize_ticks), beat, track.channel, pitch, _velocity(rng, track.volume - 12, settings.humanize_velocity, 0))
         notes += 1
     return notes
@@ -666,7 +783,7 @@ def _add_texture_bar(rng: random.Random, data: MidiTrackData, settings: Generato
     notes = 0
     for i in range(1 + settings.variation // 35):
         low, high = _role_range(settings, track)
-        pitch = _fold_pitch((chord.notes[i % len(chord.notes)] + 12 + track.octave * 12), low, high)
+        pitch = _apply_track_pitch((chord.notes[i % len(chord.notes)] + 12 + track.octave * 12), settings, track, low, high)
         tick = start + rng.randint(0, max(0, bar_len - beat))
         data.add_note(_human_tick(rng, tick, settings.humanize_ticks * 2), beat * rng.choice([1, 2, 3]), track.channel, pitch, _velocity(rng, min(track.volume, 70), settings.humanize_velocity, -18))
         notes += 1
@@ -674,12 +791,102 @@ def _add_texture_bar(rng: random.Random, data: MidiTrackData, settings: Generato
 
 
 
-def _normalize_track_velocities(tracks: Sequence[MidiTrackData], settings: GeneratorSettings) -> None:
-    """Equalize perceived MIDI note loudness per track while preserving accents.
 
-    The user-facing goal is not hard compression. Normal notes are moved toward a
-    shared target average, while unusually loud accents/fills are changed much
-    less so hook moments, drum fills and section highlights can still stand out.
+def _count_note_ons(tracks: Sequence[MidiTrackData]) -> int:
+    return sum(1 for data in tracks for ev in data.events if ev.kind == "note_on" and ev.b > 0)
+
+
+def _paired_note_events(data: MidiTrackData):
+    """Return paired (note_on, note_off, duration) objects for post-processing."""
+    open_notes: Dict[Tuple[int, int], List] = {}
+    pairs = []
+    for ev in sorted(data.events, key=lambda e: (e.tick, 0 if e.kind == "note_on" and e.b > 0 else 1)):
+        if ev.kind == "note_on" and ev.b > 0:
+            open_notes.setdefault((ev.channel, ev.a), []).append(ev)
+        elif ev.kind in ("note_off", "note_on"):
+            key = (ev.channel, ev.a)
+            if open_notes.get(key):
+                on_ev = open_notes[key].pop(0)
+                if ev.tick > on_ev.tick:
+                    pairs.append((on_ev, ev, ev.tick - on_ev.tick))
+    return pairs
+
+
+def _smooth_note_bursts(tracks: Sequence[MidiTrackData], settings: GeneratorSettings, track_settings: Sequence[TrackSettings]) -> None:
+    """Reduce harsh machine-gun note bursts on tonal tracks.
+
+    This is a post-generation musical hygiene pass. It does not quantize the song;
+    it only removes very dense repeated triggers where one instrumental line fires
+    too many separate notes in a short time window. Chord clusters that start at
+    essentially the same tick are preserved.
+    """
+    if not getattr(settings, "rhythmic_smoothing", True):
+        return
+    strength = clamp(getattr(settings, "smoothing_strength", 55), 0, 100) / 100.0
+    if strength <= 0:
+        return
+    beat = max(1, settings.ticks_per_beat)
+    role_factor = {
+        "bass": 0.28,
+        "melody": 0.38,
+        "counter": 0.42,
+        "arpeggio": 0.30,
+        "chord": 0.55,
+        "pad": 0.80,
+        "texture": 0.45,
+    }
+    for idx, data in enumerate(tracks):
+        track = track_settings[idx] if idx < len(track_settings) else TrackSettings(name=data.name, role="melody")
+        role = (track.role or "melody").lower().strip()
+        if role == "drum":
+            continue
+        pairs = _paired_note_events(data)
+        if not pairs:
+            continue
+        # AlgoMusic and high-density tracks get a slightly stronger burst guard.
+        density_boost = max(0.0, (track.density - 70) / 100.0)
+        algo_boost = 0.12 if (_is_algomusic(settings) or "tracker" in (track.pattern or "").lower() or "acid" in (track.pattern or "").lower()) else 0.0
+        min_gap = int(beat * role_factor.get(role, 0.38) * (0.45 + strength * 0.95 + density_boost + algo_boost))
+        min_gap = max(1, min_gap)
+        same_cluster = max(2, int(beat * 0.025))
+        drop_ids = set()
+        last_cluster_tick = -10**12
+        for on_ev, off_ev, duration in sorted(pairs, key=lambda p: (p[0].tick, -p[0].b, p[0].a)):
+            # Keep true simultaneous chord notes together.
+            if abs(on_ev.tick - last_cluster_tick) <= same_cluster:
+                continue
+            if on_ev.tick - last_cluster_tick < min_gap:
+                drop_ids.add(id(on_ev)); drop_ids.add(id(off_ev))
+            else:
+                last_cluster_tick = on_ev.tick
+        if drop_ids:
+            data.events = [ev for ev in data.events if id(ev) not in drop_ids]
+
+
+def _track_energy(data: MidiTrackData, total_ticks: int) -> float:
+    pairs = _paired_note_events(data)
+    if not pairs:
+        return 0.0
+    total_ticks = max(1, int(total_ticks))
+    acc = 0.0
+    for on_ev, _off_ev, duration in pairs:
+        v = max(1, min(127, on_ev.b)) / 127.0
+        acc += (v * v) * max(1, duration)
+    return math.sqrt(acc / total_ticks)
+
+
+def _cc7_volume(data: MidiTrackData, fallback: int) -> int:
+    for ev in data.events:
+        if ev.kind == "cc" and ev.a == 7:
+            return clamp(ev.b, 0, 127)
+    return clamp(fallback, 0, 127)
+
+def _normalize_track_velocities(tracks: Sequence[MidiTrackData], settings: GeneratorSettings, track_settings: Sequence[TrackSettings] | None = None, total_ticks: int | None = None) -> None:
+    """Equalize perceived loudness per track while preserving musical accents.
+
+    v0.4.7 improves the earlier velocity-only pass. It now considers note density
+    and note duration, so a very busy arpeggio/gate line is not left much louder
+    than a sparser melody merely because its average velocity is similar.
     """
     if not settings.normalize_velocity:
         return
@@ -687,17 +894,46 @@ def _normalize_track_velocities(tracks: Sequence[MidiTrackData], settings: Gener
     strength = clamp(settings.normalize_strength, 0, 100) / 100.0
     if strength <= 0:
         return
-    for data in tracks:
+    track_settings = list(track_settings or [])
+    total_ticks = int(total_ticks or max((ev.tick for data in tracks for ev in data.events), default=1))
+    stats = []
+    for idx, data in enumerate(tracks):
         note_ons = [ev for ev in data.events if ev.kind == "note_on" and ev.b > 0]
         if not note_ons:
             continue
+        ts = track_settings[idx] if idx < len(track_settings) else TrackSettings(name=data.name, role="melody")
+        role = (ts.role or "melody").lower().strip()
         avg = sum(ev.b for ev in note_ons) / max(1, len(note_ons))
-        if avg <= 0:
-            continue
-        # Drums usually need a little more apparent level to compete with tonal instruments.
-        is_drum = any(ev.channel == 9 for ev in note_ons)
-        local_target = min(122, target + 4) if is_drum else target
-        factor = max(0.55, min(1.80, local_target / avg))
+        energy = _track_energy(data, total_ticks)
+        # Drums should remain present but not dominate; hats/arps/gates are dense and need more compensation.
+        role_weight = {
+            "drum": 0.92,
+            "bass": 0.96,
+            "chord": 0.92,
+            "pad": 0.86,
+            "arpeggio": 1.10,
+            "melody": 1.00,
+            "counter": 1.06,
+            "texture": 1.12,
+        }.get(role, 1.0)
+        stats.append({"data": data, "track": ts, "note_ons": note_ons, "avg": avg, "energy": max(energy * role_weight, 0.0001), "role": role})
+    if not stats:
+        return
+    energies = sorted(x["energy"] for x in stats if x["energy"] > 0)
+    median_energy = energies[len(energies) // 2] if energies else 0.01
+    for st in stats:
+        data = st["data"]; ts = st["track"]; note_ons = st["note_ons"]; avg = st["avg"]; role = st["role"]
+        local_target = target
+        if role == "drum":
+            local_target = min(118, target + 1)
+        elif role in ("arpeggio", "counter", "texture"):
+            local_target = max(35, target - 5)
+        elif role == "pad":
+            local_target = max(35, target - 8)
+        velocity_factor = max(0.50, min(1.60, local_target / max(1.0, avg)))
+        energy_factor = max(0.42, min(1.70, median_energy / st["energy"]))
+        # Energy factor is the important part for perceived balance; velocity target keeps user intent.
+        factor = (energy_factor * 0.72 + velocity_factor * 0.28)
         for ev in note_ons:
             desired = ev.b * factor
             local_strength = strength
@@ -707,6 +943,14 @@ def _normalize_track_velocities(tracks: Sequence[MidiTrackData], settings: Gener
             elif ev.b <= avg - 20:
                 local_strength = min(1.0, local_strength * 1.15)
             ev.b = clamp(ev.b + (desired - ev.b) * local_strength, 1, 127)
+        # Also rebalance MIDI channel volume CC7, because many GM synths weigh CC7
+        # more heavily than note velocity. Keep this gentler than note velocity.
+        current_vol = _cc7_volume(data, getattr(ts, "volume", 96))
+        desired_vol = current_vol * (1.0 + (factor - 1.0) * 0.55)
+        new_vol = clamp(current_vol + (desired_vol - current_vol) * strength, 20, 127)
+        for ev in data.events:
+            if ev.kind == "cc" and ev.a == 7:
+                ev.b = new_vol
 
 def _default_title(settings: GeneratorSettings, seed: int) -> str:
     # SoundHelix-style random title: deterministic for the seed, human-readable for the GUI/files.
@@ -787,10 +1031,18 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
                 note_count += _add_melody_bar(rng, data, settings, track, bar, section, chord, motif)
         tracks.append(data)
 
+    if getattr(settings, "rhythmic_smoothing", True):
+        if progress_callback:
+            progress_callback(86, "Smoothing rapid note bursts...")
+        _smooth_note_bursts(tracks, settings, settings.tracks)
+        note_count = _count_note_ons(tracks)
+
     if settings.normalize_velocity:
         if progress_callback:
             progress_callback(88, "Normalizing instrument loudness...")
-        _normalize_track_velocities(tracks, settings)
+        _normalize_track_velocities(tracks, settings, settings.tracks, end_tick)
+
+    note_count = _count_note_ons(tracks)
 
     if progress_callback:
         progress_callback(90, "Writing MIDI...")
@@ -821,7 +1073,7 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
             if progress_callback:
                 progress_callback(92, "Rendering WAV with internal synth...")
             result.wav_path = render_tracks_to_wav(
-                wav_path, tracks, settings.tracks, settings.bpm, settings.ticks_per_beat, end_tick, settings.audio_sample_rate, progress_callback
+                wav_path, tracks, settings.tracks, settings.bpm, settings.ticks_per_beat, end_tick, settings.audio_sample_rate, progress_callback, settings.normalize_velocity
             )
             result.render_log += "WAV rendered with the built-in lightweight synth. "
             if settings.render_mp3:
@@ -842,7 +1094,7 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike[str
     if settings.export_json:
         payload = {
             "application": "PythonSoundHelix",
-            "version": "0.4.6",
+            "version": "0.4.9",
             "license": "GPLv3",
             "title": result.title,
             "seed": result.seed,
@@ -866,7 +1118,7 @@ def make_chord_sheet(title: str, settings: GeneratorSettings, sections: Sequence
         title,
         "=" * len(title),
         "",
-        f"Generated by PythonSoundHelix 0.4.6 (GPLv3)",
+        f"Generated by PythonSoundHelix 0.4.9 (GPLv3)",
         f"Preset: {settings.preset_name}",
         f"Seed: {settings.seed}",
         f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",

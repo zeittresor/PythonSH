@@ -1,6 +1,15 @@
 # Changelog
 
-## v0.4.6
+## v0.4.9
+
+- Added Generate-tab **Seed variation** control.
+- Added CLI option `--seed-variation`.
+- Made template melodies seed-sensitive without destroying their contour.
+- Improved Popcorn-inspired contour hook behavior and reduced chord-tone flattening.
+- Made arpeggio row order and phrase density react more clearly to seed changes.
+
+
+## v0.4.8
 
 - Renamed **AlgoMusic MUI Ambient House** to **AlgoMusic Ambient House** because MUI belongs to the Amiga GUI/theme context, not to the music style.
 - Added **AlgoMusic Techno Pattern Rows**, a new screenshot-informed preset that recombines digit/dash melody rows and symbol-based drum rows into full songs.
@@ -59,3 +68,14 @@
 
 - Initial PyQt6 GPLv3 PythonSoundHelix version.
 - Added MIDI export, presets, XML inspector, history/rating memory, JSON project/result export and chord sheets.
+
+## v0.4.8 Fine Tune / arpeggio control pass
+
+- Added a dedicated Fine Tune tab.
+- Added a global arpeggio-rate slider, persisted in project JSON as `global_arpeggio_rate`.
+- Added per-track octave, semitone transpose, cents fine-tune and arpeggio-rate sliders.
+- Added `Smart Fine Tune`, which spreads bass/chords/pads/melodies/arpeggios into saner pitch lanes and calms arpeggio rates.
+- Added per-track `transpose`, `fine_tune_cents` and `arp_rate` fields.
+- MIDI output now writes pitch-bend events for cents fine-tuning on non-drum tracks.
+- The built-in WAV renderer now also applies cents fine-tuning, so exported WAV/MP3 matches the fine-tune settings.
+- Added CLI option `--arpeggio-rate` for quick no-GUI testing.

@@ -44,7 +44,7 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p.progression = "Am/10,G/2,F/2,Am/12,G/2,F/2,Am/2,+C/8,Em/2,D/2,C/12,Em/2,D/2,C/4"
     p.harmonic_rhythm = 1; p.section_count = 36
     p.complexity = 62; p.variation = 42; p.swing = 0; p.humanize_ticks = 0; p.humanize_velocity = 6; p.motif_memory = 78; p.accent_strength = 30
-    p.melody_template = "Popcorn-style original pulse"; p.auto_range_guard = True; p.max_melody_pitch = 84
+    p.melody_template = "Popcorn-style recognizable contour"; p.auto_range_guard = True; p.max_melody_pitch = 84; p.seed_variation_strength = 55
     p.use_rating_memory = False
     # Long classic preset: avoid unexpectedly rendering an eight-minute WAV/MP3 on every generation.
     # The Render/Play button can still render audio explicitly.
@@ -66,15 +66,15 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p = _base("PythonSoundHelix Popcorn Expansion")
     p.description = "Shorter, more modern Python expansion of the Popcorn idea with extra tracks and GUI-friendly audio rendering."
     p.bpm = 136; p.bars = 128; p.key = "A"; p.mode = "minor"; p.progression = "Am/10,G/2,F/2,Am/12,G/2,F/2,Am/2,+C/8,Em/2,D/2,C/12,Em/2,D/2,C/4"; p.harmonic_rhythm = 1
-    p.complexity = 72; p.variation = 66; p.swing = 4; p.melody_template = "Popcorn-style original pulse"
+    p.complexity = 72; p.variation = 58; p.seed_variation_strength = 82; p.swing = 4; p.melody_template = "Popcorn-style recognizable contour"
     p.tracks = [
         _t("Popcorn Drums Plus", "drum", 9, 0, 104, 64, 88, 82, 95, "electro four", fill_every=4),
         _t("Pop Bass", "bass", 1, "Synth Bass 2", 96, 48, 84, 60, 92, "sync eighth", octave=-1),
-        _t("Pluck Hook", "melody", 2, "Lead 1 (square)", 105, 62, 96, 86, 100, "template"),
-        _t("Glass Arp", "arpeggio", 3, "Celesta", 74, 80, 90, 72, 88, "updown", octave=0),
+        _t("Pluck Hook", "melody", 2, "Lead 1 (square)", 108, 62, 100, 82, 100, "template"),
+        _t("Glass Arp", "arpeggio", 3, "Celesta", 58, 80, 62, 58, 70, "updown", octave=0),
         _t("Offbeat Organ", "chord", 4, "Drawbar Organ", 72, 36, 68, 50, 76, "stab"),
         _t("Space Pad", "pad", 5, "Pad 7 (halo)", 62, 94, 45, 38, 88, "long"),
-        _t("Noise Spark", "texture", 6, "FX 3 (crystal)", 42, 72, 38, 70, 46, "spark", octave=0),
+        _t("Noise Spark", "texture", 6, "FX 3 (crystal)", 34, 72, 26, 54, 34, "spark", octave=0),
     ]
     presets[p.preset_name] = p
 
@@ -270,15 +270,15 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p = _base("AlgoMusic Legacy Techno House")
     p.description = "Amiga/AlgoMusic-inspired Techno-House generator: tracker-like pulse, tracker-style algorithmic activity, gated stabs and simple deterministic randomness. Newly written Python logic; no Amiga binary/code is bundled."
     p.bpm = 132; p.bars = 144; p.key = "A"; p.mode = "minor"; p.progression = "i,VII,VI,VII,i,iv,V,i"; p.harmonic_rhythm = 1; p.section_count = 12
-    p.complexity = 72; p.variation = 78; p.swing = 2; p.humanize_ticks = 2; p.humanize_velocity = 10; p.motif_memory = 46; p.accent_strength = 62
-    p.melody_template = "AlgoMusic tracker pulse"; p.groove_template = "algomusic legacy"; p.ui_theme = "Amiga MUI"; p.normalize_velocity = True; p.normalize_target = 84; p.render_wav = True; p.render_mp3 = True
+    p.complexity = 64; p.variation = 62; p.swing = 2; p.humanize_ticks = 2; p.humanize_velocity = 8; p.motif_memory = 54; p.accent_strength = 52
+    p.melody_template = "AlgoMusic tracker pulse"; p.groove_template = "algomusic legacy"; p.normalize_velocity = True; p.normalize_target = 80; p.normalize_strength = 84; p.rhythmic_smoothing = True; p.smoothing_strength = 72; p.render_wav = True; p.render_mp3 = True
     p.tracks = [
-        _t("Classic Kick Snare", "drum", 9, 0, 104, 64, 86, 78, 98, "amiga four", fill_every=8),
-        _t("Tracker Hats", "drum", 9, 0, 76, 64, 88, 64, 92, "tracker hats", fill_every=0),
-        _t("Algorithmic Bass", "bass", 1, "Synth Bass 1", 98, 46, 88, 76, 92, "acid pulse", octave=-1),
-        _t("Legacy Gate Chords", "chord", 2, "Electric Piano 2", 82, 34, 74, 66, 82, "random gate"),
-        _t("Tracker Arp", "arpeggio", 3, "Lead 8 (bass + lead)", 74, 82, 92, 74, 78, "tracker arp", octave=0),
-        _t("Algo Hook", "melody", 4, "Lead 1 (square)", 88, 62, 68, 76, 70, "template", mute_intro=True),
+        _t("Classic Kick Snare", "drum", 9, 0, 96, 64, 76, 68, 92, "amiga four", fill_every=8),
+        _t("Tracker Hats", "drum", 9, 0, 58, 64, 66, 52, 82, "tracker hats", fill_every=0),
+        _t("Algorithmic Bass", "bass", 1, "Synth Bass 1", 88, 46, 72, 62, 86, "acid pulse", octave=-1),
+        _t("Legacy Gate Chords", "chord", 2, "Electric Piano 2", 68, 34, 50, 52, 72, "random gate"),
+        _t("Tracker Arp", "arpeggio", 3, "Lead 8 (bass + lead)", 58, 82, 58, 58, 66, "tracker arp", octave=0),
+        _t("Algo Hook", "melody", 4, "Lead 1 (square)", 74, 62, 52, 58, 62, "template", mute_intro=True),
         _t("Amiga Pad", "pad", 5, "Pad 3 (polysynth)", 58, 88, 40, 34, 74, "long"),
     ]
     presets[p.preset_name] = p
@@ -286,14 +286,14 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p = _base("AlgoMusic 040 Acid Jam")
     p.description = "Faster 68040-era acid/techno sketch inspired by AlgoMusic's random Techno/House premise: short gated bass cells, bright tracker arp and sparse robotic counters."
     p.bpm = 148; p.bars = 128; p.key = "C"; p.mode = "phrygian"; p.progression = "i,II,VII,i,VI,VII,i,V"; p.harmonic_rhythm = 1; p.section_count = 16
-    p.complexity = 82; p.variation = 86; p.swing = 1; p.humanize_ticks = 1; p.humanize_velocity = 8; p.motif_memory = 38; p.accent_strength = 70
-    p.melody_template = "AlgoMusic random walk"; p.groove_template = "algomusic acid"; p.ui_theme = "MagicWB"; p.normalize_velocity = True; p.normalize_target = 86; p.render_wav = True; p.render_mp3 = True
+    p.complexity = 70; p.variation = 68; p.swing = 1; p.humanize_ticks = 1; p.humanize_velocity = 7; p.motif_memory = 48; p.accent_strength = 58
+    p.melody_template = "AlgoMusic random walk"; p.groove_template = "algomusic acid"; p.normalize_velocity = True; p.normalize_target = 81; p.normalize_strength = 84; p.rhythmic_smoothing = True; p.smoothing_strength = 74; p.render_wav = True; p.render_mp3 = True
     p.tracks = [
-        _t("040 Machine Kit", "drum", 9, 0, 110, 64, 94, 88, 100, "amiga four", fill_every=4),
-        _t("Acid Cell Bass", "bass", 1, "Synth Bass 2", 106, 44, 95, 90, 98, "acid pulse", octave=-1),
-        _t("Random Gate Organ", "chord", 2, "Drawbar Organ", 78, 36, 70, 74, 76, "random gate"),
-        _t("040 Tracker Arp", "arpeggio", 3, "Clavinet", 82, 84, 96, 88, 88, "tracker arp", octave=0),
-        _t("Robot Answer", "counter", 4, "Lead 2 (sawtooth)", 66, 74, 50, 64, 54, "answer"),
+        _t("040 Machine Kit", "drum", 9, 0, 98, 64, 78, 76, 94, "amiga four", fill_every=8),
+        _t("Acid Cell Bass", "bass", 1, "Synth Bass 2", 90, 44, 72, 70, 90, "acid pulse", octave=-1),
+        _t("Random Gate Organ", "chord", 2, "Drawbar Organ", 66, 36, 48, 58, 68, "random gate"),
+        _t("040 Tracker Arp", "arpeggio", 3, "Clavinet", 58, 84, 58, 64, 72, "tracker arp", octave=0),
+        _t("Robot Answer", "counter", 4, "Lead 2 (sawtooth)", 50, 74, 34, 46, 42, "answer"),
         _t("Low CPU Pad", "pad", 5, "Pad 2 (warm)", 48, 92, 30, 30, 62, "long"),
     ]
     presets[p.preset_name] = p
@@ -302,7 +302,7 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p.description = "Softer Amiga/AlgoMusic-flavored ambient-house preset: random-gated e-piano, low tracker bass, sparse melody and wider pads."
     p.bpm = 116; p.bars = 128; p.key = "D"; p.mode = "dorian"; p.progression = "i,IV,VII,III,i,VI,IV,V"; p.harmonic_rhythm = 2; p.section_count = 10
     p.complexity = 50; p.variation = 68; p.swing = 8; p.humanize_ticks = 5; p.humanize_velocity = 12; p.motif_memory = 58; p.accent_strength = 42
-    p.melody_template = "AlgoMusic house chord riff"; p.groove_template = "algomusic mellow"; p.ui_theme = "Amiga MUI"; p.normalize_velocity = True; p.normalize_target = 78; p.render_wav = True; p.render_mp3 = True
+    p.melody_template = "AlgoMusic house chord riff"; p.groove_template = "algomusic mellow"; p.normalize_velocity = True; p.normalize_target = 76; p.normalize_strength = 82; p.rhythmic_smoothing = True; p.smoothing_strength = 62; p.render_wav = True; p.render_mp3 = True
     p.tracks = [
         _t("Mellow 4/4 Kit", "drum", 9, 0, 84, 64, 70, 58, 78, "soft four", fill_every=16),
         _t("Warm Tracker Bass", "bass", 1, "Fretless Bass", 76, 46, 62, 48, 76, "acid pulse", octave=-1),
@@ -317,15 +317,15 @@ def make_presets() -> Dict[str, GeneratorSettings]:
     p = _base("AlgoMusic Techno Pattern Rows")
     p.description = "Screenshot-informed AlgoMusic-style Techno preset: separate digit/dash melody rows and symbol-based drum rows are selected per bar and recombined into a full song. Newly written Python logic based on the visual pattern concept, not copied Amiga code."
     p.bpm = 138; p.bars = 160; p.key = "A"; p.mode = "minor"; p.progression = "i,VII,VI,VII,i,VII,iv,V"; p.harmonic_rhythm = 1; p.section_count = 16
-    p.complexity = 76; p.variation = 82; p.swing = 1; p.humanize_ticks = 1; p.humanize_velocity = 8; p.motif_memory = 52; p.accent_strength = 66
-    p.melody_template = "AlgoMusic digit progression"; p.groove_template = "algomusic techno rows"; p.ui_theme = "MagicWB"; p.normalize_velocity = True; p.normalize_target = 85; p.render_wav = True; p.render_mp3 = True
+    p.complexity = 66; p.variation = 64; p.swing = 1; p.humanize_ticks = 1; p.humanize_velocity = 7; p.motif_memory = 58; p.accent_strength = 54
+    p.melody_template = "AlgoMusic digit progression"; p.groove_template = "algomusic techno rows"; p.normalize_velocity = True; p.normalize_target = 80; p.normalize_strength = 86; p.rhythmic_smoothing = True; p.smoothing_strength = 76; p.render_wav = True; p.render_mp3 = True
     p.tracks = [
-        _t("Symbol Row Drums", "drum", 9, 0, 108, 64, 96, 88, 100, "algomusic drums", fill_every=4),
-        _t("Tracker Row Hats", "drum", 9, 0, 72, 64, 92, 70, 96, "tracker hats", fill_every=0),
-        _t("Row Bass", "bass", 1, "Synth Bass 2", 102, 46, 90, 84, 96, "acid pulse", octave=-1),
-        _t("Digit Gate Chords", "chord", 2, "Electric Piano 2", 78, 34, 78, 72, 88, "random gate"),
-        _t("Digit Row Lead", "melody", 3, "Lead 1 (square)", 92, 62, 88, 82, 90, "digit progression", mute_intro=True),
-        _t("Row Tracker Arp", "arpeggio", 4, "Clavinet", 78, 82, 94, 82, 86, "tracker arp", octave=0),
+        _t("Symbol Row Drums", "drum", 9, 0, 96, 64, 78, 72, 94, "algomusic drums", fill_every=8),
+        _t("Tracker Row Hats", "drum", 9, 0, 54, 64, 62, 52, 82, "tracker hats", fill_every=0),
+        _t("Row Bass", "bass", 1, "Synth Bass 2", 88, 46, 70, 66, 88, "acid pulse", octave=-1),
+        _t("Digit Gate Chords", "chord", 2, "Electric Piano 2", 64, 34, 48, 54, 72, "random gate"),
+        _t("Digit Row Lead", "melody", 3, "Lead 1 (square)", 74, 62, 58, 64, 72, "digit progression", mute_intro=True),
+        _t("Row Tracker Arp", "arpeggio", 4, "Clavinet", 56, 82, 56, 60, 68, "tracker arp", octave=0),
         _t("Machine Pad", "pad", 5, "Pad 3 (polysynth)", 52, 88, 35, 30, 70, "long"),
     ]
     presets[p.preset_name] = p

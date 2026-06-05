@@ -37,3 +37,9 @@ Screenshot-informed notes added in v0.4.6:
   plus, caret, asterisk, dots and X-style accents. PythonSoundHelix maps newly
   written symbol rows to kick, snare/clap, hats, rim and fill/crash events.
 - MUI is treated as a GUI/theme reference only, not as a music preset/style name.
+
+
+v0.4.7 follow-up notes:
+- Musical preset selection must not change the GUI theme; MUI/MagicWB remain interface themes only.
+- AlgoMusic-style row/pattern presets now use calmer defaults and burst smoothing to avoid excessive retrigger density.
+- Loudness normalization now treats dense tracker/arpeggio/gate rows as louder than sparse lines even when average velocity is similar.

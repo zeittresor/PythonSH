@@ -1,0 +1,1281 @@
+{
+  "application": "PythonSoundHelix",
+  "version": "0.6.5",
+  "engine": "quality-locked auto-arranger v0.6.5",
+  "title": "Contemporary and Engine",
+  "seed": 698094534,
+  "output_stem": "Contemporary and Engine_seed698094534",
+  "midi_path": "E:\\Debug_Enviroment\\PythonSoundHelix_PyQt6_GPLv3_v0_6_5\\output\\Contemporary and Engine_seed698094534.mid",
+  "note_count": 1729,
+  "arrangement_profile": {
+    "style": "chord_first",
+    "lead_role": "chord",
+    "intro_solo_bars": 5,
+    "entry": {
+      "chord": 0,
+      "melody": 2,
+      "bass": 4,
+      "pad": 8,
+      "drum": 12
+    },
+    "mult": {
+      "drum": 0.62,
+      "bass": 1.12,
+      "melody": 0.94,
+      "chord": 0.8448,
+      "pad": 0.7332
+    },
+    "focus": "bass"
+  },
+  "settings": {
+    "preset_name": "Elise Inspired",
+    "title": "Contemporary and Engine",
+    "seed": 698094534,
+    "randomize_seed": true,
+    "bpm": 146,
+    "bars": 92,
+    "beats_per_bar": 4,
+    "ticks_per_beat": 480,
+    "key": "B",
+    "mode": "minor",
+    "progression": "Auto resolved phrase plan",
+    "custom_progression": "",
+    "harmonic_rhythm": 1,
+    "section_count": 5,
+    "melody_template": "Elise inspired contour",
+    "melody_coverage": 50,
+    "complexity": 78,
+    "variation": 72,
+    "seed_variation_strength": 70,
+    "swing": 2,
+    "motif_memory": 70,
+    "accent_strength": 52,
+    "humanize_ticks": 4,
+    "humanize_velocity": 6,
+    "lfo_expression": true,
+    "call_response": true,
+    "keep_bass_on_roots": true,
+    "add_markers": true,
+    "export_json": true,
+    "export_chord_sheet": true,
+    "use_rating_memory": true,
+    "allow_dissonance": false,
+    "tracks": [
+      {
+        "name": "Tight Drums",
+        "role": "drum",
+        "enabled": false,
+        "channel": 9,
+        "program": 0,
+        "volume": 70,
+        "pan": 64,
+        "octave": 0,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      },
+      {
+        "name": "Tonal Bass",
+        "role": "bass",
+        "enabled": true,
+        "channel": 1,
+        "program": 38,
+        "volume": 72,
+        "pan": 48,
+        "octave": -1,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      },
+      {
+        "name": "Lead Melody",
+        "role": "melody",
+        "enabled": true,
+        "channel": 2,
+        "program": 0,
+        "volume": 72,
+        "pan": 64,
+        "octave": 0,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      },
+      {
+        "name": "Chord Pulse",
+        "role": "chord",
+        "enabled": true,
+        "channel": 3,
+        "program": 4,
+        "volume": 62,
+        "pan": 36,
+        "octave": 0,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      },
+      {
+        "name": "Soft Pad piano",
+        "role": "melody",
+        "enabled": true,
+        "channel": 4,
+        "program": 89,
+        "volume": 55,
+        "pan": 82,
+        "octave": -1,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      },
+      {
+        "name": "Extra Drum 6",
+        "role": "chord",
+        "enabled": true,
+        "channel": 9,
+        "program": 0,
+        "volume": 58,
+        "pan": 64,
+        "octave": 2,
+        "transpose": 0,
+        "fine_tune_cents": 0
+      }
+    ]
+  },
+  "sections": [
+    {
+      "name": "Intro",
+      "start_bar": 0,
+      "bars": 15,
+      "energy": 28,
+      "phrase": "INTRO"
+    },
+    {
+      "name": "A",
+      "start_bar": 15,
+      "bars": 20,
+      "energy": 62,
+      "phrase": "A"
+    },
+    {
+      "name": "B",
+      "start_bar": 35,
+      "bars": 20,
+      "energy": 74,
+      "phrase": "B"
+    },
+    {
+      "name": "Hook",
+      "start_bar": 55,
+      "bars": 24,
+      "energy": 92,
+      "phrase": "HOOK"
+    },
+    {
+      "name": "Outro",
+      "start_bar": 79,
+      "bars": 13,
+      "energy": 32,
+      "phrase": "OUT"
+    }
+  ],
+  "chords": [
+    {
+      "bar": 0,
+      "tick": 0,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 1,
+      "tick": 1920,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 2,
+      "tick": 3840,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 3,
+      "tick": 5760,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 4,
+      "tick": 7680,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 5,
+      "tick": 9600,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 6,
+      "tick": 11520,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 7,
+      "tick": 13440,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 8,
+      "tick": 15360,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 9,
+      "tick": 17280,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 10,
+      "tick": 19200,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 11,
+      "tick": 21120,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 12,
+      "tick": 23040,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 13,
+      "tick": 24960,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 14,
+      "tick": 26880,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Intro"
+    },
+    {
+      "bar": 15,
+      "tick": 28800,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 16,
+      "tick": 30720,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 17,
+      "tick": 32640,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 18,
+      "tick": 34560,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 19,
+      "tick": 36480,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 20,
+      "tick": 38400,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 21,
+      "tick": 40320,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 22,
+      "tick": 42240,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 23,
+      "tick": 44160,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 24,
+      "tick": 46080,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 25,
+      "tick": 48000,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 26,
+      "tick": 49920,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 27,
+      "tick": 51840,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 28,
+      "tick": 53760,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 29,
+      "tick": 55680,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 30,
+      "tick": 57600,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 31,
+      "tick": 59520,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 32,
+      "tick": 61440,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 33,
+      "tick": 63360,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 34,
+      "tick": 65280,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "A"
+    },
+    {
+      "bar": 35,
+      "tick": 67200,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 36,
+      "tick": 69120,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 37,
+      "tick": 71040,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 38,
+      "tick": 72960,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 39,
+      "tick": 74880,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 40,
+      "tick": 76800,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 41,
+      "tick": 78720,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 42,
+      "tick": 80640,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 43,
+      "tick": 82560,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 44,
+      "tick": 84480,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 45,
+      "tick": 86400,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 46,
+      "tick": 88320,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 47,
+      "tick": 90240,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 48,
+      "tick": 92160,
+      "symbol": "VII",
+      "root": 9,
+      "notes": [
+        69,
+        73,
+        76
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 49,
+      "tick": 94080,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 50,
+      "tick": 96000,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 51,
+      "tick": 97920,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 52,
+      "tick": 99840,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 53,
+      "tick": 101760,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 54,
+      "tick": 103680,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "B"
+    },
+    {
+      "bar": 55,
+      "tick": 105600,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 56,
+      "tick": 107520,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 57,
+      "tick": 109440,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 58,
+      "tick": 111360,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 59,
+      "tick": 113280,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 60,
+      "tick": 115200,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 61,
+      "tick": 117120,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 62,
+      "tick": 119040,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 63,
+      "tick": 120960,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 64,
+      "tick": 122880,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 65,
+      "tick": 124800,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 66,
+      "tick": 126720,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 67,
+      "tick": 128640,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 68,
+      "tick": 130560,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 69,
+      "tick": 132480,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 70,
+      "tick": 134400,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 71,
+      "tick": 136320,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 72,
+      "tick": 138240,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 73,
+      "tick": 140160,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 74,
+      "tick": 142080,
+      "symbol": "III",
+      "root": 2,
+      "notes": [
+        62,
+        66,
+        69
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 75,
+      "tick": 144000,
+      "symbol": "iv",
+      "root": 4,
+      "notes": [
+        64,
+        67,
+        71
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 76,
+      "tick": 145920,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 77,
+      "tick": 147840,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 78,
+      "tick": 149760,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Hook"
+    },
+    {
+      "bar": 79,
+      "tick": 151680,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 80,
+      "tick": 153600,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 81,
+      "tick": 155520,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 82,
+      "tick": 157440,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 83,
+      "tick": 159360,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 84,
+      "tick": 161280,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 85,
+      "tick": 163200,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 86,
+      "tick": 165120,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 87,
+      "tick": 167040,
+      "symbol": "VI",
+      "root": 7,
+      "notes": [
+        67,
+        71,
+        74
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 88,
+      "tick": 168960,
+      "symbol": "V",
+      "root": 6,
+      "notes": [
+        66,
+        70,
+        73
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 89,
+      "tick": 170880,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 90,
+      "tick": 172800,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    },
+    {
+      "bar": 91,
+      "tick": 174720,
+      "symbol": "i",
+      "root": 11,
+      "notes": [
+        71,
+        74,
+        78
+      ],
+      "section": "Outro"
+    }
+  ]
+}

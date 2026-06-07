@@ -90,9 +90,9 @@ The bundled XML files in `resources/original_soundhelix_examples/` are copied fr
 
 The public-domain-inspired examples use short transformed interval contours and generator variation. They are not bundled recordings and are not intended as exact covers. The new genre presets and `Arcade Byte Bubbles` are original generator templates designed to provide catchy, recognizable test material without using commercial melodies.
 
+## v0.7.x
 
-
-
+- look at docs/version_info.md for a detailed changelog
 
 ## v0.4.9 Seed / Popcorn contour pass
 

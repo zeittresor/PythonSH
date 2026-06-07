@@ -3,7 +3,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 call :color 0B "============================================================"
 echo.
-call :color 0A " PythonSoundHelix v0.6.5 - PyQt6 GPLv3 Windows installer"
+call :color 0A " PythonSoundHelix v0.7.8 - PyQt6 GPLv3 Windows installer"
 echo.
 call :color 0B "============================================================"
 echo.

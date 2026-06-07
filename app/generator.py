@@ -15,8 +15,8 @@ from .music_theory import (
     nearest_allowed_pitch, note_name, safe_filename, scale_pcs, scale_tones_in_range, voice_lead,
 )
 
-APP_VERSION = "0.6.5"
-ENGINE_NAME = "quality-locked auto-arranger v0.6.5"
+APP_VERSION = "0.7.8"
+ENGINE_NAME = "prompt-first semantic relation arranger v0.7.8"
 
 PRESET_NAMES = [
     "Auto Composer", "Toccata Drive", "Structured Pop", "Night Piano", "Minor House", "Calm Ambient", "DNB Coherent", "Canon Dream", "Elise Inspired"
@@ -47,12 +47,31 @@ class TrackSettings:
     octave: int = 0
     transpose: int = 0
     fine_tune_cents: int = 0
+    lock_instrument: bool = False
 
 
 @dataclass
 class GeneratorSettings:
     preset_name: str = "Auto Composer"
     title: str = ""
+    prompt: str = ""
+    prompt_language: str = "English"
+    prompt_interpretation: str = ""
+    prompt_style_id: str = ""
+    prompt_style_name: str = ""
+    prompt_style_family: str = ""
+    prompt_style_blend: List[str] = field(default_factory=list)
+    prompt_relation_profile: str = ""
+    prompt_semantic_tags: List[str] = field(default_factory=list)
+    prompt_style_confidence: int = 0
+    prompt_drum_feel: str = ""
+    prompt_intensity: int = 0
+    prompt_hard_drums: bool = False
+    prompt_reference_name: str = ""
+    prompt_reference_type: str = ""
+    prompt_reference_traits: str = ""
+    prompt_mode: bool = True
+    direct_style_hint: str = "Auto / random style"
     seed: int = 1192594075
     randomize_seed: bool = True
     bpm: int = 142
@@ -169,26 +188,98 @@ def generate_title(seed: int, preset: str = "") -> str:
 
 
 def _style_hint(settings: GeneratorSettings) -> str:
-    name = (settings.preset_name or "Auto Composer").lower()
-    if name == "auto composer":
-        r = random.Random(settings.seed ^ 0xA07C0DE)
-        return r.choice(["piano", "toccata", "pop", "house", "dnb", "ambient", "canon", "elise"])
-    if "dnb" in name or "drum" in name:
-        return "dnb"
-    if "house" in name:
+    """Return the composition family, not just the UI preset.
+
+    v0.7.8: Prompt style has priority.  In v0.7.0 a prompt such as
+    "techno misc with hard drums" was parsed as Techno, but the generator
+    still behaved like the generic Minor House preset and could even pick a
+    pad-first arrangement.  This function makes style recognition drive the
+    actual engine.
+    """
+    family = (getattr(settings, "prompt_style_family", "") or "").lower().strip()
+    sid = (getattr(settings, "prompt_style_id", "") or "").lower().strip()
+    name = ((getattr(settings, "prompt_style_name", "") or "") + " " + (settings.preset_name or "Auto Composer")).lower()
+    if family:
+        return family
+    if any(t in sid or t in name for t in ["schranz", "hard_techno", "acid_techno", "minimal_tekkno", "techno", "tekkno"]):
+        return "techno"
+    if any(t in sid or t in name for t in ["house", "garage", "ukg", "amapiano"]):
         return "house"
-    if "ambient" in name or "calm" in name:
+    if any(t in sid or t in name for t in ["goa", "psytrance", "psy_trance", "psy trance", "psy"]):
+        return "psytrance"
+    if any(t in sid or t in name for t in ["trance", "acid_trance", "uplifting_trance", "rave"]):
+        return "trance"
+    if any(t in sid or t in name for t in ["dnb", "drum_and_bass", "jungle", "breakcore", "techstep"]):
+        return "dnb"
+    if any(t in sid or t in name for t in ["gabba", "hardcore", "frenchcore", "hardstyle"]):
+        return "hardcore"
+    if any(t in sid or t in name for t in ["ambient", "drone", "meditation", "pad"]):
         return "ambient"
-    if "piano" in name:
+    if any(t in sid or t in name for t in ["piano", "klavier", "waltz", "walzer"]):
         return "piano"
-    if "canon" in name:
+    if any(t in sid or t in name for t in ["canon", "baroque", "orchestra", "orchestral", "choral", "church", "gospel"]):
         return "canon"
-    if "elise" in name:
+    if "elise" in sid or "elise" in name:
         return "elise"
+    if any(t in sid or t in name for t in ["rock", "metal", "punk", "ska", "reggae", "dub"]):
+        return "band"
     if "toccata" in name or "drive" in name:
         return "toccata"
+    if (settings.preset_name or "").lower() == "auto composer":
+        r = random.Random(settings.seed ^ 0xA07C0DE)
+        return r.choice(["piano", "toccata", "pop", "house", "dnb", "ambient", "canon", "elise", "techno"])
     return "pop"
 
+
+def _prompt_tokens(settings: GeneratorSettings) -> str:
+    return ((getattr(settings, "prompt", "") or "") + " " + (getattr(settings, "prompt_style_id", "") or "") + " " + (getattr(settings, "prompt_style_name", "") or "") + " " + (getattr(settings, "prompt_reference_name", "") or "")).lower().replace("_", " ").replace("-", " ")
+
+
+def _style_blend(settings: GeneratorSettings) -> List[str]:
+    explicit = getattr(settings, "prompt_style_blend", None)
+    if isinstance(explicit, (list, tuple)) and explicit:
+        out: List[str] = []
+        for item in explicit:
+            item = str(item).lower().replace("_", " ").replace("-", " ").strip()
+            if item and item not in out:
+                out.append(item)
+        return out
+    text = _prompt_tokens(settings)
+    found: List[str] = []
+    if "goa" in text:
+        found.append("goa")
+    if any(x in text for x in ["psytrance", "psy trance", "psychedelic trance", "psy"]):
+        found.append("psytrance")
+    if "techno" in text or "tekkno" in text:
+        found.append("techno")
+    if "grunge" in text or "nirvana" in text:
+        found.append("grunge")
+    if "acid" in text:
+        found.append("acid")
+    if any(x in text for x in ["dnb", "drum and bass", "drum n bass", "dran and bass", "jungle", "techstep", "liquid"]):
+        found.append("dnb")
+    if "trance" in text and "psytrance" not in found and "goa" not in found:
+        found.append("trance")
+    if "hard" in text or "fat" in text or "fett" in text or "heavy" in text:
+        found.append("hard")
+    out: List[str] = []
+    for item in found:
+        if item not in out:
+            out.append(item)
+    return out
+
+
+def _relation_profile(settings: GeneratorSettings) -> str:
+    return (getattr(settings, "prompt_relation_profile", "") or "").lower().strip()
+
+def _has_semantic(settings: GeneratorSettings, tag: str) -> bool:
+    tags = getattr(settings, "prompt_semantic_tags", []) or []
+    return str(tag).lower() in {str(t).lower() for t in tags}
+
+
+def _psy_techno_combo(settings: GeneratorSettings) -> bool:
+    blend = set(_style_blend(settings))
+    return "psytrance" in blend and ("techno" in blend or "acid" in blend or "goa" in _prompt_tokens(settings))
 
 def _auto_phrase_plan(settings: GeneratorSettings) -> Dict[str, List[str]]:
     r = random.Random(settings.seed ^ 0xA640)
@@ -204,7 +295,12 @@ def _auto_phrase_plan(settings: GeneratorSettings) -> Dict[str, List[str]]:
         {"A":["I","vi","IV","V","ii","V","I","I"], "B":["vi","iii","IV","I","ii","V","I","V"], "HOOK":["I","V","vi","IV","IV","V","I","I"], "OUT":["IV","V","I","I"]},
         {"A":["I","IV","V","I","vi","ii","V","I"], "B":["iii","vi","ii","V","IV","I","V","V"], "HOOK":["I","V","vi","IV","ii","V","I","I"], "OUT":["IV","V","I","I"]},
     ]
-    if style in ("dnb", "house", "toccata"):
+    if style == "psytrance":
+        base = r.choice([
+            {"A":["i","VII","VI","VII","i","VII","VI","V"], "B":["iv","i","VI","VII","iv","i","V","V"], "HOOK":["i","i","VII","VI","i","i","iv","VII"], "OUT":["VI","VII","i","i"]},
+            {"A":["i","i","VII","VI","iv","i","VII","i"], "B":["VI","VII","i","iv","VI","VII","V","V"], "HOOK":["i","VII","i","VI","i","VII","iv","V"], "OUT":["iv","V","i","i"]},
+        ])
+    elif style in ("dnb", "house", "toccata", "trance"):
         base = r.choice(minor_plans if minor else major_plans)
     elif style in ("ambient", "elise"):
         base = r.choice(minor_plans if minor else major_plans)
@@ -221,41 +317,100 @@ def _auto_phrase_plan(settings: GeneratorSettings) -> Dict[str, List[str]]:
 
 
 def arrangement_profile(settings: GeneratorSettings) -> Dict[str, object]:
-    r = random.Random(settings.seed ^ 0xE17A ^ (sum(ord(c) for c in settings.preset_name or "") << 3))
+    r = random.Random(settings.seed ^ 0xE17A ^ (sum(ord(c) for c in ((getattr(settings, "prompt_style_id", "") or settings.preset_name or ""))) << 3))
     style_hint = _style_hint(settings)
     roles = ["drum", "bass", "melody", "chord", "pad"]
-    # v0.6.5: choose one explicit lead role for the opening.  Earlier versions often
-    # allowed pad+chord support to sneak in at bar 0, which made many songs feel as if
-    # they always started with a pad.  Now only the lead role owns the first bars.
-    if style_hint in ("ambient", "piano", "canon", "elise"):
+    hard_drums = bool(getattr(settings, "prompt_hard_drums", False))
+    intensity = int(getattr(settings, "prompt_intensity", 0) or 0)
+
+    if style_hint == "psytrance":
+        lead_pool = ["drum", "drum", "bass", "drum"] if _psy_techno_combo(settings) else ["drum", "bass", "drum", "bass"]
+    elif style_hint in ("techno", "hardcore"):
+        lead_pool = ["drum", "drum", "drum", "bass", "chord"] if hard_drums or intensity > 10 else ["drum", "drum", "bass", "chord", "melody"]
+    elif style_hint == "dnb":
+        lead_pool = ["drum", "drum", "bass"]
+    elif style_hint in ("house", "trance", "toccata"):
+        lead_pool = ["drum", "bass", "melody", "chord"]
+    elif style_hint in ("ambient", "piano", "canon", "elise"):
         lead_pool = ["melody", "chord", "pad", "bass"]
-    elif style_hint in ("dnb", "house", "toccata"):
-        lead_pool = ["drum", "bass", "melody", "chord", "pad"]
     else:
         lead_pool = roles
-    lead_role = lead_pool[r.randrange(len(lead_pool))]
-    if r.random() < 0.18:
-        lead_role = r.choice(roles)
-    style = f"{lead_role}s_first" if lead_role == "drum" else f"{lead_role}_first"
-    secondary = [x for x in roles if x != lead_role]
-    r.shuffle(secondary)
-    entry = {lead_role: 0}
-    # Let the opening breathe: each next role enters a little later, but not always
-    # in the same order. This is the procedural "mal so, mal so" part.
-    for i, role in enumerate(secondary):
-        entry[role] = [2, 4, 8, 12][i]
-    intro_solo_bars = r.choice([2, 3, 4, 5])
-    mult = {"drum":1.0, "bass":1.0, "melody":1.0, "chord":0.88, "pad":0.78}
-    focus = r.choice(roles)
-    for role in list(mult):
-        if role == focus:
-            mult[role] *= r.choice([1.05, 1.12, 1.18])
-        elif role == lead_role:
-            mult[role] *= r.choice([0.96, 1.02, 1.08])
-        else:
-            mult[role] *= r.choice([0.62, 0.74, 0.86, 0.94])
-    return {"style": style, "lead_role": lead_role, "intro_solo_bars": intro_solo_bars, "entry": entry, "mult": mult, "focus": focus}
 
+    lead_role = lead_pool[r.randrange(len(lead_pool))]
+    if hard_drums and style_hint in ("techno", "hardcore", "house", "dnb", "psytrance"):
+        lead_role = "drum"
+    style = ("goa_techno_psy_drive" if _psy_techno_combo(settings) else "psytrance_drive") if style_hint == "psytrance" else (f"{lead_role}s_first" if lead_role == "drum" else f"{lead_role}_first")
+
+    if style_hint == "dnb":
+        prof_name = _relation_profile(settings)
+        if prof_name in ("dark_melodic_dnb", "liquid_dnb"):
+            entry = {"drum": 0, "bass": 0, "chord": 8, "melody": 8, "pad": 16}
+        else:
+            entry = {"drum": 0, "bass": 0, "chord": 8, "melody": 12, "pad": 24}
+        secondary = []
+        if prof_name:
+            style = prof_name + "_drive"
+        else:
+            style = "dark_melodic_dnb_drive" if "dark" in _prompt_tokens(settings) or "melodic" in _prompt_tokens(settings) else "dnb_breakbeat_drive"
+        lead_role = "drum"
+    elif style_hint == "psytrance":
+        entry = {"drum": 0, "bass": 0, "chord": 12 if _psy_techno_combo(settings) else 8, "melody": 12 if _psy_techno_combo(settings) else 8, "pad": 48 if _psy_techno_combo(settings) else 24}
+        secondary = []
+    elif style_hint == "techno":
+        if _relation_profile(settings) == "techno_grunge" or "grunge" in _style_blend(settings):
+            entry = {"drum": 0, "bass": 1, "chord": 2, "melody": 8, "pad": 48}
+            style = "techno_grunge_drive"
+        else:
+            entry = {"drum": 0, "bass": 2, "chord": 4, "melody": 8, "pad": 16}
+        secondary = []
+    elif style_hint == "hardcore":
+        entry = {"drum": 0, "bass": 1, "chord": 4, "melody": 8, "pad": 20}
+        secondary = []
+    else:
+        secondary = [x for x in roles if x != lead_role]
+        r.shuffle(secondary)
+        entry = {lead_role: 0}
+        for i, role in enumerate(secondary):
+            entry[role] = [2, 4, 8, 12][i]
+
+    intro_solo_bars = 1 if style_hint in ("psytrance", "techno", "hardcore") else r.choice([2, 3, 4, 5])
+    mult = {"drum": 1.0, "bass": 1.0, "melody": 1.0, "chord": 0.88, "pad": 0.78}
+    if style_hint == "dnb":
+        if _relation_profile(settings) in ("dark_melodic_dnb", "liquid_dnb"):
+            mult.update({"drum": 1.42, "bass": 1.30, "melody": 0.70, "chord": 0.44, "pad": 0.30})
+        else:
+            mult.update({"drum": 1.46, "bass": 1.32, "melody": 0.48, "chord": 0.48, "pad": 0.18})
+        focus = "drum+bass"
+    elif style_hint == "psytrance":
+        if _psy_techno_combo(settings):
+            mult.update({"drum": 1.72, "bass": 1.66, "melody": 0.58, "chord": 0.38, "pad": 0.04})
+            focus = "drum+bass"
+        else:
+            mult.update({"drum": 1.34, "bass": 1.42, "melody": 0.78, "chord": 0.54, "pad": 0.18})
+            focus = "bass"
+    elif style_hint == "techno":
+        if _relation_profile(settings) == "techno_grunge" or "grunge" in _style_blend(settings):
+            mult.update({"drum": 1.34, "bass": 1.18, "melody": 0.72, "chord": 1.12, "pad": 0.08})
+            focus = "drum+riff"
+        else:
+            mult.update({"drum": 1.28 if hard_drums else 1.15, "bass": 1.10, "melody": 0.54, "chord": 0.88, "pad": 0.32})
+            focus = "drum" if hard_drums else r.choice(["drum", "bass", "chord"])
+    elif style_hint == "hardcore":
+        mult.update({"drum": 1.36, "bass": 1.18, "melody": 0.45, "chord": 0.82, "pad": 0.18})
+        focus = "drum"
+    elif style_hint == "dnb":
+        mult.update({"drum": 1.22, "bass": 1.15, "melody": 0.62, "chord": 0.72, "pad": 0.38})
+        focus = r.choice(["drum", "bass"])
+    else:
+        focus = r.choice(roles)
+        for role in list(mult):
+            if role == focus:
+                mult[role] *= r.choice([1.05, 1.12, 1.18])
+            elif role == lead_role:
+                mult[role] *= r.choice([0.96, 1.02, 1.08])
+            else:
+                mult[role] *= r.choice([0.62, 0.74, 0.86, 0.94])
+    return {"style": style, "lead_role": lead_role, "intro_solo_bars": intro_solo_bars, "entry": entry, "mult": mult, "focus": focus, "style_family": style_hint}
 
 def role_active(settings: GeneratorSettings, sections: Sequence[Section], bar: int, role: str) -> bool:
     prof = arrangement_profile(settings)
@@ -267,6 +422,36 @@ def role_active(settings: GeneratorSettings, sections: Sequence[Section], bar: i
     r = random.Random(settings.seed + bar * 97 + sum(ord(c) for c in role) * 31)
     rel = bar - sec.start_bar
     lead = str(prof.get("lead_role", "pad"))
+    style_family = str(prof.get("style_family", _style_hint(settings)))
+    if style_family == "dnb":
+        if role in ("drum", "bass"):
+            return True
+        if role == "pad":
+            return sec.name in ("B", "Hook") and rel % 8 in (0, 1)
+        if role == "chord":
+            return sec.name in ("A", "B", "Hook") and rel % 4 in (0, 2)
+        if role == "melody":
+            return sec.name in ("B", "Hook") and rel % 8 in (0, 1, 4, 5)
+    if style_family == "psytrance":
+        if role in ("drum", "bass"):
+            return True
+        if role == "pad":
+            return sec.name in ("B", "Hook") and rel % 8 in (0, 1, 2)
+        if role == "chord":
+            return sec.name in ("B", "Hook") and rel % 4 in (0, 2)
+        if role == "melody":
+            return sec.name in ("B", "Hook") and rel % 4 in (0, 1, 2)
+    if style_family in ("techno", "hardcore"):
+        if role == "pad" and sec.name not in ("B", "Hook"):
+            return False
+        if role == "pad" and rel % 4 not in (0, 1):
+            return False
+        if role == "melody" and sec.name == "Intro":
+            return False
+        if role == "melody" and sec.name not in ("B", "Hook") and rel % 8 not in (0, 4):
+            return False
+        if role == "chord" and rel % 2 == 1:
+            return False
     # In the first bars only the chosen lead role should be audible.  This prevents
     # the old behavior where pad/chord layers made every intro feel like a pad intro.
     if sec.name == "Intro" and rel < int(prof.get("intro_solo_bars", 3)):
@@ -316,7 +501,11 @@ def resolve_auto_settings(settings: GeneratorSettings, rng: random.Random) -> No
     if not settings.key or settings.key.lower() == "auto":
         settings.key = rng.choice(keys)
     if not settings.mode or settings.mode.lower() == "auto":
-        if style in ("dnb", "house", "toccata", "ambient", "elise"):
+        if style == "psytrance":
+            settings.mode = "minor"
+        elif style == "dnb":
+            settings.mode = "minor"
+        elif style in ("house", "techno", "trance", "hardcore", "toccata", "ambient", "elise"):
             settings.mode = rng.choice(["minor", "minor", "major"])
         else:
             settings.mode = rng.choice(["major", "minor", "major"])
@@ -331,6 +520,8 @@ def resolve_auto_settings(settings: GeneratorSettings, rng: random.Random) -> No
             pool = ["Canon contour", "SoundHelix piano contour"]
         elif style == "elise":
             pool = ["Elise inspired contour", "SoundHelix piano contour"]
+        elif style in ("psytrance", "techno", "hardcore"):
+            pool = ["Toccata contour", "Toccata contour", "SoundHelix piano contour"]
         elif style == "dnb":
             pool = ["Toccata contour", "SoundHelix piano contour", "Canon contour"]
         else:
@@ -357,7 +548,7 @@ def preset_defaults(name: str) -> GeneratorSettings:
         s.bpm=94; s.tracks[0].enabled=False
     elif name == "Elise Inspired":
         s.bpm=96; s.beats_per_bar=3; s.bars=72; s.tracks[0].enabled=False
-    # v0.6.5: preset = style hint, not fixed harmony. Core musical choices stay auto by default.
+    # v0.7.0: preset = style hint, not fixed harmony. Core musical choices stay auto by default.
     s.key="Auto"; s.mode="auto"; s.progression="Auto mode-safe"; s.melody_template="auto"
     return s
 
@@ -535,6 +726,186 @@ def add_note(track: MidiTrack, tick: int, dur: int, ch: int, pitch: int, vel: in
     return 1
 
 
+
+ROLE_PROGRAM_POOLS = {
+    "piano": {
+        "bass": [32, 33, 34], "melody": [0, 1, 4, 5, 6], "chord": [0, 1, 4], "pad": [48, 49, 88, 89], "counter": [4, 5, 6],
+    },
+    "toccata": {
+        "bass": [32, 38, 39], "melody": [16, 17, 18, 80, 81], "chord": [16, 18, 19, 48], "pad": [48, 51, 89, 91], "counter": [19, 80, 81],
+    },
+    "house": {
+        "bass": [38, 39, 81, 87], "melody": [80, 81, 82, 88, 89], "chord": [4, 5, 88, 90], "pad": [88, 89, 90, 91, 95], "counter": [81, 82, 89],
+    },
+    "techno": {
+        "bass": [38, 39, 87, 88], "melody": [81, 82, 87, 100], "chord": [81, 87, 88, 100], "pad": [89, 90, 91], "counter": [81, 82, 87],
+    },
+    "trance": {
+        "bass": [38, 39, 81, 87], "melody": [81, 82, 88, 89], "chord": [81, 88, 89, 90], "pad": [89, 90, 91, 92], "counter": [81, 82, 88],
+    },
+    "psytrance": {
+        "bass": [38, 39], "melody": [81, 82, 87, 88], "chord": [81, 87, 88], "pad": [89, 90, 91], "counter": [81, 82, 87],
+    },
+    "hardcore": {
+        "bass": [38, 39, 87], "melody": [81, 82, 87], "chord": [87, 100, 81], "pad": [90, 91], "counter": [81, 87],
+    },
+    "dnb": {
+        "bass": [38, 39, 81, 87], "melody": [80, 81, 82, 86], "chord": [4, 5, 88, 90], "pad": [89, 90, 91, 95], "counter": [80, 81, 82],
+    },
+    "ambient": {
+        "bass": [32, 33, 38], "melody": [0, 4, 5, 73, 80, 88], "chord": [48, 49, 88, 89], "pad": [88, 89, 90, 91, 92, 95], "counter": [73, 88, 89],
+    },
+    "canon": {
+        "bass": [32, 42, 43], "melody": [40, 41, 56, 73, 0], "chord": [48, 49, 50], "pad": [48, 49, 52, 89], "counter": [40, 41, 73],
+    },
+    "elise": {
+        "bass": [0, 32, 42], "melody": [0, 4, 5, 6], "chord": [0, 48, 49], "pad": [48, 49, 89], "counter": [4, 5, 6],
+    },
+    "pop": {
+        "bass": [32, 33, 34, 38], "melody": [0, 4, 5, 80, 81], "chord": [0, 4, 24, 27, 88], "pad": [48, 49, 88, 89, 90], "counter": [4, 5, 80],
+    },
+}
+
+
+def auto_program_for(settings: GeneratorSettings, track: TrackSettings, track_index: int) -> int:
+    """Choose a style-compatible GM program unless the user locked the instrument.
+
+    This keeps generated songs from always using the same instrument set while still
+    letting Finetuning override the engine with the new lock checkbox.
+    """
+    if getattr(track, "lock_instrument", False) or (track.role or "").lower() == "drum":
+        return int(track.program)
+    style = _style_hint(settings)
+    pools = ROLE_PROGRAM_POOLS.get(style, ROLE_PROGRAM_POOLS["pop"])
+    role = (track.role or "melody").lower()
+    pool = pools.get(role) or pools.get("counter") or [int(track.program)]
+    salt = sum(ord(c) for c in f"{track.name}:{role}:{track_index}:{settings.preset_name}")
+    r = random.Random(settings.seed ^ 0x1A57A11 ^ salt)
+    return int(pool[r.randrange(len(pool))])
+
+
+def effective_track_for_generation(settings: GeneratorSettings, track: TrackSettings, track_index: int, forced_role: str | None = None) -> TrackSettings:
+    role = forced_role or track.role
+    profile = _relation_profile(settings)
+    # Relation profiles already picked role-compatible programs in the prompt parser.
+    # Keep those choices unless the profile intentionally falls back to the generic
+    # style pools. This prevents "symphonic metal" or "liquid DnB" from being
+    # overwritten by the broad family defaults.
+    relation_program_locked = bool(profile)
+    program = int(track.program) if relation_program_locked else auto_program_for(settings, track, track_index)
+    volume = track.volume
+    if not getattr(track, "lock_instrument", False):
+        if _style_hint(settings) == "dnb":
+            if profile == "liquid_dnb":
+                if role == "drum": volume = max(volume, 84); program = 0
+                elif role == "bass": volume = max(volume, 86); program = program if relation_program_locked else 38
+                elif role == "melody": volume = min(max(volume, 58), 68)
+                elif role == "chord": volume = min(max(volume, 42), 54)
+                elif role == "pad": volume = min(max(volume, 34), 48)
+            elif profile == "dark_melodic_dnb":
+                if role == "drum": volume = max(volume, 96); program = 0
+                elif role == "bass": volume = max(volume, 92); program = program if relation_program_locked else 39
+                elif role == "melody": volume = min(max(volume, 58), 64)
+                elif role == "chord": volume = min(max(volume, 40), 50)
+                elif role == "pad": volume = min(max(volume, 24), 32)
+            elif profile in ("techstep_dnb", "neurofunk_dnb"):
+                if role == "drum": volume = max(volume, 100); program = 0
+                elif role == "bass": volume = max(volume, 98); program = 87
+                elif role == "melody": volume = min(max(volume, 46), 54)
+                elif role == "chord": volume = min(max(volume, 34), 44)
+                elif role == "pad": volume = min(volume, 14)
+            else:
+                if role == "drum": volume = max(volume, 96); program = 0
+                elif role == "bass": volume = max(volume, 92); program = 38 + ((settings.seed >> 2) & 1)
+                elif role == "melody": volume = min(max(volume, 48), 58); program = 80 + ((settings.seed >> 4) & 3)
+                elif role == "chord": volume = min(max(volume, 40), 52); program = 88
+                elif role == "pad": volume = min(volume, 20); program = 89 + ((settings.seed >> 6) & 1)
+        elif _style_hint(settings) == "psytrance":
+            if _psy_techno_combo(settings):
+                if role == "drum": volume = max(volume, 112); program = 0
+                elif role == "bass": volume = max(volume, 108); program = 38 + ((settings.seed >> 3) & 1)
+                elif role == "melody": volume = min(max(volume, 58), 66); program = 81 + ((settings.seed >> 5) & 1)
+                elif role == "chord": volume = min(max(volume, 46), 56); program = 87
+                elif role == "pad": volume = min(volume, 10); program = 90
+            else:
+                if role == "drum": volume = max(volume, 86)
+                elif role == "bass": volume = max(volume, 88); program = 38 + ((settings.seed >> 2) & 1)
+                elif role == "melody": volume = min(max(volume, 64), 74)
+                elif role == "chord": volume = min(max(volume, 58), 68)
+                elif role == "pad": volume = min(volume, 24)
+        elif profile == "dark_ambient_drone":
+            if role == "bass": volume = min(max(volume, 38), 48)
+            elif role == "melody": volume = min(max(volume, 40), 54)
+            elif role == "chord": volume = min(max(volume, 34), 46)
+            elif role == "pad": volume = max(volume, 68)
+        elif profile == "symphonic_metal":
+            if role == "drum": volume = max(volume, 92); program = 0
+            elif role == "bass": volume = max(volume, 82)
+            elif role == "melody": volume = min(max(volume, 62), 72)
+            elif role == "chord": volume = max(volume, 76)
+            elif role == "pad": volume = max(volume, 56)
+        elif profile == "reggae_dub":
+            if role == "drum": volume = min(max(volume, 62), 76)
+            elif role == "bass": volume = max(volume, 86)
+            elif role == "pad": volume = max(volume, 48)
+        elif role == "melody":
+            volume = min(volume, 70)
+        elif role in ("counter", "harmony"):
+            volume = min(volume, 52)
+        elif role == "pad":
+            volume = min(volume, 46)
+    return TrackSettings(track.name, role, track.enabled, track.channel, int(program), int(volume), track.pan, track.octave, track.transpose, track.fine_tune_cents, getattr(track, "lock_instrument", False))
+
+
+def bass_pattern_family(settings: GeneratorSettings) -> str:
+    style = _style_hint(settings)
+    r = random.Random(settings.seed ^ 0xBA55CAFE ^ (sum(ord(c) for c in settings.preset_name or "") << 1))
+    if style == "psytrance":
+        return "psy_rolling"
+    elif style == "dnb":
+        prof = _relation_profile(settings)
+        if prof == "liquid_dnb":
+            return "dnb_sub"
+        if prof in ("dark_melodic_dnb", "techstep_dnb", "neurofunk_dnb"):
+            return "dnb_reese"
+        return "dnb_sub" if (settings.seed & 1) else "dnb_reese"
+    elif style in ("techno", "hardcore"):
+        pool = ["offbeat_pulse", "pedal", "syncopated", "root_fifth", "broken_octave"]
+    elif style in ("house", "dnb", "trance", "toccata"):
+        pool = ["offbeat_pulse", "syncopated", "broken_octave", "walking", "root_fifth", "sparse_roots"]
+    elif style in ("piano", "canon", "elise"):
+        pool = ["sparse_roots", "broken_octave", "walking", "root_fifth"]
+    elif style == "ambient":
+        pool = ["sparse_roots", "pedal", "root_fifth", "walking"]
+    else:
+        pool = ["root_fifth", "walking", "broken_octave", "syncopated", "sparse_roots"]
+    # Tango-like rhythm exists, but it is deliberately rare.
+    if r.random() < 0.07:
+        pool.append("tango_like")
+    return pool[r.randrange(len(pool))]
+
+
+def section_bass_pattern(settings: GeneratorSettings, sec: Section, bar: int) -> str:
+    family = bass_pattern_family(settings)
+    r = random.Random(settings.seed + sec.start_bar * 193 + sum(ord(c) for c in sec.name) * 17)
+    if _style_hint(settings) == "psytrance":
+        return "psy_rolling"
+    if _style_hint(settings) == "dnb":
+        if sec.name in ("B", "Hook"):
+            return "dnb_reese" if ((bar - sec.start_bar) // 4) % 2 else "dnb_sub"
+        return "dnb_sub"
+    if sec.name == "Intro" and r.random() < 0.55:
+        return "sparse_roots"
+    if sec.name in ("B", "Hook") and r.random() < 0.45:
+        variants = ["walking", "syncopated", "broken_octave", "offbeat_pulse"]
+        return variants[r.randrange(len(variants))]
+    if sec.name == "Outro" and r.random() < 0.55:
+        return "sparse_roots"
+    # Tiny bar-block variation avoids one mechanical bass groove across the whole song.
+    if (bar - sec.start_bar) // 4 % 3 == 2 and family not in ("pedal", "sparse_roots"):
+        return "root_fifth"
+    return family
+
 def setup_track(t: TrackSettings) -> MidiTrack:
     tr = MidiTrack(t.name)
     ch = 9 if t.role == "drum" else t.channel
@@ -555,6 +926,8 @@ def compose_melody(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings
     section_transforms = [0, 2, 4, 7, 0]
     template_name = (settings.melody_template or "").lower()
     preset_name = (settings.preset_name or "").lower()
+    if _style_hint(settings) == "psytrance":
+        return compose_psytrance_acid_lead(tr, ts, settings, sections, chords, rng)
     for si, sec in enumerate(sections):
         contour = section_contour(settings, si, sec.name, rng)
         phrase_beats = max(settings.beats_per_bar, max((off + dur for off, dur, _, _ in contour), default=settings.beats_per_bar))
@@ -631,6 +1004,34 @@ def compose_melody(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings
     return count
 
 
+def compose_psytrance_acid_lead(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], rng: random.Random) -> int:
+    count = 0
+    bar_ticks = settings.ticks_per_beat * settings.beats_per_bar
+    acid_steps = [0, 7, 12, 7, 3, 7, 10, 7, 0, 7, 12, 15, 14, 12, 10, 7]
+    for chord in chords:
+        sec = section_for_bar(sections, chord.bar)
+        rel = chord.bar - sec.start_bar
+        if sec.name == "Intro" or sec.energy < 60:
+            continue
+        if sec.name == "A" and rel % 8 not in (4, 5, 6, 7):
+            continue
+        if sec.name == "Outro":
+            continue
+        base = chord_tones_in_range(chord.symbol, settings.key, settings.mode, 60, 72)[0]
+        for step in range(16):
+            # Acid lead is present but not constant: gaps create gate movement.
+            if sec.name == "B" and step % 4 == 3:
+                continue
+            if sec.name == "Hook" and step in (7, 15):
+                continue
+            pitch = nearest_allowed_pitch(base + acid_steps[(step + rel + (settings.seed % 5)) % len(acid_steps)], scale_pcs(settings.key, settings.mode, chord.symbol == "V" and settings.mode == "minor") | {n % 12 for n in chord.notes}, 58, 82)
+            tick = chord.bar * bar_ticks + int(step * settings.ticks_per_beat / 4)
+            dur = int(settings.ticks_per_beat * (0.18 if step % 2 else 0.24))
+            vel = role_velocity(settings, "melody", clamp(ts.volume * 0.52 + sec.energy * 0.08 + (8 if step % 4 == 0 else 0), 38, 72))
+            count += add_note(tr, tick, dur, ts.channel, pitch + ts.octave * 12 + ts.transpose, vel, settings, chord, 58, 82)
+    return count
+
+
 def compose_counter_melody(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], melody_index: int = 1) -> int:
     # Extra melody tracks are not allowed to become independent lead melodies by default.
     # They become sparse chord-tone answers in a separate register, so several user-added
@@ -657,21 +1058,62 @@ def compose_counter_melody(tr: MidiTrack, ts: TrackSettings, settings: Generator
 
 
 def compose_bass(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord]) -> int:
-    count=0; bar_ticks=settings.ticks_per_beat*settings.beats_per_bar
-    for chord in chords:
+    count = 0
+    bar_ticks = settings.ticks_per_beat * settings.beats_per_bar
+    for idx, chord in enumerate(chords):
         if not role_active(settings, sections, chord.bar, "bass"):
             continue
         sec = section_for_bar(sections, chord.bar)
-        root = 12*3 + chord.root + ts.octave*12 + ts.transpose
+        root = 12 * 3 + chord.root + ts.octave * 12 + ts.transpose
         root = nearest_allowed_pitch(root, {chord.root}, 28, 52)
-        fifth = nearest_allowed_pitch(root + 7, scale_pcs(settings.key, settings.mode, chord.symbol=="V" and settings.mode=="minor"), 31, 56)
-        pat = [(0, root, .58), (1.5, fifth, .42), (2.0, root, .48), (3.0, root+12, .38)] if settings.beats_per_bar == 4 else [(0, root, .7), (1, fifth, .55), (2, root+12, .55)]
-        vel = role_velocity(settings, "bass", clamp(ts.volume*.58 + sec.energy*.12, 38, 78))
-        for off, p, dur in pat:
+        chord_pcs = {n % 12 for n in chord.notes}
+        third_candidates = chord_tones_in_range(chord.symbol, settings.key, settings.mode, 30, 58)
+        third = min(third_candidates, key=lambda p: abs(p - (root + 3))) if third_candidates else root + 3
+        fifth = nearest_allowed_pitch(root + 7, scale_pcs(settings.key, settings.mode, chord.symbol == "V" and settings.mode == "minor") | chord_pcs, 31, 56)
+        octave = nearest_allowed_pitch(root + 12, {chord.root}, 36, 60)
+        next_root = root
+        if idx + 1 < len(chords):
+            next_chord = chords[idx + 1]
+            next_root = nearest_allowed_pitch(12 * 3 + next_chord.root + ts.octave * 12 + ts.transpose, {next_chord.root}, 28, 52)
+        approach = nearest_allowed_pitch(next_root - 1 if next_root >= root else next_root + 1, scale_pcs(settings.key, settings.mode, chord.symbol == "V" and settings.mode == "minor") | chord_pcs, 28, 58)
+        pattern = section_bass_pattern(settings, sec, chord.bar)
+        if settings.beats_per_bar == 3:
+            pattern_map = {
+                "sparse_roots": [(0.0, root, 0.82), (2.0, fifth, 0.48)],
+                "root_fifth": [(0.0, root, 0.60), (1.0, fifth, 0.42), (2.0, octave, 0.42)],
+                "walking": [(0.0, root, 0.45), (1.0, third, 0.38), (2.0, approach, 0.40)],
+                "broken_octave": [(0.0, root, 0.45), (1.5, octave, 0.45), (2.25, fifth, 0.35)],
+                "syncopated": [(0.0, root, 0.42), (1.25, fifth, 0.35), (2.15, octave, 0.32)],
+                "offbeat_pulse": [(0.5, root, 0.35), (1.5, fifth, 0.35), (2.5, root, 0.30)],
+                "pedal": [(0.0, root, 1.25)],
+                "tango_like": [(0.0, root, 0.65), (1.5, fifth, 0.38), (2.25, octave, 0.32)],
+                "psy_rolling": [(0.25, root, 0.18), (0.5, root, 0.18), (0.75, octave, 0.16), (1.25, root, 0.18), (1.5, root, 0.18), (1.75, fifth, 0.16), (2.25, root, 0.18), (2.5, root, 0.18), (2.75, octave, 0.16)],
+                "dnb_sub": [(0.0, root, 0.35), (1.5, root, 0.28), (2.0, fifth, 0.30)],
+                "dnb_reese": [(0.0, root, 0.60), (1.5, fifth, 0.28), (2.5, root, 0.34)],
+            }
+        else:
+            pattern_map = {
+                "sparse_roots": [(0.0, root, 0.85), (2.0, fifth, 0.55)],
+                "root_fifth": [(0.0, root, 0.58), (1.0, fifth, 0.36), (2.0, root, 0.46), (3.0, octave, 0.34)],
+                "walking": [(0.0, root, 0.40), (1.0, third, 0.34), (2.0, fifth, 0.36), (3.0, approach, 0.34)],
+                "broken_octave": [(0.0, root, 0.42), (0.75, octave, 0.32), (2.0, fifth, 0.42), (3.0, octave, 0.30)],
+                "syncopated": [(0.0, root, 0.38), (1.25, fifth, 0.34), (2.5, octave, 0.32), (3.25, fifth, 0.28)],
+                "offbeat_pulse": [(0.5, root, 0.32), (1.5, root, 0.32), (2.5, fifth, 0.32), (3.5, root, 0.28)],
+                "pedal": [(0.0, root, 1.4), (2.0, root, 1.1)],
+                "tango_like": [(0.0, root, 0.58), (1.5, fifth, 0.42), (2.0, root, 0.48), (3.0, octave, 0.38)],
+                "psy_rolling": [(0.25, root, 0.18), (0.5, root, 0.18), (0.75, octave, 0.16), (1.25, root, 0.18), (1.5, root, 0.18), (1.75, fifth, 0.16), (2.25, root, 0.18), (2.5, root, 0.18), (2.75, octave, 0.16), (3.25, root, 0.18), (3.5, root, 0.18), (3.75, fifth, 0.16)],
+                "dnb_sub": [(0.0, root, 0.35), (0.75, root, 0.22), (1.5, fifth, 0.28), (2.0, root, 0.30), (2.75, approach, 0.20), (3.5, root, 0.24)],
+                "dnb_reese": [(0.0, root, 0.55), (1.25, fifth, 0.28), (1.75, octave, 0.22), (2.5, root, 0.35), (3.25, approach, 0.22)],
+            }
+        pat = pattern_map.get(pattern, pattern_map["root_fifth"])
+        if _style_hint(settings) == "psytrance":
+            vel = role_velocity(settings, "bass", clamp(ts.volume * 0.72 + sec.energy * 0.15, 52, 94))
+        else:
+            vel = role_velocity(settings, "bass", clamp(ts.volume * 0.56 + sec.energy * 0.11, 34, 76))
+        for off, pitch, dur in pat:
             if off < settings.beats_per_bar:
-                count += add_note(tr, chord.bar*bar_ticks+int(off*settings.ticks_per_beat), int(dur*settings.ticks_per_beat), ts.channel, p, vel, settings, chord, 28, 58)
+                count += add_note(tr, chord.bar * bar_ticks + int(off * settings.ticks_per_beat), int(dur * settings.ticks_per_beat), ts.channel, pitch, vel, settings, chord, 28, 58)
     return count
-
 
 def compose_chords(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], pad=False) -> int:
     count=0; prev=None; bar_ticks=settings.ticks_per_beat*settings.beats_per_bar
@@ -683,7 +1125,13 @@ def compose_chords(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings
         if pad and (chord.bar - sec.start_bar) % 2: continue
         if sec.name == "Intro" and not pad and chord.bar < sec.start_bar + sec.bars//2: continue
         voicing = voice_lead(prev, chord.notes, 48 if not pad else 43, 72 if not pad else 64); prev=voicing
-        hits = [0] if pad or settings.beats_per_bar == 3 else [0, 2]
+        style_family = _style_hint(settings)
+        if style_family in ("techno", "hardcore") and not pad:
+            hits = [0, 2] if sec.name in ("B", "Hook") else [0]
+        elif style_family in ("techno", "hardcore") and pad:
+            hits = [0] if sec.name in ("B", "Hook") else []
+        else:
+            hits = [0] if pad or settings.beats_per_bar == 3 else [0, 2]
         vel = role_velocity(settings, role_name, clamp(ts.volume * (.42 if pad else .50) + sec.energy * (.04 if pad else .07), 24, 68))
         dur = int((bar_ticks * (1.9 if pad else .62/settings.beats_per_bar))) if pad else int(.58*settings.ticks_per_beat)
         for off in hits:
@@ -700,14 +1148,50 @@ def compose_drums(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings,
         sec=section_for_bar(sections, bar)
         if sec.energy < 30: continue
         base=role_velocity(settings, "drum", clamp(ts.volume*.55+sec.energy*.14, 40, 82))
-        hits=[(0,"kick",base+8),(2,"snare",base),(1,"closed_hat",base-24),(3,"closed_hat",base-24)]
-        if "house" in settings.preset_name.lower() or "drive" in settings.preset_name.lower():
-            hits += [(1,"kick",base-6),(3,"kick",base-6)]
+        style_family = _style_hint(settings)
+        hard = bool(getattr(settings, "prompt_hard_drums", False))
+        if style_family == "psytrance":
+            if _psy_techno_combo(settings):
+                hits=[
+                  (0,"kick",base+34),(0,"tom",base+12),(1,"kick",base+30),(1,"tom",base+8),(2,"kick",base+32),(2,"tom",base+10),(3,"kick",base+30),(3,"tom",base+8),
+                  (0.25,"closed_hat",base-14),(0.5,"open_hat",base+2),(0.75,"closed_hat",base-18),
+                  (1.25,"closed_hat",base-14),(1.5,"open_hat",base+1),(1.75,"closed_hat",base-18),
+                  (2.0,"clap",base+10),(2.0,"snare",base+6),(2.25,"closed_hat",base-14),(2.5,"open_hat",base+3),(2.75,"closed_hat",base-18),
+                  (3.25,"closed_hat",base-14),(3.5,"open_hat",base+1),(3.75,"closed_hat",base-18)]
+                if sec.name in ("A", "B", "Hook"):
+                    hits += [(0,"ride",base-18),(1,"ride",base-20),(2,"ride",base-18),(3,"ride",base-20)]
+                if sec.name in ("B", "Hook"):
+                    hits += [(0.5,"clap",base-10),(1.5,"clap",base-10),(3.5,"ride",base-8)]
+            else:
+                hits=[(0,"kick",base+22),(1,"kick",base+18),(2,"kick",base+20),(3,"kick",base+18),
+                      (0.5,"closed_hat",base-6),(0.75,"closed_hat",base-16),(1.5,"closed_hat",base-5),(1.75,"closed_hat",base-16),
+                      (2.5,"closed_hat",base-5),(2.75,"closed_hat",base-16),(3.5,"closed_hat",base-4),(3.75,"closed_hat",base-16),
+                      (2,"clap",base+4)]
+                if sec.name in ("B", "Hook"):
+                    hits += [(1,"open_hat",base-5),(3,"open_hat",base-5),(3.5,"ride",base-14)]
+        elif style_family in ("techno", "hardcore"):
+            hits=[(0,"kick",base+16),(1,"kick",base+10),(2,"kick",base+14),(3,"kick",base+10),
+                  (0.5,"closed_hat",base-10),(1.5,"closed_hat",base-8),(2.5,"closed_hat",base-10),(3.5,"closed_hat",base-8),
+                  (2,"clap",base+2)]
+            if sec.name in ("B", "Hook"):
+                hits += [(1,"open_hat",base-8),(3,"open_hat",base-8),(3.5,"ride",base-18)]
+            if hard:
+                hits += [(0.75,"closed_hat",base-16),(1.75,"closed_hat",base-16),(2.75,"closed_hat",base-16),(3.75,"closed_hat",base-16)]
+        elif style_family == "dnb":
+            hits=[(0.0,"kick",base+18),(0.75,"kick",base-4),(1.5,"snare",base+22),(2.0,"kick",base+4),(2.75,"kick",base-6),(3.0,"snare",base+16),
+                  (0.25,"closed_hat",base-18),(0.5,"closed_hat",base-14),(1.0,"closed_hat",base-20),(1.25,"closed_hat",base-18),
+                  (1.75,"closed_hat",base-16),(2.25,"closed_hat",base-18),(2.5,"open_hat",base-10),(3.25,"closed_hat",base-18),(3.5,"closed_hat",base-16)]
+            if sec.name in ("B", "Hook"):
+                hits += [(0.5,"snare",base-10),(2.5,"snare",base-12),(3.5,"ride",base-16)]
+        else:
+            hits=[(0,"kick",base+8),(2,"snare",base),(1,"closed_hat",base-24),(3,"closed_hat",base-24)]
+            if _style_hint(settings) in ("house", "trance") or "house" in settings.preset_name.lower() or "drive" in settings.preset_name.lower():
+                hits += [(1,"kick",base-6),(3,"kick",base-6)]
         if bar == sec.start_bar+sec.bars-1:
             hits += [(3.5,"snare",base+6)]
         for off,name,vel in hits:
             if off < settings.beats_per_bar:
-                tr.note(bar*bar_ticks+int(off*settings.ticks_per_beat), max(1,settings.ticks_per_beat//12), 9, DRUM_NOTES[name], int(clamp(vel,20,100))); count+=1
+                tr.note(bar*bar_ticks+int(off*settings.ticks_per_beat), max(1,settings.ticks_per_beat//12), 9, DRUM_NOTES[name], int(clamp(vel,24,124 if _psy_techno_combo(settings) else 104))); count+=1
     return count
 
 
@@ -734,7 +1218,7 @@ def quality_pass(tracks: Sequence[MidiTrack], active_settings: Sequence[TrackSet
                 chord_pcs = {n % 12 for n in chord.notes}
                 scale_allowed = scale_pcs(settings.key, settings.mode, chord.symbol == "V" and settings.mode == "minor")
                 if role == "melody":
-                    # v0.6.5 default is conservative: melody notes are chord-tonal on
+                    # v0.7.0 default is conservative: melody notes are chord-tonal on
                     # strong/visible positions and only very quiet passing notes may use
                     # wider scale tones. This avoids lead/counter melody clashes.
                     strong = abs(beat_pos - round(beat_pos)) < 0.03 and int(round(beat_pos)) in (0, 2, settings.beats_per_bar - 1)
@@ -752,7 +1236,7 @@ def quality_pass(tracks: Sequence[MidiTrack], active_settings: Sequence[TrackSet
                 elif role == "bass":
                     allowed = {chord.root, (chord.root + 7) % 12} | chord_pcs
                     low, high = 24, 58
-                    vel = clamp(e.data[2] - density_penalty, 24, 76)
+                    vel = clamp(e.data[2] - density_penalty, 28, 92 if _style_hint(settings) == "psytrance" else 76)
                 else:
                     allowed = scale_allowed | chord_pcs
                     low, high = 24, 96
@@ -776,6 +1260,43 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike, pr
     if settings.randomize_seed:
         settings.seed = int(time.time_ns() % 2_147_483_647)
     rng=random.Random(settings.seed)
+    parse_prompt = bool(getattr(settings, "prompt_mode", True))
+    direct_style_hint = str(getattr(settings, "direct_style_hint", "") or "").strip()
+    use_direct_style_hint = (not parse_prompt) and direct_style_hint and not direct_style_hint.lower().startswith("auto")
+    if parse_prompt or use_direct_style_hint:
+        try:
+            from .prompt_parser import apply_prompt_to_settings
+            manual_before_prompt = settings.to_dict()
+            parser_text = getattr(settings, "prompt", "") if parse_prompt else direct_style_hint
+            apply_prompt_to_settings(settings, parser_text, getattr(settings, "prompt_language", "English"))
+            if use_direct_style_hint:
+                # In direct-parameter view, the style pulldown is a style/drum/instrument hint.
+                # It may choose family, drums, instruments and tempo, but explicit manual fields
+                # such as key/mode/progression/template/custom progression remain authoritative.
+                settings.prompt_mode = False
+                settings.direct_style_hint = direct_style_hint
+                settings.prompt = manual_before_prompt.get("prompt", "")
+                for always in ["title", "seed", "randomize_seed", "bars", "ticks_per_beat", "section_count",
+                               "melody_coverage", "export_json", "export_chord_sheet", "use_rating_memory",
+                               "allow_dissonance", "lfo_expression", "add_markers"]:
+                    if always in manual_before_prompt:
+                        setattr(settings, always, manual_before_prompt[always])
+                # Preserve explicit overrides, but let Auto fields stay style-aware.
+                if str(manual_before_prompt.get("key", "Auto")).lower() != "auto":
+                    settings.key = manual_before_prompt["key"]
+                if str(manual_before_prompt.get("mode", "auto")).lower() != "auto":
+                    settings.mode = manual_before_prompt["mode"]
+                if not str(manual_before_prompt.get("progression", "Auto")).lower().startswith("auto"):
+                    settings.progression = manual_before_prompt["progression"]
+                if str(manual_before_prompt.get("custom_progression", "")).strip():
+                    settings.custom_progression = manual_before_prompt["custom_progression"]
+                if str(manual_before_prompt.get("melody_template", "auto")).lower() != "auto":
+                    settings.melody_template = manual_before_prompt["melody_template"]
+                interp = getattr(settings, "prompt_interpretation", "") or "style hint"
+                settings.prompt_interpretation = f"direct_style_hint={direct_style_hint}; " + interp
+            rng=random.Random(settings.seed)
+        except Exception as exc:
+            settings.prompt_interpretation = f"Prompt/style parser warning: {type(exc).__name__}: {exc}"
     resolve_auto_settings(settings, rng)
     sanitize_mode_progression(settings)
     settings.bpm = clamp(settings.bpm, 48, 220); settings.bars=clamp(settings.bars, 16, 256); settings.beats_per_bar=clamp(settings.beats_per_bar,3,4)
@@ -785,22 +1306,24 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike, pr
     sections=build_sections(settings); chords=build_chords(settings, sections)
     tracks=[]; active_tracks=[]; note_count=0
     melody_seen = 0
-    for t in settings.tracks:
+    for track_index, t in enumerate(settings.tracks):
         if not t.enabled: continue
-        effective = t
-        tr=setup_track(t)
         role = (t.role or "").lower()
-        if role=="drum": note_count += compose_drums(tr,t,settings,sections)
-        elif role=="bass": note_count += compose_bass(tr,t,settings,sections,chords)
-        elif role=="melody":
-            if melody_seen == 0:
-                note_count += compose_melody(tr,t,settings,sections,chords,rng)
-            else:
-                effective = TrackSettings(t.name, "counter", t.enabled, t.channel, t.program, min(t.volume, 54), t.pan, t.octave, t.transpose, t.fine_tune_cents)
-                note_count += compose_counter_melody(tr,effective,settings,sections,chords,melody_seen)
+        forced_role = None
+        if role == "melody" and melody_seen > 0:
+            forced_role = "counter"
+        effective = effective_track_for_generation(settings, t, track_index, forced_role)
+        tr = setup_track(effective)
+        if effective.role == "drum": note_count += compose_drums(tr,effective,settings,sections)
+        elif effective.role == "bass": note_count += compose_bass(tr,effective,settings,sections,chords)
+        elif effective.role == "melody":
+            note_count += compose_melody(tr,effective,settings,sections,chords,rng)
             melody_seen += 1
-        elif role=="chord": note_count += compose_chords(tr,t,settings,sections,chords,False)
-        elif role=="pad": note_count += compose_chords(tr,t,settings,sections,chords,True)
+        elif effective.role == "counter":
+            note_count += compose_counter_melody(tr,effective,settings,sections,chords,max(1, melody_seen))
+            melody_seen += 1
+        elif effective.role == "chord": note_count += compose_chords(tr,effective,settings,sections,chords,False)
+        elif effective.role == "pad": note_count += compose_chords(tr,effective,settings,sections,chords,True)
         tracks.append(tr); active_tracks.append(effective)
     quality_pass(tracks, active_tracks, settings, chords)
     note_count=sum(1 for tr in tracks for e in tr.events if len(e.data)>=3 and (e.data[0]&0xF0)==0x90 and e.data[2]>0)
@@ -810,13 +1333,13 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike, pr
     sheet=make_chord_sheet(title, settings, sections, chords, note_count)
     if settings.export_chord_sheet: chord_path.write_text(sheet,encoding='utf-8')
     if settings.export_json:
-        payload={"application":"PythonSoundHelix","version":APP_VERSION,"engine":ENGINE_NAME,"title":title,"seed":settings.seed,"output_stem":output_stem,"midi_path":str(midi),"note_count":note_count,"arrangement_profile":arrangement_profile(settings),"settings":settings.to_dict(),"sections":[asdict(s) for s in sections],"chords":[asdict(c) for c in chords]}
+        payload={"application":"PythonSoundHelix","version":APP_VERSION,"engine":ENGINE_NAME,"title":title,"seed":settings.seed,"output_stem":output_stem,"midi_path":str(midi),"note_count":note_count,"arrangement_profile":arrangement_profile(settings),"bass_pattern_family":bass_pattern_family(settings),"prompt":getattr(settings,"prompt", ""),"prompt_interpretation":getattr(settings,"prompt_interpretation", ""),"direct_style_hint":getattr(settings,"direct_style_hint", ""),"prompt_style_id":getattr(settings,"prompt_style_id", ""),"prompt_style_name":getattr(settings,"prompt_style_name", ""),"prompt_style_family":_style_hint(settings),"prompt_style_blend":_style_blend(settings),"prompt_relation_profile":getattr(settings,"prompt_relation_profile", ""),"prompt_semantic_tags":getattr(settings,"prompt_semantic_tags", []),"prompt_style_confidence":getattr(settings,"prompt_style_confidence", 0),"prompt_hard_drums":getattr(settings,"prompt_hard_drums", False),"prompt_reference_name":getattr(settings,"prompt_reference_name", ""),"prompt_reference_type":getattr(settings,"prompt_reference_type", ""),"prompt_reference_traits":getattr(settings,"prompt_reference_traits", ""),"effective_tracks":[asdict(t) for t in active_tracks],"settings":settings.to_dict(),"sections":[asdict(s) for s in sections],"chords":[asdict(c) for c in chords]}
         js.write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf-8')
-    return SongResult(title,settings.seed,str(midi),str(js) if settings.export_json else "",str(chord_path) if settings.export_chord_sheet else "",note_count, f"{ENGINE_NAME}: auto phrase plans, seed-specific arrangement entry profile, strict tonal correction, role loudness variation.")
+    return SongResult(title,settings.seed,str(midi),str(js) if settings.export_json else "",str(chord_path) if settings.export_chord_sheet else "",note_count, f"{ENGINE_NAME}: auto phrase plans, seed-specific arrangement entry profile, varied bass pattern family={bass_pattern_family(settings)}, auto-instruments unless locked, reference-aware prompt mapping, strict tonal correction; prompt_interpretation=" + getattr(settings, "prompt_interpretation", "auto") + ".")
 
 
 def make_chord_sheet(title: str, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], note_count: int) -> str:
-    lines=[title,"="*len(title),"",f"Generated by PythonSoundHelix {APP_VERSION} (GPLv3)",f"Engine: {ENGINE_NAME}",f"Preset: {settings.preset_name}",f"Seed: {settings.seed}",f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",f"Progression: {settings.progression}",f"Arrangement profile: {arrangement_profile(settings)['style']} | focus={arrangement_profile(settings)['focus']}",f"Melody coverage: {settings.melody_coverage}% distributed across the whole phrase, not prefix-only",f"Notes: {note_count}","","Sections:"]
+    lines=[title,"="*len(title),"",f"Generated by PythonSoundHelix {APP_VERSION} (GPLv3)",f"Engine: {ENGINE_NAME}",f"Preset: {settings.preset_name}",f"Seed: {settings.seed}",f"Prompt: {getattr(settings, 'prompt', '') or 'auto'}",f"Interpretation: {getattr(settings, 'prompt_interpretation', '') or 'auto'}",f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",f"Progression: {settings.progression}",f"Arrangement profile: {arrangement_profile(settings)['style']} | style_family={_style_hint(settings)} | blend={'+'.join(_style_blend(settings)) or 'auto'} | relation={getattr(settings, 'prompt_relation_profile', '') or 'auto'} | focus={arrangement_profile(settings)['focus']} | bass={bass_pattern_family(settings)}",f"Melody coverage: {settings.melody_coverage}% distributed across the whole phrase, not prefix-only",f"Notes: {note_count}","","Sections:"]
     for s in sections: lines.append(f"  - {s.name}: bars {s.start_bar+1}-{s.start_bar+s.bars}, energy {s.energy}%")
     lines += ["", "Chord map:"]
     current=None; buf=[]

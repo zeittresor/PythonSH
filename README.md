@@ -1,4 +1,4 @@
-# PythonSoundHelix v0.4.9
+# PythonSoundHelix v0.6.5
 
 PythonSoundHelix is a GPLv3 Python/PyQt6 reimplementation and expansion inspired by the original Java SoundHelix project.
 

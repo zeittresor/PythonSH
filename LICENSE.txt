@@ -1,0 +1,3 @@
+PythonSoundHelix is distributed under the GNU General Public License version 3 or later.
+
+This package is a Python/PyQt6 project inspired by SoundHelix. The original SoundHelix project is by Thomas Schürger. PythonSoundHelix is a separate project intended for github.com/zeittresor.

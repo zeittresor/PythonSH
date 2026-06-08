@@ -20,6 +20,8 @@ Parameter Mode:
 
 <img width="1345" height="863" alt="v7_8_parameter-mode" src="https://github.com/user-attachments/assets/300b2b73-212a-47d6-9370-5db29728427a" />
 
+(btw. you can copy a seed to reproduce the same song but make changes to the used instruments and volumes in the finetune tab.)
+
 ## What is included
 
 - PyQt6 Windows GUI, no tkinter.

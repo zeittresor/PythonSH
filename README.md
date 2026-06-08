@@ -1,6 +1,6 @@
-# PythonSoundHelix v0.7.8
+# PythonSH v0.7.8
 
-PythonSoundHelix is a GPLv3 Python/PyQt6 inoffical reimplementation and expansion inspired by the original Java SoundHelix project.
+PythonSH is a GPLv3 Python/PyQt6 inoffical reimplementation and expansion inspired by the original Java SoundHelix project.
 
 The original SoundHelix project is a Java framework for algorithmic random music composition with XML configuration and MIDI output. This Python version keeps the core ideas—seeded composition, configurable harmony, arrangement engines, sequence-like track roles, random song names and MIDI export—but removes the Java runtime dependency and adds a Windows-focused PyQt6 GUI.
 

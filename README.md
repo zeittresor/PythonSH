@@ -12,7 +12,7 @@ Example Output (v.7.9) using Midi-Import Preset with 80% Adaptation Rate / Synth
 
 https://github.com/user-attachments/assets/212716bd-2344-423a-8c95-98bd59c96fad
 
-(btw. you can copy a seed to reproduce the same song but make changes to the used instruments and volumes of each midi channel in the finetune tab or add more channels with extra functions.)
+(btw. you can copy a seed to reproduce the same song but make changes to the used instruments and volumes of each midi channel in the finetune tab or add more channels with extra functions. In this example case the output filename was "Electric and Machine_seed1666653313.mid")
 
 Prompt Mode:
 

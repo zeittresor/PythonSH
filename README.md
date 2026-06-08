@@ -12,6 +12,8 @@ Example Output (v.7.9) using Midi-Import Preset with 80% Adaptation Rate / Synth
 
 https://github.com/user-attachments/assets/212716bd-2344-423a-8c95-98bd59c96fad
 
+(btw. you can copy a seed to reproduce the same song but make changes to the used instruments and volumes in the finetune tab.)
+
 Prompt Mode:
 
 <img width="1343" height="513" alt="v7_8_prompt-mode" src="https://github.com/user-attachments/assets/e9ed8f2d-d954-460d-b47f-6a36401a57ce" />
@@ -19,8 +21,6 @@ Prompt Mode:
 Parameter Mode:
 
 <img width="1345" height="863" alt="v7_8_parameter-mode" src="https://github.com/user-attachments/assets/300b2b73-212a-47d6-9370-5db29728427a" />
-
-(btw. you can copy a seed to reproduce the same song but make changes to the used instruments and volumes in the finetune tab.)
 
 ## What is included
 

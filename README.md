@@ -1,4 +1,4 @@
-# PythonSH v0.7.8
+# PythonSH v0.7.9
 
 PythonSH is a GPLv3 Python/PyQt6 inoffical reimplementation and expansion inspired by the original Java SoundHelix project.
 

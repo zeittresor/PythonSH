@@ -8,6 +8,10 @@ Example Output (v.4.9 / commit d0b79c2):
 
 https://github.com/user-attachments/assets/4627ff79-b327-45cb-ac00-ba589ec109fe
 
+Example Output (v.7.9) using Midi-Import Preset with 80% Adaptation Rate / Synth, Melody, Pop Style:
+
+https://github.com/user-attachments/assets/212716bd-2344-423a-8c95-98bd59c96fad
+
 Prompt Mode:
 
 <img width="1343" height="513" alt="v7_8_prompt-mode" src="https://github.com/user-attachments/assets/e9ed8f2d-d954-460d-b47f-6a36401a57ce" />

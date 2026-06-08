@@ -15,12 +15,18 @@ from .music_theory import (
     nearest_allowed_pitch, note_name, safe_filename, scale_pcs, scale_tones_in_range, voice_lead,
 )
 
-APP_VERSION = "0.7.8"
-ENGINE_NAME = "prompt-first semantic relation arranger v0.7.8"
+APP_VERSION = "0.7.9"
+ENGINE_NAME = "prompt-first semantic relation arranger v0.7.9"
 
-PRESET_NAMES = [
+BASE_PRESET_NAMES = [
     "Auto Composer", "Toccata Drive", "Structured Pop", "Night Piano", "Minor House", "Calm Ambient", "DNB Coherent", "Canon Dream", "Elise Inspired"
 ]
+try:
+    from .midi_importer import list_imported_midi_presets, load_imported_midi_preset
+except Exception:  # pragma: no cover - import helper must never block the app
+    def list_imported_midi_presets(): return []
+    def load_imported_midi_preset(name): return None
+PRESET_NAMES = BASE_PRESET_NAMES + [n for n in list_imported_midi_presets() if n not in BASE_PRESET_NAMES]
 PROGRESSION_NAMES = [
     "Auto mode-safe",
     "Minor classic: i-V-i-iv",
@@ -31,7 +37,8 @@ PROGRESSION_NAMES = [
     "Major canon: I-V-vi-iii-IV-I-IV-V",
 ]
 MELODY_TEMPLATES = [
-    "auto", "SoundHelix piano contour", "Toccata contour", "Elise inspired contour", "Canon contour", "Row Boat contour"
+    "auto", "SoundHelix piano contour", "Toccata contour", "Elise inspired contour", "Canon contour", "Row Boat contour",
+    "Ode Joy full contour", "Twinkle full contour", "Imported MIDI full contour"
 ]
 
 
@@ -72,6 +79,9 @@ class GeneratorSettings:
     prompt_reference_traits: str = ""
     prompt_mode: bool = True
     direct_style_hint: str = "Auto / random style"
+    imported_midi_preset: str = ""
+    imported_midi_phrase: List[List[float]] = field(default_factory=list)
+    imported_midi_info: Dict = field(default_factory=dict)
     seed: int = 1192594075
     randomize_seed: bool = True
     bpm: int = 142
@@ -190,7 +200,7 @@ def generate_title(seed: int, preset: str = "") -> str:
 def _style_hint(settings: GeneratorSettings) -> str:
     """Return the composition family, not just the UI preset.
 
-    v0.7.8: Prompt style has priority.  In v0.7.0 a prompt such as
+    v0.7.9: Prompt style has priority.  In v0.7.0 a prompt such as
     "techno misc with hard drums" was parsed as Techno, but the generator
     still behaved like the generic Minor House preset and could even pick a
     pad-first arrangement.  This function makes style recognition drive the
@@ -529,6 +539,25 @@ def resolve_auto_settings(settings: GeneratorSettings, rng: random.Random) -> No
         settings.melody_template = rng.choice(pool)
 
 def preset_defaults(name: str) -> GeneratorSettings:
+    imported = load_imported_midi_preset(name) if name else None
+    if imported:
+        s = GeneratorSettings(preset_name=name)
+        s.imported_midi_preset = name
+        s.imported_midi_phrase = imported.get("imported_midi_phrase", []) or []
+        s.imported_midi_info = imported.get("imported_midi_info", {}) or {}
+        s.bpm = int(imported.get("bpm", s.bpm) or s.bpm)
+        s.bars = int(imported.get("bars", s.bars) or s.bars)
+        s.beats_per_bar = int(imported.get("beats_per_bar", s.beats_per_bar) or s.beats_per_bar)
+        s.key = imported.get("key", "Auto") or "Auto"
+        s.mode = imported.get("mode", "auto") or "auto"
+        s.progression = "Auto mode-safe"
+        s.melody_template = "Imported MIDI full contour"
+        s.melody_coverage = int(imported.get("melody_coverage", 50) or 50)
+        progs = imported.get("programs", {}) or {}
+        for t in s.tracks:
+            if t.role in progs and not t.lock_instrument:
+                t.program = int(progs[t.role])
+        return s
     s = GeneratorSettings(preset_name=name)
     if name == "Auto Composer":
         return s
@@ -637,15 +666,34 @@ TOCCATA_CONTOUR = [
 ]
 ELISE_CONTOUR = [(0,.5,7,1),(.5,.5,6,0),(1,.5,7,1),(1.5,.5,6,0),(2,.5,7,1),(2.5,.5,2,0),(3,.5,5,0),(3.5,.5,3,0),(4,1,0,1),(5,.5,-3,0),(5.5,.5,0,0),(6,.5,2,0),(6.5,1,3,1)]
 CANON_CONTOUR = [(0,.5,4,1),(.5,.5,3,0),(1,.5,2,0),(1.5,.5,1,0),(2,.5,0,1),(2.5,.5,-1,0),(3,.5,0,0),(3.5,.5,1,0)]
-ROW_CONTOUR = [(0,.75,0,1),(.75,.75,0,0),(1.5,.5,0,0),(2,.5,1,0),(2.5,.75,2,1),(3.25,.5,2,0),(3.75,.5,1,0),(4.25,.5,2,0),(4.75,.5,3,0),(5.25,1.5,4,1)]
+ROW_CONTOUR = [(0,.75,0,1),(.75,.75,0,0),(1.5,.5,0,0),(2,.5,1,0),(2.5,.75,2,1),(3.25,.5,2,0),(3.75,.5,1,0),(4.25,.5,2,0),(4.75,.5,3,0),(5.25,1.5,4,1),(7.0,.5,7,1),(7.5,.5,7,0),(8.0,.5,7,0),(8.5,.5,4,0),(9.0,.5,4,0),(9.5,.5,4,0),(10.0,.5,2,0),(10.5,.5,2,0),(11.0,.5,2,0),(11.5,.5,0,0),(12.0,.5,0,0),(12.5,.5,0,0),(13.0,.5,4,1),(13.5,.5,3,0),(14.0,.5,2,0),(14.5,.5,1,0),(15.0,1.0,0,1)]
+ODE_FULL_CONTOUR = [(0,.5,2,1),(.5,.5,2,0),(1,.5,3,0),(1.5,.5,4,1),(2,.5,4,0),(2.5,.5,3,0),(3,.5,2,0),(3.5,.5,1,0),(4,.5,0,1),(4.5,.5,0,0),(5,.5,1,0),(5.5,.5,2,0),(6,.75,2,1),(6.75,.25,1,0),(7,1,1,1),(8,.5,2,1),(8.5,.5,2,0),(9,.5,3,0),(9.5,.5,4,1),(10,.5,4,0),(10.5,.5,3,0),(11,.5,2,0),(11.5,.5,1,0),(12,.5,0,1),(12.5,.5,0,0),(13,.5,1,0),(13.5,.5,2,0),(14,.75,1,1),(14.75,.25,0,0),(15,1,0,1)]
+TWINKLE_FULL_CONTOUR = [(0,.5,0,1),(.5,.5,0,0),(1,.5,4,1),(1.5,.5,4,0),(2,.5,5,1),(2.5,.5,5,0),(3,1,4,1),(4,.5,3,1),(4.5,.5,3,0),(5,.5,2,1),(5.5,.5,2,0),(6,.5,1,1),(6.5,.5,1,0),(7,1,0,1),(8,.5,4,1),(8.5,.5,4,0),(9,.5,3,1),(9.5,.5,3,0),(10,.5,2,1),(10.5,.5,2,0),(11,1,1,1),(12,.5,4,1),(12.5,.5,4,0),(13,.5,3,1),(13.5,.5,3,0),(14,.5,2,1),(14.5,.5,2,0),(15,1,1,1),(16,.5,0,1),(16.5,.5,0,0),(17,.5,4,1),(17.5,.5,4,0),(18,.5,5,1),(18.5,.5,5,0),(19,1,4,1),(20,.5,3,1),(20.5,.5,3,0),(21,.5,2,1),(21.5,.5,2,0),(22,.5,1,1),(22.5,.5,1,0),(23,1,0,1)]
+
+
+def imported_contour_for(settings: GeneratorSettings):
+    phrase = getattr(settings, "imported_midi_phrase", []) or []
+    out = []
+    for item in phrase:
+        try:
+            off, dur, deg, acc = item[:4]
+            out.append((float(off), max(0.125, float(dur)), int(deg), int(acc)))
+        except Exception:
+            continue
+    return out
 
 
 def contour_for(settings: GeneratorSettings):
+    imported = imported_contour_for(settings)
+    if imported and ("imported" in (settings.melody_template or "").lower() or getattr(settings, "imported_midi_preset", "")):
+        return imported
     name = settings.melody_template.lower()
     if "toccata" in name or "toccata" in settings.preset_name.lower(): return TOCCATA_CONTOUR
     if "elise" in name: return ELISE_CONTOUR
     if "canon" in name: return CANON_CONTOUR
     if "row" in name: return ROW_CONTOUR
+    if "ode" in name or "joy" in name: return ODE_FULL_CONTOUR
+    if "twinkle" in name: return TWINKLE_FULL_CONTOUR
     return PIANO_CONTOUR
 
 
@@ -920,7 +968,60 @@ def setup_track(t: TrackSettings) -> MidiTrack:
     return tr
 
 
+def compose_imported_melody(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], rng: random.Random) -> int:
+    """Use an imported MIDI contour as a whole-song source, not a short section loop.
+
+    The imported MIDI is transformed into scale degrees and snapped to the generated
+    chord map.  This keeps it useful as inspiration while avoiding 1:1 copies.
+    """
+    contour = imported_contour_for(settings)
+    if not contour:
+        return 0
+    count = 0
+    bar_ticks = settings.ticks_per_beat * settings.beats_per_bar
+    total_beats = settings.bars * settings.beats_per_bar
+    phrase_beats = max(settings.beats_per_bar, max((off + dur for off, dur, _, _ in contour), default=settings.beats_per_bar))
+    # If the imported source is shorter than the target, repeat with transposed/rotated variants.
+    repeats = max(1, math.ceil(total_beats / phrase_beats))
+    for rep in range(repeats):
+        base_beat = rep * phrase_beats
+        selected = coverage_indices(len(contour), settings.melody_coverage, settings.seed, rep)
+        section_index = rep % max(1, len(sections))
+        trans = [0, 2, 4, -1, 5][section_index % 5] if rep else 0
+        last_tick = -999999
+        for ci, (off, dur, deg, acc) in enumerate(contour):
+            abs_beat = base_beat + off
+            if abs_beat >= total_beats:
+                break
+            bar = int(abs_beat // settings.beats_per_bar)
+            beat = abs_beat - bar * settings.beats_per_bar
+            if not role_active(settings, sections, bar, "melody"):
+                continue
+            is_source = ci in selected
+            if not is_source and not (acc or abs(beat - round(beat)) < 0.01):
+                continue
+            tick = bar * bar_ticks + int(round(beat * settings.ticks_per_beat))
+            # keep imported contours flowing, but thin extreme densities
+            min_gap = settings.ticks_per_beat // (2 if section_for_bar(sections, bar).name in ("B", "Hook") else 1)
+            if tick - last_tick < min_gap and not acc:
+                continue
+            chord = chords[min(bar, len(chords)-1)]
+            strong = acc or (abs(beat - round(beat)) < 0.02 and int(round(beat)) in (0, 2, settings.beats_per_bar-1))
+            if is_source:
+                pitch = degree_pitch(settings, int(deg) + trans, chord, strong, 58, 80)
+            else:
+                tones = chord_tones_in_range(chord.symbol, settings.key, settings.mode, 58, 78)
+                pitch = tones[(ci + rep) % len(tones)]
+            vel = role_velocity(settings, "melody", clamp(ts.volume * 0.52 + section_for_bar(sections, bar).energy * 0.065 + (4 if acc else 0), 32, 72))
+            length = max(int(float(dur) * settings.ticks_per_beat * 0.88), settings.ticks_per_beat // 4)
+            count += add_note(tr, tick, length, ts.channel, pitch + ts.octave*12 + ts.transpose, vel, settings, chord, 52, 82)
+            last_tick = tick
+    return count
+
+
 def compose_melody(tr: MidiTrack, ts: TrackSettings, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], rng: random.Random) -> int:
+    if imported_contour_for(settings):
+        return compose_imported_melody(tr, ts, settings, sections, chords, rng)
     count = 0
     bar_ticks = settings.ticks_per_beat * settings.beats_per_bar
     section_transforms = [0, 2, 4, 7, 0]
@@ -1333,13 +1434,13 @@ def generate_song(settings: GeneratorSettings, output_dir: str | os.PathLike, pr
     sheet=make_chord_sheet(title, settings, sections, chords, note_count)
     if settings.export_chord_sheet: chord_path.write_text(sheet,encoding='utf-8')
     if settings.export_json:
-        payload={"application":"PythonSoundHelix","version":APP_VERSION,"engine":ENGINE_NAME,"title":title,"seed":settings.seed,"output_stem":output_stem,"midi_path":str(midi),"note_count":note_count,"arrangement_profile":arrangement_profile(settings),"bass_pattern_family":bass_pattern_family(settings),"prompt":getattr(settings,"prompt", ""),"prompt_interpretation":getattr(settings,"prompt_interpretation", ""),"direct_style_hint":getattr(settings,"direct_style_hint", ""),"prompt_style_id":getattr(settings,"prompt_style_id", ""),"prompt_style_name":getattr(settings,"prompt_style_name", ""),"prompt_style_family":_style_hint(settings),"prompt_style_blend":_style_blend(settings),"prompt_relation_profile":getattr(settings,"prompt_relation_profile", ""),"prompt_semantic_tags":getattr(settings,"prompt_semantic_tags", []),"prompt_style_confidence":getattr(settings,"prompt_style_confidence", 0),"prompt_hard_drums":getattr(settings,"prompt_hard_drums", False),"prompt_reference_name":getattr(settings,"prompt_reference_name", ""),"prompt_reference_type":getattr(settings,"prompt_reference_type", ""),"prompt_reference_traits":getattr(settings,"prompt_reference_traits", ""),"effective_tracks":[asdict(t) for t in active_tracks],"settings":settings.to_dict(),"sections":[asdict(s) for s in sections],"chords":[asdict(c) for c in chords]}
+        payload={"application":"PythonSoundHelix","version":APP_VERSION,"engine":ENGINE_NAME,"title":title,"seed":settings.seed,"output_stem":output_stem,"midi_path":str(midi),"note_count":note_count,"arrangement_profile":arrangement_profile(settings),"bass_pattern_family":bass_pattern_family(settings),"prompt":getattr(settings,"prompt", ""),"prompt_interpretation":getattr(settings,"prompt_interpretation", ""),"direct_style_hint":getattr(settings,"direct_style_hint", ""),"prompt_style_id":getattr(settings,"prompt_style_id", ""),"prompt_style_name":getattr(settings,"prompt_style_name", ""),"prompt_style_family":_style_hint(settings),"prompt_style_blend":_style_blend(settings),"prompt_relation_profile":getattr(settings,"prompt_relation_profile", ""),"prompt_semantic_tags":getattr(settings,"prompt_semantic_tags", []),"prompt_style_confidence":getattr(settings,"prompt_style_confidence", 0),"prompt_hard_drums":getattr(settings,"prompt_hard_drums", False),"prompt_reference_name":getattr(settings,"prompt_reference_name", ""),"prompt_reference_type":getattr(settings,"prompt_reference_type", ""),"prompt_reference_traits":getattr(settings,"prompt_reference_traits", ""),"effective_tracks":[asdict(t) for t in active_tracks],"imported_midi_info":getattr(settings,"imported_midi_info",{}),"settings":settings.to_dict(),"sections":[asdict(s) for s in sections],"chords":[asdict(c) for c in chords]}
         js.write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf-8')
     return SongResult(title,settings.seed,str(midi),str(js) if settings.export_json else "",str(chord_path) if settings.export_chord_sheet else "",note_count, f"{ENGINE_NAME}: auto phrase plans, seed-specific arrangement entry profile, varied bass pattern family={bass_pattern_family(settings)}, auto-instruments unless locked, reference-aware prompt mapping, strict tonal correction; prompt_interpretation=" + getattr(settings, "prompt_interpretation", "auto") + ".")
 
 
 def make_chord_sheet(title: str, settings: GeneratorSettings, sections: Sequence[Section], chords: Sequence[Chord], note_count: int) -> str:
-    lines=[title,"="*len(title),"",f"Generated by PythonSoundHelix {APP_VERSION} (GPLv3)",f"Engine: {ENGINE_NAME}",f"Preset: {settings.preset_name}",f"Seed: {settings.seed}",f"Prompt: {getattr(settings, 'prompt', '') or 'auto'}",f"Interpretation: {getattr(settings, 'prompt_interpretation', '') or 'auto'}",f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",f"Progression: {settings.progression}",f"Arrangement profile: {arrangement_profile(settings)['style']} | style_family={_style_hint(settings)} | blend={'+'.join(_style_blend(settings)) or 'auto'} | relation={getattr(settings, 'prompt_relation_profile', '') or 'auto'} | focus={arrangement_profile(settings)['focus']} | bass={bass_pattern_family(settings)}",f"Melody coverage: {settings.melody_coverage}% distributed across the whole phrase, not prefix-only",f"Notes: {note_count}","","Sections:"]
+    lines=[title,"="*len(title),"",f"Generated by PythonSoundHelix {APP_VERSION} (GPLv3)",f"Engine: {ENGINE_NAME}",f"Preset: {settings.preset_name}",f"Imported MIDI preset: {getattr(settings, 'imported_midi_preset', '') or 'no'}",f"Seed: {settings.seed}",f"Prompt: {getattr(settings, 'prompt', '') or 'auto'}",f"Interpretation: {getattr(settings, 'prompt_interpretation', '') or 'auto'}",f"Tempo: {settings.bpm} BPM | Key: {settings.key} {settings.mode} | Bars: {settings.bars}",f"Progression: {settings.progression}",f"Arrangement profile: {arrangement_profile(settings)['style']} | style_family={_style_hint(settings)} | blend={'+'.join(_style_blend(settings)) or 'auto'} | relation={getattr(settings, 'prompt_relation_profile', '') or 'auto'} | focus={arrangement_profile(settings)['focus']} | bass={bass_pattern_family(settings)}",f"Melody coverage: {settings.melody_coverage}% distributed across the whole phrase, not prefix-only",f"Notes: {note_count}","","Sections:"]
     for s in sections: lines.append(f"  - {s.name}: bars {s.start_bar+1}-{s.start_bar+s.bars}, energy {s.energy}%")
     lines += ["", "Chord map:"]
     current=None; buf=[]

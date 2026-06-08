@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
 
 from .generator import APP_VERSION, GeneratorSettings, PRESET_NAMES, PROGRESSION_NAMES, MELODY_TEMPLATES, TrackSettings, generate_song, preset_defaults, sanitize_mode_progression
 from .style_reference_db import packaged_reference_count, reference_candidates, add_user_reference
+from .midi_importer import save_imported_midi_preset, list_imported_midi_presets, load_imported_midi_preset
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "output"
@@ -58,44 +59,44 @@ THEME_NAMES = ["Dark", "Light", "Matrix", "Ocean", "Purple", "Hellfire", "Sepia"
 
 TRANSLATIONS = {
     "English": {
-        "prompt_box":"Prompt Composer", "prompt_label":"Describe the song you want", "prompt_generate":"Generate from prompt", "prompt_placeholder":"Example: dark but melodic drum and bass, fast, strong drums, evolving bass, airy pads, no dissonance", "prompt_note":"Prompt-first mode is active. Describe the music in natural language; the app interprets style, mood, tempo, instruments, density, key/mode and arrangement. You can switch back to direct parameter controls in Options.", "prompt_first":"Prompt-first Generate tab", "direct_params":"Show direct parameter controls", "prompt_mode_tip":"When enabled, the Generate tab uses natural-language prompts. When disabled, the original direct parameter controls are visible and the prompt is ignored.", "style_preset":"Style / drum preset", "style_preset_tip":"Direct-parameter mode only: choose one of the imported Synthwave MIDI Reimaginer style profiles as a style/drum/instrument hint. Auto keeps seed-based random style selection.",
+        "prompt_box":"Prompt Composer", "prompt_label":"Describe the song you want", "prompt_generate":"Generate from prompt", "prompt_placeholder":"Example: dark but melodic drum and bass, fast, strong drums, evolving bass, airy pads, no dissonance", "prompt_note":"Prompt-first mode is active. Describe the music in natural language; the app interprets style, mood, tempo, instruments, density, key/mode and arrangement. You can switch back to direct parameter controls in Options.", "prompt_first":"Prompt-first Generate tab", "direct_params":"Show direct parameter controls", "prompt_mode_tip":"When enabled, the Generate tab uses natural-language prompts. When disabled, the original direct parameter controls are visible and the prompt is ignored.", "style_preset":"Style / drum preset", "style_preset_tip":"Direct-parameter mode only: choose one of the imported Synthwave MIDI Reimaginer style profiles as a style/drum/instrument hint. Auto keeps seed-based random style selection.", "midi_import":"MIDI preset import", "midi_import_tip":"Import a MIDI as a transformed full-song contour preset. Use only files you may legally use; PythonSoundHelix transforms the contour instead of copying the original 1:1.", "midi_import_button":"Import MIDI as preset",
         "generate_tab":"Generate", "finetuning_tab":"Finetuning", "options_tab":"Options", "reference_tab":"Reference DB", "log_tab":"Log",
         "help":"Help", "about":"About", "generate":"Generate Song", "play":"Play MIDI", "open":"Open output folder",
         "randomize":"randomize on generate", "lfo":"LFO expression CC", "call":"call/response melody", "bass":"bass favors chord roots", "markers":"section markers", "json":"export JSON result", "chords":"export chord sheet", "ratings":"use thumbs-up rating memory", "dissonance":"allow experimental dissonance/free counterpoint", "lock_instrument":"lock instrument",
         "tip_preset":"Auto Composer randomly chooses a style profile. Other presets are style hints; key/mode/progression/template stay automatic by default.",
         "tip_progression":"Auto mode-safe creates section-specific phrase plans. Manual progressions remain possible but are less varied.",
         "tip_language":"Changes main menus, tabs, buttons and tooltips immediately.",
-        "options_note":"v0.7.8: presets act as style hints. Key, mode, progression and melody template stay Auto by default; the engine uses seed-specific role entry profiles so songs can begin with pad, melody, drums, chords or bass.",
+        "options_note":"v0.7.9: presets act as style hints. Key, mode, progression and melody template stay Auto by default; the engine uses seed-specific role entry profiles so songs can begin with pad, melody, drums, chords or bass.",
     },
     "Deutsch": {
-        "prompt_box":"Prompt-Komponist", "prompt_label":"Beschreibe den Song, den du willst", "prompt_generate":"Aus Prompt erzeugen", "prompt_placeholder":"Beispiel: düsterer aber melodischer Drum and Bass, schnell, starke Drums, bewegter Bass, luftige Pads, keine Dissonanzen", "prompt_note":"Prompt-Modus ist aktiv. Beschreibe die Musik als Fließtext; die App interpretiert Stil, Stimmung, Tempo, Instrumente, Dichte, Tonart/Modus und Arrangement. In den Optionen kannst du wieder zur direkten Parameterauswahl wechseln.", "prompt_first":"Prompt-first-Ansicht im Erzeugen-Tab", "direct_params":"Direkte Parameter anzeigen", "prompt_mode_tip":"Aktiv: Erzeugen per Fließtext-Prompt. Inaktiv: ursprüngliche direkte Parameteransicht; der Prompt wird ignoriert.", "style_preset":"Style-/Drum-Preset", "style_preset_tip":"Nur in der direkten Parameteransicht: wählt eines der importierten Synthwave-MIDI-Reimaginer-Stilprofile als Stil-/Drum-/Instrument-Hinweis. Auto behält die seed-basierte Zufallsauswahl.",
+        "prompt_box":"Prompt-Komponist", "prompt_label":"Beschreibe den Song, den du willst", "prompt_generate":"Aus Prompt erzeugen", "prompt_placeholder":"Beispiel: düsterer aber melodischer Drum and Bass, schnell, starke Drums, bewegter Bass, luftige Pads, keine Dissonanzen", "prompt_note":"Prompt-Modus ist aktiv. Beschreibe die Musik als Fließtext; die App interpretiert Stil, Stimmung, Tempo, Instrumente, Dichte, Tonart/Modus und Arrangement. In den Optionen kannst du wieder zur direkten Parameterauswahl wechseln.", "prompt_first":"Prompt-first-Ansicht im Erzeugen-Tab", "direct_params":"Direkte Parameter anzeigen", "prompt_mode_tip":"Aktiv: Erzeugen per Fließtext-Prompt. Inaktiv: ursprüngliche direkte Parameteransicht; der Prompt wird ignoriert.", "style_preset":"Style-/Drum-Preset", "style_preset_tip":"Nur in der direkten Parameteransicht: wählt eines der importierten Synthwave-MIDI-Reimaginer-Stilprofile als Stil-/Drum-/Instrument-Hinweis. Auto behält die seed-basierte Zufallsauswahl.", "midi_import":"MIDI-Preset-Import", "midi_import_tip":"Importiert ein MIDI als transformiertes Ganzsong-Kontur-Preset. Nutze nur Dateien, die du rechtlich verwenden darfst; PythonSoundHelix transformiert die Kontur statt das Original 1:1 zu kopieren.", "midi_import_button":"MIDI als Preset importieren",
         "generate_tab":"Erzeugen", "finetuning_tab":"Feinabstimmung", "options_tab":"Optionen", "reference_tab":"Referenz-DB", "log_tab":"Log",
         "help":"Hilfe", "about":"Über", "generate":"Song erzeugen", "play":"MIDI abspielen", "open":"Ausgabeordner öffnen",
         "randomize":"Seed zufällig beim Erzeugen", "lfo":"LFO-Ausdruck CC", "call":"Call/Response-Melodie", "bass":"Bass bevorzugt Akkord-Grundtöne", "markers":"Abschnittsmarker", "json":"JSON exportieren", "chords":"Akkordblatt exportieren", "ratings":"Daumen-hoch-Bewertungen nutzen", "dissonance":"experimentelle Dissonanzen/freien Kontrapunkt erlauben", "lock_instrument":"Instrument sperren",
         "tip_preset":"Auto Composer wählt zufällig ein Stilprofil. Andere Presets sind Stil-Hinweise; Tonart/Modus/Progression/Melodie bleiben standardmäßig automatisch.",
         "tip_progression":"Auto mode-safe erzeugt abschnittsweise passende Phrasenpläne. Manuelle Progressionen bleiben möglich, sind aber weniger variabel.",
         "tip_language":"Ändert Hauptmenüs, Tabs, Buttons und Tooltips sofort.",
-        "options_note":"v0.7.8: Presets sind Stil-Hinweise. Tonart, Modus, Progression und Melodie-Template bleiben standardmäßig Auto; die Engine nutzt seed-spezifische Einstiegsmuster, sodass Songs mit Pad, Melodie, Drums, Akkorden oder Bass beginnen können.",
+        "options_note":"v0.7.9: Presets sind Stil-Hinweise. Tonart, Modus, Progression und Melodie-Template bleiben standardmäßig Auto; die Engine nutzt seed-spezifische Einstiegsmuster, sodass Songs mit Pad, Melodie, Drums, Akkorden oder Bass beginnen können.",
     },
     "Français": {
-        "prompt_box":"Compositeur par prompt", "prompt_label":"Décris le morceau souhaité", "prompt_generate":"Générer depuis le prompt", "prompt_placeholder":"Exemple : drum and bass sombre mais mélodique, rapide, batteries fortes, basse évolutive, pads aériens, sans dissonance", "prompt_note":"Le mode prompt-first est actif. Décris la musique en texte libre; l’application interprète style, humeur, tempo, instruments, densité, tonalité/mode et arrangement. Le mode paramètres directs peut être réactivé dans Options.", "prompt_first":"Onglet génération en mode prompt-first", "direct_params":"Afficher les paramètres directs", "prompt_mode_tip":"Activé : génération par texte libre. Désactivé : vue originale avec paramètres directs; le prompt est ignoré.", "style_preset":"Preset style / batterie", "style_preset_tip":"Mode paramètres directs seulement : choisit un profil de style importé comme indication de style, batterie et instrumentation. Auto conserve la sélection aléatoire par graine.",
+        "prompt_box":"Compositeur par prompt", "prompt_label":"Décris le morceau souhaité", "prompt_generate":"Générer depuis le prompt", "prompt_placeholder":"Exemple : drum and bass sombre mais mélodique, rapide, batteries fortes, basse évolutive, pads aériens, sans dissonance", "prompt_note":"Le mode prompt-first est actif. Décris la musique en texte libre; l’application interprète style, humeur, tempo, instruments, densité, tonalité/mode et arrangement. Le mode paramètres directs peut être réactivé dans Options.", "prompt_first":"Onglet génération en mode prompt-first", "direct_params":"Afficher les paramètres directs", "prompt_mode_tip":"Activé : génération par texte libre. Désactivé : vue originale avec paramètres directs; le prompt est ignoré.", "style_preset":"Preset style / batterie", "style_preset_tip":"Mode paramètres directs seulement : choisit un profil de style importé comme indication de style, batterie et instrumentation. Auto conserve la sélection aléatoire par graine.", "midi_import":"Import preset MIDI", "midi_import_tip":"Importe un MIDI comme contour complet transformé. Utilise uniquement des fichiers autorisés; PythonSoundHelix transforme le contour au lieu de copier l’original.", "midi_import_button":"Importer MIDI comme preset",
         "generate_tab":"Générer", "finetuning_tab":"Réglage fin", "options_tab":"Options", "reference_tab":"Base références", "log_tab":"Journal",
         "help":"Aide", "about":"À propos", "generate":"Générer le morceau", "play":"Lire MIDI", "open":"Ouvrir le dossier de sortie",
         "randomize":"graine aléatoire à la génération", "lfo":"Expression LFO CC", "call":"mélodie appel/réponse", "bass":"basse sur fondamentales d’accords", "markers":"marqueurs de sections", "json":"exporter JSON", "chords":"exporter grille d’accords", "ratings":"utiliser les évaluations positives", "dissonance":"autoriser dissonances/contrepoint libre expérimentaux", "lock_instrument":"verrouiller l’instrument",
         "tip_preset":"Auto Composer choisit un profil de style aléatoire. Les autres presets restent des indications de style; tonalité/mode/progression/modèle mélodique restent automatiques par défaut.",
         "tip_progression":"Auto mode-safe crée des plans de phrases par section. Les progressions manuelles restent possibles, mais moins variées.",
         "tip_language":"Met à jour immédiatement menus, onglets, boutons et infobulles.",
-        "options_note":"v0.7.8 : les presets sont des indications de style. Tonalité, mode, progression et modèle mélodique restent en Auto; le moteur utilise des entrées de rôles propres à la graine pour varier les débuts.",
+        "options_note":"v0.7.9 : les presets sont des indications de style. Tonalité, mode, progression et modèle mélodique restent en Auto; le moteur utilise des entrées de rôles propres à la graine pour varier les débuts.",
     },
     "Русский": {
-        "prompt_box":"Prompt-композитор", "prompt_label":"Опиши нужную композицию", "prompt_generate":"Создать по prompt", "prompt_placeholder":"Пример: тёмный, но мелодичный drum and bass, быстро, сильные ударные, развивающийся бас, воздушные пэды, без диссонанса", "prompt_note":"Активен режим prompt-first. Опиши музыку обычным текстом; приложение интерпретирует стиль, настроение, темп, инструменты, плотность, тональность/лад и аранжировку. В параметрах можно вернуть прямое управление.", "prompt_first":"Вкладка генерации в режиме prompt-first", "direct_params":"Показать прямые параметры", "prompt_mode_tip":"Включено: генерация по текстовому prompt. Выключено: исходная панель прямых параметров; prompt игнорируется.", "style_preset":"Стиль / ударные", "style_preset_tip":"Только в режиме прямых параметров: выбирает импортированный профиль стиля как подсказку для стиля, ударных и инструментов. Auto оставляет случайный выбор по seed.",
+        "prompt_box":"Prompt-композитор", "prompt_label":"Опиши нужную композицию", "prompt_generate":"Создать по prompt", "prompt_placeholder":"Пример: тёмный, но мелодичный drum and bass, быстро, сильные ударные, развивающийся бас, воздушные пэды, без диссонанса", "prompt_note":"Активен режим prompt-first. Опиши музыку обычным текстом; приложение интерпретирует стиль, настроение, темп, инструменты, плотность, тональность/лад и аранжировку. В параметрах можно вернуть прямое управление.", "prompt_first":"Вкладка генерации в режиме prompt-first", "direct_params":"Показать прямые параметры", "prompt_mode_tip":"Включено: генерация по текстовому prompt. Выключено: исходная панель прямых параметров; prompt игнорируется.", "style_preset":"Стиль / ударные", "style_preset_tip":"Только в режиме прямых параметров: выбирает импортированный профиль стиля как подсказку для стиля, ударных и инструментов. Auto оставляет случайный выбор по seed.", "midi_import":"Импорт MIDI-пресета", "midi_import_tip":"Импортирует MIDI как преобразованный контур всей композиции. Используй только разрешённые файлы; PythonSoundHelix не копирует оригинал 1:1.", "midi_import_button":"Импортировать MIDI как preset",
         "generate_tab":"Создать", "finetuning_tab":"Тонкая настройка", "options_tab":"Опции", "reference_tab":"База ссылок", "log_tab":"Журнал",
         "help":"Помощь", "about":"О программе", "generate":"Создать песню", "play":"Играть MIDI", "open":"Открыть папку вывода",
         "randomize":"случайный seed при создании", "lfo":"LFO expression CC", "call":"мелодия вопрос/ответ", "bass":"бас по основным тонам аккорда", "markers":"маркеры секций", "json":"экспорт JSON", "chords":"экспорт аккордов", "ratings":"использовать оценки лайков", "dissonance":"разрешить экспериментальные диссонансы/свободный контрапункт", "lock_instrument":"зафиксировать инструмент",
         "tip_preset":"Auto Composer случайно выбирает стилевой профиль. Остальные пресеты — подсказки стиля; тональность/лад/прогрессия/мелодия по умолчанию автоматические.",
         "tip_progression":"Auto mode-safe создает фразовые планы по секциям. Ручные прогрессии возможны, но менее вариативны.",
         "tip_language":"Сразу меняет меню, вкладки, кнопки и подсказки.",
-        "options_note":"v0.7.8: пресеты являются стилевыми подсказками. Тональность, лад, прогрессия и шаблон мелодии остаются Auto; движок использует seed-зависимые входы партий, поэтому песня может начинаться с пада, мелодии, ударных, аккордов или баса.",
+        "options_note":"v0.7.9: пресеты являются стилевыми подсказками. Тональность, лад, прогрессия и шаблон мелодии остаются Auto; движок использует seed-зависимые входы партий, поэтому песня может начинаться с пада, мелодии, ударных, аккордов или баса.",
     },
 }
 
@@ -136,7 +137,7 @@ class MainWindow(QMainWindow):
         self.prompt_box=QGroupBox("Prompt Composer"); prompt_box=self.prompt_box; prompt_layout=QVBoxLayout(prompt_box)
         self.prompt_label=QLabel("Describe the song you want")
         self.prompt=QTextEdit(); self.prompt.setMinimumHeight(170); self.prompt.setPlaceholderText("Example: dark but melodic drum and bass, fast, strong drums, evolving bass, airy pads, no dissonance")
-        self.prompt_note=QLabel("Direct parameter controls are hidden in v0.7.8. Describe style, mood, tempo, instruments, density, key/mode and arrangement."); self.prompt_note.setWordWrap(True)
+        self.prompt_note=QLabel("Direct parameter controls are hidden in v0.7.9. Describe style, mood, tempo, instruments, density, key/mode and arrangement."); self.prompt_note.setWordWrap(True)
         prompt_layout.addWidget(self.prompt_label); prompt_layout.addWidget(self.prompt); prompt_layout.addWidget(self.prompt_note)
         outer.addWidget(prompt_box)
         top=QHBoxLayout(); outer.addLayout(top)
@@ -272,10 +273,47 @@ class MainWindow(QMainWindow):
         self.allow_dissonance = QCheckBox("allow experimental dissonance/free counterpoint")
         self.allow_dissonance.setChecked(False)
         form.addRow("Harmony safety", self.allow_dissonance)
+
+        midi_box = QGroupBox(self._tr("midi_import")); midi_form = QFormLayout(midi_box)
+        self.midi_import_name = QLineEdit(); self.midi_import_name.setPlaceholderText("Optional preset name; empty = filename")
+        self.btn_import_midi = QPushButton(self._tr("midi_import_button")); self.btn_import_midi.clicked.connect(self.import_midi_preset_from_ui)
+        self.midi_import_note = QLabel(self._tr("midi_import_tip")); self.midi_import_note.setWordWrap(True)
+        midi_form.addRow("Preset name", self.midi_import_name)
+        midi_form.addRow("", self.btn_import_midi)
+        midi_form.addRow("", self.midi_import_note)
+        v.addWidget(midi_box)
+
         self.options_note=QTextEdit(); self.options_note.setMinimumHeight(320); self.options_note.setReadOnly(True)
         v.addWidget(self.options_note)
         v.addStretch(1)
         return page
+
+    def refresh_preset_dropdown(self, select_name: str | None = None):
+        current = select_name or (self.preset.currentText() if hasattr(self, "preset") else "Auto Composer")
+        names = list(PRESET_NAMES)
+        for name in list_imported_midi_presets():
+            if name not in names:
+                names.append(name)
+        self.preset.blockSignals(True)
+        self.preset.clear(); self.preset.addItems(names)
+        if current in names:
+            self.preset.setCurrentText(current)
+        self.preset.blockSignals(False)
+
+    def import_midi_preset_from_ui(self):
+        try:
+            path, _ = QFileDialog.getOpenFileName(self, "Import MIDI as preset", str(ROOT), "MIDI files (*.mid *.midi);;All files (*.*)")
+            if not path:
+                return
+            name = self.midi_import_name.text().strip() or f"MIDI: {Path(path).stem}"
+            out = save_imported_midi_preset(path, name)
+            self.refresh_preset_dropdown(name)
+            self.settings = preset_defaults(name)
+            self._load_settings_to_ui()
+            QMessageBox.information(self, "MIDI preset imported", f"Imported as preset:\n{name}\n\nSaved metadata:\n{out}\n\nThe MIDI is used as a transformed contour source; original melodies are not copied 1:1 by default.")
+            self.midi_import_name.clear()
+        except Exception as e:
+            QMessageBox.warning(self, "MIDI import failed", f"{type(e).__name__}: {e}")
 
     def _reference_tab(self):
         page = QWidget(); v = QVBoxLayout(page)
@@ -360,6 +398,7 @@ class MainWindow(QMainWindow):
         if hasattr(self, "prompt_mode_checkbox"):
             self.prompt_mode_checkbox.setChecked(bool(getattr(s, "prompt_mode", True)))
             self.apply_generate_view_mode()
+        self.refresh_preset_dropdown(s.preset_name)
         self.preset.blockSignals(True); self.preset.setCurrentText(s.preset_name); self.preset.blockSignals(False)
         if hasattr(self, "style_preset"):
             self.style_preset.setCurrentText(getattr(s, "direct_style_hint", "Auto / random style") or "Auto / random style")
@@ -465,11 +504,14 @@ class MainWindow(QMainWindow):
             self.language_combo.setToolTip(self._tr("tip_language"))
         if hasattr(self, "prompt_mode_checkbox"):
             self.prompt_mode_checkbox.setText(self._tr("prompt_first")); self.prompt_mode_checkbox.setToolTip(self._tr("prompt_mode_tip"))
+        if hasattr(self, "midi_import_note"):
+            self.midi_import_note.setText(self._tr("midi_import_tip")); self.btn_import_midi.setText(self._tr("midi_import_button"))
         if hasattr(self, "options_note"):
             self.options_note.setText(self._tr("options_note"))
 
     def about(self):
         QMessageBox.information(self,"About PythonSoundHelix", f"PythonSoundHelix v{APP_VERSION}\nGPLv3\n\nPythonSoundHelix is inspired by SoundHelix but is a separate Python/PyQt6 project by github.com/zeittresor.\n\nOriginal SoundHelix project: Thomas Schürger (soundhelix.com).\n\nThis build is prompt-first by default, but Options can switch the Generate tab back to the original direct parameter view, including a style/drum preset dropdown with the imported 170+ style profiles. The app maps style/mood/tempo/instrument words to safe musical settings using multilingual wordlists, imported Synthwave Midi Reimaginer style vocabulary and a local reference database for artist/song style traits. It never copies original songs or melodies.")
+
 
     def apply_theme(self, name="Dark"):
         themes={

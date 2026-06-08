@@ -180,7 +180,7 @@ def normalize(text: str) -> str:
 def canonicalize_prompt_text(text: str) -> tuple[str, list[str]]:
     """Return a typo-tolerant prompt used for matching, plus correction notes.
 
-    v0.7.8: The parser must treat common style typos as intent, not as random
+    v0.7.9: The parser must treat common style typos as intent, not as random
     tokens that accidentally match unrelated references.  Example: "dark melodic
     dran and bass" is overwhelmingly likely to mean "dark melodic drum and
     bass", not Aggrotech.

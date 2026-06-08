@@ -1,6 +1,14 @@
 # Changelog
 
-## v0.7.8
+## v0.7.9
+
+- Added MIDI preset import under Options. Imported MIDI files become local presets in the Preset dropdown using a transformed full-song contour source.
+- Imported MIDI presets are stored update-safely in app_data/imported_midi_presets as JSON metadata.
+- Preset generation now supports imported full-song phrase contours instead of only short motif fragments.
+- Added longer public-domain/traditional full-contour templates such as Ode Joy and Twinkle-style contours.
+- Updated About box wording to clarify separation from SoundHelix, github.com/zeittresor origin, prompt-first/direct modes, multilingual wordlists/reference DB, and no-copy policy.
+
+## v0.7.9
 
 - Added a packaged local SQLite style reference database with more than 2,000 rows.
 - The database contains style aliases from the Synthwave Midi Reimaginer vocabulary plus curated artist/song reference aliases.
@@ -10,14 +18,14 @@
 - Added a Reference DB tab for searching reference matches and adding user references to app_data/user_style_references.jsonl.
 - Added docs/style_reference_schema_postgresql.sql for a future PostgreSQL-backed reference service while keeping local SQLite as the zero-install default.
 
-## v0.7.8
+## v0.7.9
 
 - Added a dedicated psytrance/goa branch instead of treating Goa Trance as generic trance.
 - Goa/Psy/acid prompts now force a minor, drive-oriented phrase plan, drums+bass first arrangement, rolling psy bass and stronger four-on-the-floor drum programming.
 - Acid lead prompts now create a gated 16th-note acid lead in B/Hook sections rather than a generic melody-first line.
 - Psytrance track balancing now boosts kick/bass and reduces pads so prompts like "goa trance uplifting acid lead" no longer resolve to melody/pad-forward output.
 
-## v0.7.8
+## v0.7.9
 
 - Converted the Generate workflow to prompt-first: direct generator parameter panels are hidden by default.
 - Added `app/prompt_parser.py` and `app/prompt_style_words.json`.
@@ -26,7 +34,7 @@
 - CLI now accepts `--prompt "..."` and `--language ...`.
 - Generation JSON/chord sheet includes prompt and prompt interpretation.
 
-## v0.7.8
+## v0.7.9
 
 - Added varied seed-specific bass rhythm families so bass no longer always uses the same tango-like hit layout.
 - Bass pattern can now be sparse roots, root/fifth, walking, broken octave, syncopated, offbeat pulse, pedal, or rarely tango-like, with section-level variation.
@@ -35,7 +43,7 @@
 - Extra tracks added from Finetuning are locked by default because adding them is an explicit manual choice.
 - JSON export now includes `effective_tracks` and `bass_pattern_family` for debugging generated arrangements.
 
-## v0.7.8
+## v0.7.9
 
 - Fixed arrangement intro selection: the first bars now have one explicit seed-selected lead role, so songs no longer all drift into pad-first intros.
 - Opening role can be drum, bass, melody, chord, or pad depending on seed/style.
@@ -43,7 +51,7 @@
 - Final quality pass is stricter for melody/counter lines: prominent melody notes are chord-tonal, quiet passing notes remain scale-safe, and counter melodies use chord tones only.
 - Updated docs/version markers.
 
-## v0.7.8
+## v0.7.9
 
 - Presets now act as style hints by default: key, mode, progression and melody template remain Auto unless manually overridden.
 - Added seed-specific arrangement entry profiles so songs can start with pad, melody, drums, chords or bass instead of nearly always bass-first.
@@ -53,7 +61,7 @@
 - Purple and other themes now set explicit readable inactive/active tab colors.
 - Language selector now updates main tabs, menu items, buttons, checkboxes and key tooltips immediately for English, German, French and Russian.
 
-## v0.7.8
+## v0.7.9
 
 - Fixed generated songs overwriting previous output files. Output filenames now include the seed and auto-increment when needed.
 - Randomized generation now ignores the previously generated title so every generation can receive a fresh song name.

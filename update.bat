@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 echo ============================================================
-echo  PythonSoundHelix v0.7.8 - wheelhouse updater
+echo  PythonSoundHelix v0.7.9 - wheelhouse updater
 echo ============================================================
 if not exist ".venv\Scripts\python.exe" py -3 -m venv .venv || exit /b 1
 ".venv\Scripts\python.exe" -m pip install --upgrade pip
